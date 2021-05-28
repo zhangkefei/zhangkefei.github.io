@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="想要对一件事情刨根问底，自然要从大处着眼，理解了整体架构之后，渐渐深入细节，才能了然于胸。这与战略与战术的关系很相似，一切的战术都是为实现战略而存在，战术是战略的微观体现，战术的执行是战略的实现过程。如不能有效的实现战略目标，再精巧强悍的战术也毫无意义。同样，所有细节的技巧看起来是非常简单的，只有被有效地组织起来，才能形成一个完整的系统。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue刨根问底-文件组织">
+<meta property="og:url" content="https://themis.hirgb.com/2018/12/10/frontend/vue-source-file-organization/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="想要对一件事情刨根问底，自然要从大处着眼，理解了整体架构之后，渐渐深入细节，才能了然于胸。这与战略与战术的关系很相似，一切的战术都是为实现战略而存在，战术是战略的微观体现，战术的执行是战略的实现过程。如不能有效的实现战略目标，再精巧强悍的战术也毫无意义。同样，所有细节的技巧看起来是非常简单的，只有被有效地组织起来，才能形成一个完整的系统。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-10T19:09:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="FrontEnd">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2018/12/10/frontend/vue-source-file-organization/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue刨根问底-文件组织 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2018/12/10/frontend/vue-source-file-organization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue刨根问底-文件组织
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-10 19:09:00" itemprop="dateCreated datePublished" datetime="2018-12-10T19:09:00Z">2018-12-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/Vue/" itemprop="url" rel="index"><span itemprop="name">Vue</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>想要对一件事情刨根问底，自然要从大处着眼，理解了整体架构之后，渐渐深入细节，才能了然于胸。这与战略与战术的关系很相似，一切的战术都是为实现战略而存在，战术是战略的微观体现，战术的执行是战略的实现过程。如不能有效的实现战略目标，再精巧强悍的战术也毫无意义。同样，所有细节的技巧看起来是非常简单的，只有被有效地组织起来，才能形成一个完整的系统。<br><a id="more"></a></p>
+<blockquote>
+<p>《Vue刨根问底》系列文章基于vue最新开发分支，当前发布版本为v2.5.21</p>
+</blockquote>
+<h2 id="Vue的github仓库根目录"><a href="#Vue的github仓库根目录" class="headerlink" title="Vue的github仓库根目录"></a>Vue的github仓库根目录</h2><p>先来大致了解一下整个项目的结构（摘译自官方说明文档）：</p>
+<ul>
+<li>scripts：包含构建相关的脚本和配置文件。作者声明一般开发不需要关注此目录</li>
+<li>dist：构建出的不同分发版本，只有发布新版本时才会跟新，开发分支的新特性不会反映在此</li>
+<li>flow：包含使用Flow（静态类型检查工具）声明的类型，供全局使用</li>
+<li>packages：包含服务端渲染和模板编译器两种不同的NPM包，是提供给不同使用场景使用的</li>
+<li>test：包含所有测试代码</li>
+<li>src：Vue的源码，使用ES6和Flow类型注释编写的</li>
+<li>types：使用TypeScript定义的类型声明，并且包含了测试文件，不太明白为什么要同时使用两种静态类型检查语言</li>
+</ul>
+<p>以下是官方文档未列出说明的文件夹，抱着刨根问底的决心一并在此列出：</p>
+<ul>
+<li>.github：项目相关的说明文档，上面的说明文档就在此文件夹</li>
+<li>examples：一些示例</li>
+<li>.circleci：包含CircleCI部署工具的配置文件</li>
+<li>benchmark： Benchmark性能测试相关文件</li>
+</ul>
+<p>基于以上的大致了解，发现除 flow 和 src 目录外，其他的文件夹主要都是用来服务于Vue项目组织和构建的，在源码探究的旅途中可以将他们剔除。由于 flow 文件夹里包含了一些预先定义好的静态类型，是与源码编写相关的，还是需要浏览一下。接下来，继续详细的探索一下 src 源码文件夹的组织结构。</p>
+<h2 id="Vue的src源码目录"><a href="#Vue的src源码目录" class="headerlink" title="Vue的src源码目录"></a>Vue的src源码目录</h2><p>Vue最新版本的源码文件夹下分为6个目录compiler、core、server、platforms、sfc、shared。作者在CONTRIBUTING.md也说明了它们的内容，但在其文档中types文件夹已经被移出到根目录下了，这里没有修改。</p>
+<h4 id="Compiler-编译器"><a href="#Compiler-编译器" class="headerlink" title="Compiler 编译器"></a>Compiler 编译器</h4><p>包含模板到渲染函数编译器的代码。</p>
+<p><strong>拆分原因</strong>：1.0版本中就把编译器的功能存放在独立文件夹中，2.0之后的版本进行了调整和优化，可以更好地组织编译器相关功能的代码。</p>
+<p>编译器由解析器、优化器、代码生成器组成，另外还有生成编译器、指令相关等一些代码。</p>
+<p>编译器的主要构成部分：</p>
+<ul>
+<li>parser：解析器的作用是将模板转换成元素AST对象。</li>
+<li>optimizer：优化器负责检测静态抽象树的渲染进行优化。</li>
+<li>codegen：代码生成器直接从AST对象生成代码字符串。</li>
+</ul>
+<h4 id="Core-核心"><a href="#Core-核心" class="headerlink" title="Core 核心"></a>Core 核心</h4><p>组织与平台无关的通用运行时代码，即与平台解耦，在任何支持Javascript运行的环境下都可以运行。</p>
+<p><strong>拆分原因</strong>：随着2.0版本区别出了web和weex跨平台两端的开发支持，在不同平台下的编译和运行时都有区别，所以将核心通用的代码提取到独立文件夹中组织，并且不包含那些将要根据不同平台调整的相关代码，如编译器。</p>
+<p>核心代码包括2.0版本中最基础的代码部分：</p>
+<ul>
+<li>Observer：观察者系统，实现监测数据变化的功能。</li>
+<li>Vdom：Vue虚拟节点树，实现虚拟节点的创建和刷新功能。</li>
+<li>instance：Vue类，包含构造函数和原型方法的创建。</li>
+<li>Global-API：全局API。</li>
+<li>Components：通用抽象组件。</li>
+<li>util：辅助函数。</li>
+</ul>
+<h4 id="Platforms-平台"><a href="#Platforms-平台" class="headerlink" title="Platforms 平台"></a>Platforms 平台</h4><p>平台专有代码存放在这个目录中，以不同的平台组成子目录。</p>
+<p><strong>拆分原因</strong>：2.0版本后在内部支持与Weex框架的融合，与web端的应用开发相区分。</p>
+<p>目前分离了出了两个部分：web端开发和weex框架所涉及跨平台开发，分别包含了一些编译器和运行时的不同代码。</p>
+<h4 id="Server-服务器渲染"><a href="#Server-服务器渲染" class="headerlink" title="Server 服务器渲染"></a>Server 服务器渲染</h4><p>包含服务端渲染的相关代码。</p>
+<p><strong>拆分原因</strong>：2.0版本后开发了支持服务端渲染的新功能</p>
+<h4 id="Sfc-单文件组件文件编译"><a href="#Sfc-单文件组件文件编译" class="headerlink" title="Sfc 单文件组件文件编译"></a>Sfc 单文件组件文件编译</h4><p>这一文件夹目前只包含了一个叫parser.js的文件，用来将单文件组件解析为SFC描述对象，输出给编译器继而执行模板编译。</p>
+<p><strong>拆分原因</strong>：单独抽离解析vue单文件组件的逻辑</p>
+<h4 id="Shared-共享常量和函数"><a href="#Shared-共享常量和函数" class="headerlink" title="Shared 共享常量和函数"></a>Shared 共享常量和函数</h4><p>Shared是2.0版本之后增加的用来组织共享变量和辅助函数的文件夹，主要从之前的辅助函数文件里抽取出来，在后来的开发中也继续添加了其他函数和常量，从其中包含的constants.js和util.js两个文件的名称中也能显而易见此文件夹的作用。</p>
+<p><strong>拆分原因</strong>：更好的组织代码</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FrontEnd/" rel="tag"># FrontEnd</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/04/frontend/note-new-css/" rel="prev" title="我不知道的css新特性">
+      <i class="fa fa-chevron-left"></i> 我不知道的css新特性
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/11/frontend/vue-core-class-instance/" rel="next" title="Vue刨根问底-核心类的实现">
+      Vue刨根问底-核心类的实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue的github仓库根目录"><span class="nav-number">1.</span> <span class="nav-text">Vue的github仓库根目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vue的src源码目录"><span class="nav-number">2.</span> <span class="nav-text">Vue的src源码目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Compiler-编译器"><span class="nav-number">2.0.1.</span> <span class="nav-text">Compiler 编译器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Core-核心"><span class="nav-number">2.0.2.</span> <span class="nav-text">Core 核心</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Platforms-平台"><span class="nav-number">2.0.3.</span> <span class="nav-text">Platforms 平台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Server-服务器渲染"><span class="nav-number">2.0.4.</span> <span class="nav-text">Server 服务器渲染</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sfc-单文件组件文件编译"><span class="nav-number">2.0.5.</span> <span class="nav-text">Sfc 单文件组件文件编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Shared-共享常量和函数"><span class="nav-number">2.0.6.</span> <span class="nav-text">Shared 共享常量和函数</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

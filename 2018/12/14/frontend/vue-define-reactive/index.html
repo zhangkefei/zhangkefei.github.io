@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="先来一段 defineReactive 的源码：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue刨根问底-响应式数据的实现原理">
+<meta property="og:url" content="https://themis.hirgb.com/2018/12/14/frontend/vue-define-reactive/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="先来一段 defineReactive 的源码：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-14T19:09:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="FrontEnd">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2018/12/14/frontend/vue-define-reactive/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue刨根问底-响应式数据的实现原理 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2018/12/14/frontend/vue-define-reactive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue刨根问底-响应式数据的实现原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-14 19:09:00" itemprop="dateCreated datePublished" datetime="2018-12-14T19:09:00Z">2018-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/Vue/" itemprop="url" rel="index"><span itemprop="name">Vue</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>先来一段 defineReactive 的源码：<br><a id="more"></a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;在Object上定义反应属性。</span><br><span class="line">function defineReactive (</span><br><span class="line">  obj,</span><br><span class="line">  key,</span><br><span class="line">  val,</span><br><span class="line">  customSetter,</span><br><span class="line">  shallow</span><br><span class="line">) &#123;</span><br><span class="line">  var dep &#x3D; new Dep();</span><br><span class="line"></span><br><span class="line">  var property &#x3D; Object.getOwnPropertyDescriptor(obj, key);</span><br><span class="line">  if (property &amp;&amp; property.configurable &#x3D;&#x3D;&#x3D; false) &#123;</span><br><span class="line">    return</span><br><span class="line">  &#125;</span><br><span class="line">  var getter &#x3D; property &amp;&amp; property.get;</span><br><span class="line">  if (!getter &amp;&amp; arguments.length &#x3D;&#x3D;&#x3D; 2) &#123;</span><br><span class="line">    val &#x3D; obj[key];</span><br><span class="line">  &#125;</span><br><span class="line">  var setter &#x3D; property &amp;&amp; property.set;</span><br><span class="line"></span><br><span class="line">  var childOb &#x3D; !shallow &amp;&amp; observe(val);</span><br><span class="line">  Object.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: true,</span><br><span class="line">    configurable: true,</span><br><span class="line">    get: function reactiveGetter () &#123;</span><br><span class="line">      var value &#x3D; getter ? getter.call(obj) : val;</span><br><span class="line">      if (Dep.target) &#123;</span><br><span class="line">        dep.depend();</span><br><span class="line">        if (childOb) &#123;</span><br><span class="line">          childOb.dep.depend();</span><br><span class="line">          if (Array.isArray(value)) &#123;</span><br><span class="line">            dependArray(value);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      return value</span><br><span class="line">    &#125;,</span><br><span class="line">    set: function reactiveSetter (newVal) &#123;</span><br><span class="line">      var value &#x3D; getter ? getter.call(obj) : val;</span><br><span class="line">      &#x2F;* eslint-disable no-self-compare *&#x2F;</span><br><span class="line">      if (newVal &#x3D;&#x3D;&#x3D; value || (newVal !&#x3D;&#x3D; newVal &amp;&amp; value !&#x3D;&#x3D; value)) &#123;</span><br><span class="line">        return</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;* eslint-enable no-self-compare *&#x2F;</span><br><span class="line">      if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39; &amp;&amp; customSetter) &#123;</span><br><span class="line">        customSetter();</span><br><span class="line">      &#125;</span><br><span class="line">      if (setter) &#123;</span><br><span class="line">        setter.call(obj, newVal);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        val &#x3D; newVal;</span><br><span class="line">      &#125;</span><br><span class="line">      childOb &#x3D; !shallow &amp;&amp; observe(newVal);</span><br><span class="line">      dep.notify();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在讲解这段源码之前，我想先在开始讲一下 Object 的两个方法 <code>Object.defineProperty()</code><br> 和 <code>Object.getOwnPropertyDescriptor()</code></p>
+<p>虽然很多前端的大佬知道它的作用，但是我相信还是有一些朋友是不认识的，我希望我写的文章，不只是传达vue内部实现的一些精神，更能帮助一些小白去了解一些原生的api。</p>
+<h3 id="defineProperty"><a href="#defineProperty" class="headerlink" title="defineProperty"></a>defineProperty</h3><p>在 MDN 上的解释是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object.defineProperty() 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性， 并返回这个对象。</span><br></pre></td></tr></table></figure><br>这里，其实就是用来实现响应式数据的核心之一，主要做的事情就是数据的更新， <code>Object.defineProperty()</code> 最多接收三个参数：<code>obj</code> , <code>prop</code> , <code>descriptor</code>：</p>
+<ul>
+<li>obj：要在其上定义属性的对象。</li>
+<li>prop：要定义或修改的属性的名称。</li>
+<li>descriptor：将被定义或修改的属性描述符。</li>
+<li>返回值：被传递给函数的对象。</li>
+</ul>
+<p>在这里要注意一点：在ES6中，由于 Symbol类型的特殊性，用Symbol类型的值来做对象的key与常规的定义或修改不同，而<code>Object.defineProperty</code> 是定义key为Symbol的属性的方法之一。</p>
+<p>对象里目前存在的属性描述符有两种主要形式：数据描述符和存取描述符。数据描述符是一个具有值的属性，该值可能是可写的，也可能不是可写的。存取描述符是由getter-setter函数对描述的属性。描述符必须是这两种形式之一；不能同时是两者。<br>数据描述符和存取描述符均具有以下可选键值：</p>
+<ul>
+<li>configurable：当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变，同时该属性也能从对应的对象上被删除。默认值： false</li>
+<li>enumerable：当且仅当该属性的 enumerable 为 true 时，该属性才能够出现在对象的枚举属性中。默认为 false。</li>
+</ul>
+<p>数据描述符同时具有以下可选键值：</p>
+<ul>
+<li>value：该属性对应的值。可以是任何有效的 JavaScript 值（数值，对象，函数等）。默认为 undefined。</li>
+<li>writable：当且仅当该属性的 writable 为 true 时，value 才能被赋值运算符改变。默认为 false。</li>
+</ul>
+<p>存取描述符同时具有以下可选键值：</p>
+<ul>
+<li>get：一个给属性提供 getter 的方法，如果没有 getter 则为 undefined。当访问该属性时，该方法会被执行，方法执行时没有参数传入，但是会传入this对象（由于继承关系，这里的this并不一定是定义该属性的对象）。默认为 undefined。</li>
+<li>set：一个给属性提供 setter 的方法，如果没有 setter 则为 undefined。当属性值修改时，触发执行该方法。该方法将接受唯一参数，即该属性新的参数值。默认为 undefined。</li>
+</ul>
+<h3 id="Object-getOwnPropertyDescriptor"><a href="#Object-getOwnPropertyDescriptor" class="headerlink" title="Object.getOwnPropertyDescriptor()"></a>Object.getOwnPropertyDescriptor()</h3><ul>
+<li>obj：需要查找的目标对象</li>
+<li>prop：目标对象内属性名称（String类型）</li>
+<li>descriptor：将被定义或修改的属性描述符。</li>
+<li>返回值：返回值其实就是 Object.defineProperty() 中的那六个在 descriptor</li>
+</ul>
+<p>对象中可设置的属性，这里就不废话浪费篇幅了，大家看一眼上面就好</p>
+<p><code>defineReactive</code> 的参数我就不一一列举的来讲了，大概从参数名也可以知道大概的意思，具体讲函数内容的时候，在细讲。</p>
+<h3 id="Dep"><a href="#Dep" class="headerlink" title="Dep"></a>Dep</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var dep &#x3D; new Dep();</span><br></pre></td></tr></table></figure>
+<p>在一进入到 defineReactive 这个函数时，就实例化了一个Dep的构造函数，并把它指向了一个名为dep的变量，下面，我们来看看Dep这个构造函数都做了什么：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var uid &#x3D; 0;</span><br><span class="line"></span><br><span class="line">var Dep &#x3D; function Dep () &#123;</span><br><span class="line">  this.id &#x3D; uid++;</span><br><span class="line">  this.subs &#x3D; [];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Dep.prototype.addSub &#x3D; function addSub (sub) &#123;</span><br><span class="line">  this.subs.push(sub);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Dep.prototype.removeSub &#x3D; function removeSub (sub) &#123;</span><br><span class="line">  remove(this.subs, sub);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Dep.prototype.depend &#x3D; function depend () &#123;</span><br><span class="line">  if (Dep.target) &#123;</span><br><span class="line">    Dep.target.addDep(this);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Dep.prototype.notify &#x3D; function notify () &#123;</span><br><span class="line">  var subs &#x3D; this.subs.slice();</span><br><span class="line">  for (var i &#x3D; 0, l &#x3D; subs.length; i &lt; l; i++) &#123;</span><br><span class="line">    subs[i].update();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Dep.target &#x3D; null;</span><br></pre></td></tr></table></figure><br>在实例化 Dep 之前，给 Dep 添加了一个 target 的属性，默认值为 null；<br>Dep在实例化的时候，声明了一个 id 的属性，每一次实例化Dep的id都是唯一的；<br>然后声明了一个 subs 的空数组， subs 要做的事情，就是收集所有的依赖；</p>
+<h4 id="addSub："><a href="#addSub：" class="headerlink" title="addSub："></a>addSub：</h4><p>从字面意思，大家也可以看的出来，它就是做了一个添加依赖的动作；</p>
+<h4 id="removeSub："><a href="#removeSub：" class="headerlink" title="removeSub："></a>removeSub：</h4><p>其实就是移除了某一个依赖，只不过实现没有在当前的方法里写，而是调用的一个 remove 的方法：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function remove (arr, item) &#123;</span><br><span class="line">  if (arr.length) &#123;</span><br><span class="line">    var index &#x3D; arr.indexOf(item);</span><br><span class="line">    if (index &gt; -1) &#123;</span><br><span class="line">      return arr.splice(index, 1)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>这个方法，就是从数组中，移除了某一项；</p>
+<h4 id="depend："><a href="#depend：" class="headerlink" title="depend："></a>depend：</h4><p>添加一个依赖数组项；</p>
+<h4 id="notify："><a href="#notify：" class="headerlink" title="notify："></a>notify：</h4><p>通知每一个数组项，更新每一个方法；<br>这里 subs 调用了 slice 方法，官方注释是 “ stabilize the subscriber list first ” 字面意思是 “首先稳定订户列表”，这里我不是很清楚，如果知道的大佬，还请指点一下</p>
+<p>Dep.target 在 Vue 实例化之前一直都是 null ，只有在 Vue 实例化后，实例化了一个 Watcher 的构造函数,在调用 Watcher 的 get 方法的时候，才会改变 Dep.target 不为 null ,由于 Watcher 涉及的内容也很多，所以我准备单拿出一章内容，在 Vue 实例化之后去讲解,现在，我们就暂时当作 Dep.target 不为空。</p>
+<p>现在，Dep 构造函数讲解的就差不多了，我们继续接着往下看：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var property &#x3D; Object.getOwnPropertyDescriptor(obj, key);</span><br></pre></td></tr></table></figure><br>方法返回指定对象上一个自有属性对应的属性描述符并赋值给property；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (property &amp;&amp; property.configurable &#x3D;&#x3D;&#x3D; false) &#123;</span><br><span class="line">    return</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>我们要实现响应式数据的时候，要看当前的 object 上面是否有当前要实现响应式数据的这个属性，如果没有，并且 <code>configurable</code> 为 <code>false</code>，那么就直接退出该方法。</p>
+<p>在上面我们介绍过 <code>configurable</code> 这个属性，如果它是 <code>flase</code> ，说明它是不允许被更改的，那么就肯定不支持响应式数据了，那肯定是要退出该方法的。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var getter &#x3D; property &amp;&amp; property.get;</span><br><span class="line"></span><br><span class="line">if (!getter &amp;&amp; arguments.length &#x3D;&#x3D;&#x3D; 2) &#123;</span><br><span class="line">    val &#x3D; obj[key];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>获取当前该属性的 get 方法，如果没有该方法，并且只有两个参数（obj 和 key），那么 val 就是直接从这个当前的 obj 里面获取。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var setter &#x3D; property &amp;&amp; property.set;</span><br></pre></td></tr></table></figure><br>获取当前属性的 set 方法。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var childOb &#x3D; !shallow &amp;&amp; observe(val);</span><br></pre></td></tr></table></figure><br>判断是否要浅拷贝，如果传的是 false ，那么就是要进行深拷贝，这个时候，就需要把当前的值传递给 observe 的方法：</p>
+<h4 id="observe"><a href="#observe" class="headerlink" title="observe"></a>observe</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function observe (value, asRootData) &#123;</span><br><span class="line">  if (!isObject(value) || value instanceof VNode) &#123;</span><br><span class="line">    return</span><br><span class="line">  &#125;</span><br><span class="line">  var ob;</span><br><span class="line">  if (hasOwn(value, &#39;__ob__&#39;) &amp;&amp; value.__ob__ instanceof Observer) &#123;</span><br><span class="line">    ob &#x3D; value.__ob__;</span><br><span class="line">  &#125; else if (</span><br><span class="line">    shouldObserve &amp;&amp;</span><br><span class="line">    !isServerRendering() &amp;&amp;</span><br><span class="line">    (Array.isArray(value) || isPlainObject(value)) &amp;&amp;</span><br><span class="line">    Object.isExtensible(value) &amp;&amp;</span><br><span class="line">    !value._isVue</span><br><span class="line">  ) &#123;</span><br><span class="line">    ob &#x3D; new Observer(value);</span><br><span class="line">  &#125;</span><br><span class="line">  if (asRootData &amp;&amp; ob) &#123;</span><br><span class="line">    ob.vmCount++;</span><br><span class="line">  &#125;</span><br><span class="line">  return ob</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>defineReactive</code> 中，调用 observe 方法，只传了一个参数，所以这里是只有 value 一个值的，第二个值其实就是一个 boolean 值，用来判断是否是根数据；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function isObject (obj) &#123;</span><br><span class="line">    return obj !&#x3D;&#x3D; null &amp;&amp; typeof obj &#x3D;&#x3D;&#x3D; &#39;object&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>首先，要检查当前的值是不是对象，或者说当前的值的原型是否在 VNode 上，那就直接 return 出当前方法， VNode 是一个构造函数，内容比较多，所以这一章暂时不讲，接下来单独写一篇去讲 VNode。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var hasOwnProperty &#x3D; Object.prototype.hasOwnProperty;</span><br><span class="line">function hasOwn (obj, key) &#123;</span><br><span class="line">  return hasOwnProperty.call(obj, key)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>这里用来判断对象是否具有该属性，并且对象上的该属性原型是否指向的是 Observer ；<br>如果是，说明这个值是之前存在的，那么变量 ob 就等于当前观察的实例；<br>如果不是，则是做如下判断：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var shouldObserve &#x3D; true;</span><br><span class="line">function toggleObserving (value) &#123;</span><br><span class="line">    shouldObserve &#x3D; value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>shouldObserve 用来判断是否应该观察，默认是观察；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var _isServer;</span><br><span class="line">var isServerRendering &#x3D; function () &#123;</span><br><span class="line">  if (_isServer &#x3D;&#x3D;&#x3D; undefined) &#123;</span><br><span class="line">    &#x2F;* istanbul ignore if *&#x2F;</span><br><span class="line">    if (!inBrowser &amp;&amp; !inWeex &amp;&amp; typeof global !&#x3D;&#x3D; &#39;undefined&#39;) &#123;</span><br><span class="line">      &#x2F;&#x2F; detect presence of vue-server-renderer and avoid</span><br><span class="line">      &#x2F;&#x2F; Webpack shimming the process</span><br><span class="line">      _isServer &#x3D; global[&#39;process&#39;] &amp;&amp; global[&#39;process&#39;].env.VUE_ENV &#x3D;&#x3D;&#x3D; &#39;server&#39;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      _isServer &#x3D; false;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return _isServer</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><br>是否支持服务端渲染；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Array.isArray(value)</span><br></pre></td></tr></table></figure><br>当前的值是否是数组；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">isPlainObject(value)</span><br></pre></td></tr></table></figure><br>用来判断是否是Object；具体代码上一篇文章当中有描述<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object.isExtensible(value)</span><br></pre></td></tr></table></figure><br>判断一个对象是否是可扩展的<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">value._isVue</span><br></pre></td></tr></table></figure><br>判断是否可以被观察到，初始化是在 initMixin 方法里初始化的，这里暂时先不做太多的介绍。<br>这么多判断的总体意思，就是用来判断，当前的值，是否是被观察的，如果没有，那么就创建一个新的出来，并赋值给变量 ob；<br>asRootData 如果是 true，并且 ob 也存在的话，那么就给 vmCount 加 1；<br>最后返回一个 ob。</p>
+<p>接下来，开始响应式数据的核心代码部分了：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: true,</span><br><span class="line">    configurable: true,</span><br><span class="line">    get: function reactiveGetter () &#123;</span><br><span class="line">    &#125;,</span><br><span class="line">    set: function reactiveSetter (newVal) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><br>首先，要确保要监听的该属性，是可枚举、可修改的的；</p>
+<h4 id="get"><a href="#get" class="headerlink" title="get"></a>get</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var value &#x3D; getter ? getter.call(obj) : val;</span><br></pre></td></tr></table></figure>
+<p>先前，在前面把当前属性的 get 方法，传给 getter 变量，如果 getter 变量存在，那么就把当前的 getter 的 this 指向当前的 obj 并传给 value 变量；如果不存在，那么就把当前方法接收到的 val 参数传给 value 变量；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (Dep.target) &#123;</span><br><span class="line">    dep.depend();</span><br><span class="line">    if (childOb) &#123;</span><br><span class="line">      childOb.dep.depend();</span><br><span class="line">      if (Array.isArray(value)) &#123;</span><br><span class="line">        dependArray(value);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">return value</span><br></pre></td></tr></table></figure><br>每次在 get 的时候，判断 Dep.target 是否为空，如果不为空，那么就去添加一个依赖，调用实例对象 dep 的 depend 方法，这里在 Watcher 的构造函数里，还做了一些特殊处理，等到讲解 Watcher 的时候，我会把这里在带过去一起讲一下。<br>反正大家记着，在 get 的时候添加了一个依赖就好。<br>如果是存在子级的话，并且给子级添加一个依赖：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function dependArray (value) &#123;</span><br><span class="line">  for (var e &#x3D; (void 0), i &#x3D; 0, l &#x3D; value.length; i &lt; l; i++) &#123;</span><br><span class="line">    e &#x3D; value[i];</span><br><span class="line">    e &amp;&amp; e.__ob__ &amp;&amp; e.__ob__.dep.depend();</span><br><span class="line">    if (Array.isArray(e)) &#123;</span><br><span class="line">      dependArray(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>如果当前的值是数组，那么我们就要给这个数组添加一个监听，因为本身 Array 是不支持 defineProperty 方法的；<br>所以在这里，作者给所有的数组项，添加了一个依赖，这样每一个数组选项，都有了自己的监听，当它被改变的时候，会根据监听的依赖，去做对应的更新。</p>
+<h4 id="set"><a href="#set" class="headerlink" title="set"></a>set</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var value &#x3D; getter ? getter.call(obj) : val;</span><br></pre></td></tr></table></figure>
+<p>这里，和 get 时候一样，获取当前的一个值，如果不存在，就返回函数接收到的值；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (newVal &#x3D;&#x3D;&#x3D; value || (newVal !&#x3D;&#x3D; newVal &amp;&amp; value !&#x3D;&#x3D; value)) &#123;</span><br><span class="line">    return</span><br><span class="line">&#125;</span><br><span class="line">if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39; &amp;&amp; customSetter) &#123;</span><br><span class="line">    customSetter();</span><br><span class="line">&#125;</span><br><span class="line">if (setter) &#123;</span><br><span class="line">    setter.call(obj, newVal);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    val &#x3D; newVal;</span><br><span class="line">&#125;</span><br><span class="line">childOb &#x3D; !shallow &amp;&amp; observe(newVal);</span><br><span class="line">dep.notify();</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>如果当前值和新的值一样，那就说明没有什么变化，这样就不需要改，直接 return 出去；</li>
+<li>如果是在开发环境下，并且存在 customSetter 方法，那么就调用它；</li>
+<li>如果当前的属性存在 set 方法，那么就把 set 方法指向 obj，并把 newVal 传过去；</li>
+<li>如果不存在，那么就直接把值给覆盖掉；</li>
+<li>如果不是浅拷贝的话，那么就把当前的新值传给 observe 方法，去检查是否已经被观察，并且把新的值覆盖到 childOb 上；</li>
+<li>最后调用 dep 的 notify 方法去通知所有的依赖进行值的更新。</li>
+</ul>
+<h2 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h2><p>到这里，基本上 vue 实现的响应式数据的原理，抛析的就差不多了，但是整体涉及的东西比较多，可能看起来会比较费劲一些，这里我概括一下：</p>
+<ul>
+<li>每次在监听某一个属性时，要先实例化一个队列 Dep，负责监听依赖和通知依赖；</li>
+<li>确认当前要监听的属性是否存在，并且是可修改的；</li>
+<li>如果没有接收到参数 val，并且参数只接收到2个，那么就直接把 val 设置成当前的属性的值，不存在就是 undefined；</li>
+<li>判断当前要监听的值是需要深拷贝还是浅拷贝，如果是深拷贝，那么就去检查当前的值是否被监听，没有被监听，那么就去实例化一个监听对象；</li>
+<li>在调用 get 方法，获取到当前属性的值，不存在就接收调用该方法时接收到的值；</li>
+<li>检查当前的队列，要对哪一个 obj 进行变更，如果存在检查的目标的话，那就添加一个依赖；</li>
+<li>如果存在观察实例的话，在去检查一下当前的值是否是数组，如果是数组的话，那么就做一个数组项的依赖检查；</li>
+<li>在更新值的时候，发现当前值和要改变的值是相同的，那么就不进行任何操作；</li>
+<li>如果是开发环境下，还会执行一个回调，该回调实在值改变前但是符合改变条件时执行的；</li>
+<li>如果当前的属性存在 setter 方法，那么就把当前的值传给 setter 方法，并让当前的 setter 方法的 this 指向当前的 obj，如果不存在，直接用新值覆盖旧值就好；</li>
+<li>如果是深拷贝的话，就去检查遍当前的值是否被观察，如果没有被观察，就进行观察；（上面大家可能有发现，它已经进行了一次观察，为什么还要执行呢？因为上面是在初始化的时候去观察的，当该值改变以后，比如类型改变，是要进行重新观察，确保如果改变为类似数组的值的时候，还可以进行双向绑定）</li>
+<li>最后，通知所有添加对该属性进行依赖的位置。</li>
+</ul>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>对应 vue 的响应式数据，到这里就总结完了，未来在实例化 vue 对象的地方，会涉及到很多有关响应式数据的地方，所以建议大家好好看一下这里。<br>对于源码，我们了解了作者的思想就好，我们不一定要完全按照作者的写法来写，我们要学习的，是他的编程思想，而不是他的写法，其实好多地方我觉得写的不是很合适，但是我不是很明白为什么要这么做，也许是我水平还比较低，没有涉及到，接下来我会对这些疑问点，进行总结，去研究为什么要这么做。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FrontEnd/" rel="tag"># FrontEnd</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/13/frontend/vue-init-global-api-1/" rel="prev" title="Vue刨根问底-初始化全局API（一）">
+      <i class="fa fa-chevron-left"></i> Vue刨根问底-初始化全局API（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/07/ai/from-knowledge-graph-to-db/" rel="next" title="从知识图谱到图数据库">
+      从知识图谱到图数据库 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#defineProperty"><span class="nav-number">1.</span> <span class="nav-text">defineProperty</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Object-getOwnPropertyDescriptor"><span class="nav-number">2.</span> <span class="nav-text">Object.getOwnPropertyDescriptor()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dep"><span class="nav-number">3.</span> <span class="nav-text">Dep</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#addSub："><span class="nav-number">3.1.</span> <span class="nav-text">addSub：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#removeSub："><span class="nav-number">3.2.</span> <span class="nav-text">removeSub：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#depend："><span class="nav-number">3.3.</span> <span class="nav-text">depend：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#notify："><span class="nav-number">3.4.</span> <span class="nav-text">notify：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#observe"><span class="nav-number">3.5.</span> <span class="nav-text">observe</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#get"><span class="nav-number">3.6.</span> <span class="nav-text">get</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set"><span class="nav-number">3.7.</span> <span class="nav-text">set</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概括"><span class="nav-number"></span> <span class="nav-text">概括</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number"></span> <span class="nav-text">结束语</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

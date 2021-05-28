@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="前端开发是一个相当复杂的方向，至少就大项目而言，你很难仅用浏览器和编辑器完成工作。这里列出了我在开发过程中用到的工具。我希望这个列表能帮助其他人发现一些可以用在工作流程中的好工具。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端开发工具箱">
+<meta property="og:url" content="https://themis.hirgb.com/2019/06/09/frontend/frontend-toolbox/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="前端开发是一个相当复杂的方向，至少就大项目而言，你很难仅用浏览器和编辑器完成工作。这里列出了我在开发过程中用到的工具。我希望这个列表能帮助其他人发现一些可以用在工作流程中的好工具。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-06-09T13:06:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="tool">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2019/06/09/frontend/frontend-toolbox/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>前端开发工具箱 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2019/06/09/frontend/frontend-toolbox/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端开发工具箱
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-06-09 13:06:00" itemprop="dateCreated datePublished" datetime="2019-06-09T13:06:00Z">2019-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前端开发是一个相当复杂的方向，至少就大项目而言，你很难仅用浏览器和编辑器完成工作。这里列出了我在开发过程中用到的工具。我希望这个列表能帮助其他人发现一些可以用在工作流程中的好工具。<br><a id="more"></a></p>
+<h2 id="必备工具"><a href="#必备工具" class="headerlink" title="必备工具"></a>必备工具</h2><p>这些是我日常使用的工具，缺了它们我很难高效工作。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jb2RlLnZpc3VhbHN0dWRpby5jb20v">VS Code<i class="fa fa-external-link-alt"></i></span> —— 我选择的编辑器是微软出品的 VS Code。免费、轻量（和 WebStorm 之类的 IDE 相比），大量开箱即用的特性，丰富的扩展。</p>
+<p>浏览器 —— 我的默认浏览器是 Chrome，有时切换到 Firefox 或 Safari 进行开发。我也安装了其他浏览器，以供测试之用。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZXZkb2NzLmlvLw==">DevDocs<i class="fa fa-external-link-alt"></i></span> —— 这个网页应用汇聚了各种项目的文档，还支持离线使用。当我需要查询文档时，一般会访问这个站点。我主要用它查询 JS 和 DOM/浏览器方面的文档。我真没找到什么能和它媲美的工具（详尽而易于搜索）。你应该看一看。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9nb29nbGUuY29tLw==">Google<i class="fa fa-external-link-alt"></i></span> —— 没错，我经常上网搜索。关于某个 bug 的信息，如何做某件事（有时会是很基础的事情），软件包和软件库的示例代码和文档（如果 DevDocs 没收录），我都会上网搜一搜。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvZW4tVVM=">MDN<i class="fa fa-external-link-alt"></i></span> —— 对任何 web 开发者来说这都是非常棒的资源。这个站点的部分内容可以在之前提到的 DevDocs 上找到，不过有些页面只有 MDN 上有。我主要用它查询一些关于可访问性的内容，上面有不少讨论这一主题的文章。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS8=">StackOverflow<i class="fa fa-external-link-alt"></i></span> —— 经常 google 到上面的内容。如果有问题，多半能在上面找到答案。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tLw==">GitHub<i class="fa fa-external-link-alt"></i></span> —— 某个软件包我有疑问，或者想知道关于它的更多信息，我会到它的 GitHub 仓库去翻 issue 和代码，通常能找到问题的答案，就像 StackOverflow。据我个人的经验，如果有关于某个特定软件包的问题，在 GitHub 上翻到相关 issue 的几率要高于在 StackOverflow 上找到相关问题（像 React 这类特别流行的库例外）。当然，我也使用 GitHub 的版本控制功能。</p>
+<h2 id="CSS"><a href="#CSS" class="headerlink" title="CSS"></a>CSS</h2><p><span class="exturl" data-url="aHR0cHM6Ly9jc3MtdHJpY2tzLmNvbS8=">CSS-Tricks<i class="fa fa-external-link-alt"></i></span> —— 你能在上面找到大量有趣的文章和窍门。这个网站上也有一个指南（Guides）栏目，包含关于特定 HTML、CSS、JS 概念的深入讲解。我常常访问这个站点更新关于网格布局的知识。不过其他指南也非常棒。这个站点绝对值得一看。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly90eW1wYW51cy5uZXQvY29kcm9wcy9jc3NfcmVmZXJlbmNlLw==">CSS Reference<i class="fa fa-external-link-alt"></i></span> —— 如果需要更新 CSS 知识或者查下不熟悉、不常用的属性，我会访问这个站点。上面对每个 CSS 属性的讲解很深入，给出的示例也很清楚，便于你理解这些属性并应用于自己的项目。站点的作者是 Sara Soudain。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jYW5pdXNlLmNvbS8=">Can I Use<i class="fa fa-external-link-alt"></i></span> —— 如果你在意浏览器兼容性，希望负责任地使用前沿特性（渐进增强），那么这是不可或缺的工具。</p>
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><p><span class="exturl" data-url="aHR0cHM6Ly9qYWtlYXJjaGliYWxkLmdpdGh1Yi5pby9zdmdvbWcv">SVGOMG<i class="fa fa-external-link-alt"></i></span> —— 从设计师那里收到一份为 web 优化的 SVG 文件，这种事情实在太罕见。所以我会用 SVGOMG 优化 SVG，效果十分惊人。这是 SVGO 的网页版，所以你也可以使用相应的命令行工具压缩 SVG。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zaHJpbmttZS5hcHAv">Shrinkme.app<i class="fa fa-external-link-alt"></i></span> —— 使用这个网页应用优化图像文件十分快捷方便。开箱即用，支持批量上传，效果相当不错。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zcXVvb3NoLmFwcC8=">Sqoosh<i class="fa fa-external-link-alt"></i></span> —— 需要将图片压缩到极致，或者创建 webp 格式的图像文件的时候，我会使用这个网站。你可以用它提供的大量选项调出满意的效果。你也可以用它缩放图像或是转换图像格式。它用了很多前沿技术（当初 Google Chrome 团队做这个工具是为了演示现代浏览器的功能），所以你需要使用 Chrome 或基于 Chromium 的浏览器（Opera、Brave 等）。我上次试过，在 Firefox 下这个站点并不能正常工作。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9pY29tb29uLmlvL2FwcC8jL3NlbGVjdA==">Icomoon app<i class="fa fa-external-link-alt"></i></span> —— 我需要创建定制图标集时会用这个工具。可以选择现有图标（免费图标和付费图标），也可以上传自己的图标。接着就可以生成相应的图标字体或 SVG 图标文件（今时今日，后者是一个更好的选择）。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9mb250cy5nb29nbGUuY29tLw==">Google Fonts<i class="fa fa-external-link-alt"></i></span> —— 需要创建定制 web 字体时，我会首先访问 Google Fonts。我通常会下载所需文件，然后自行托管，这样性能更好。Google Fonts 有一个很棒的特性，允许只编码需要用到的字符。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2ZpbGFtZW50Z3JvdXAvZ2x5cGhoYW5nZXI=">Glyphhanger<i class="fa fa-external-link-alt"></i></span> —— 减少文件大小是提升网站性能的最佳途径之一。Web 字体经常包含很多我们不需要的字形，所以我会用 Glyphhanger 子集化字体。你可以指定需要的 Unicode 区段和字符，Glyphanger 会创建一个只包含相应字符的字体文件。它也可以将 .ttf 文件转为其他更适合 web 的格式，比如 .woff 和 .woff2。需要花一点功夫正确使用这个工具，不过我觉得存在字体性能问题时，这是一个值得考虑的选项。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0dvb2dsZUNocm9tZS9saWdodGhvdXNl">Lighthouse<i class="fa fa-external-link-alt"></i></span> —— 我在发布网页前会进行测试，Chrome 浏览器的 Lighthouse 是最常用的工具之一。它会检查各方面的常见问题并给出评分，也会给出改进提示。这是一个非常好的工具，可以初步检查我在开发时是否遗漏了一些问题。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9tZW93bmkuY2EvZm9udC1zdHlsZS1tYXRjaGVy">Font style matcher<i class="fa fa-external-link-alt"></i></span> —— 定制字体加载后会切换字体，如果你希望这个切换不容易察觉，那么可以使用这个字体风格匹配器找到和定制字体类似的默认字体。</p>
+<h2 id="可访问性"><a href="#可访问性" class="headerlink" title="可访问性"></a>可访问性</h2><p>VoiceOver —— macOS 的默认屏幕阅读器。需要花一点时间熟悉这个工具（我推荐<span class="exturl" data-url="aHR0cHM6Ly93ZWJhaW0ub3JnL2FydGljbGVzL3ZvaWNlb3Zlcg==">这篇介绍文章<i class="fa fa-external-link-alt"></i></span>，不过我努力在开发过程中时不时用下 VoiceOver。多亏这一点，我的项目中 aria 属性和面向屏幕阅读器的文本使用量大增。使用 VoiceOver 后你会惊讶地发现一些日常使用的网页组件为屏幕阅读器用户提供的上下文信息少得可怜。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9hMTF5cHJvamVjdC5jb20vcGF0dGVybnM=">a11y guidelines<i class="fa fa-external-link-alt"></i></span> —— 通常我会尽量去找可访问性良好的解决方案，不过有的时候还是不得不自己动手，这时我会参考这个页面。这篇可访问性指导原则详细解释了什么是可访问性，为什么可访问性很重要，如何实现。很多情况下，复制其中的示例代码略作调整后即可应用于实际项目。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cudzMub3JnL1RSL3dhaS1hcmlhLTEuMQ==">WAI-ARIA specification<i class="fa fa-external-link-alt"></i></span> —— 我并不经常阅读规范。如果我在读规范，那么往往是在读这一篇。其中包含大量关于如何使用 aria 角色和属性的有价值信息。要我说，任何严肃对待可访问性的开发者，都需要读下这篇规范。</p>
+<h2 id="值得一提"><a href="#值得一提" class="headerlink" title="值得一提"></a>值得一提</h2><p>最后列下个人觉得挺好用但又没那么常用的工具。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9yZXNwb25zaXZlYnJlYWtwb2ludHMuY29tLw==">Responsive breakpoints generator<i class="fa fa-external-link-alt"></i></span> —— 手动创建响应式图像的多种变体很痛苦。用这个工具就很方便。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cudG9wdGFsLmNvbS9kZXNpZ25lcnMvaHRtbGFycm93cw==">HTML Arrows<i class="fa fa-external-link-alt"></i></span> —— 各种符号的 Unicode 码、HTML 十六进制编码、HTML 实体编码、HTML 实体。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZXYudzMub3JnL2h0bWw1L2h0bWwtYXV0aG9yL2NoYXJyZWY=">Char reference<i class="fa fa-external-link-alt"></i></span> —— 类似上一个工具，但显示的信息更少，主要显示 HTML 实体。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cudHlwZXdvbGYuY29tL2NoZWF0c2hlZXQ=">Typography cheatsheet<i class="fa fa-external-link-alt"></i></span> —— 讲解常用的字体排印规则和问题。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubW9kdWxhcnNjYWxlLmNvbS8=">Modular scale<i class="fa fa-external-link-alt"></i></span> —— 设计网页时我通常使用这个工具选择模块化的缩放方案。如有兴趣了解更多关于这个主题的内容，请参考 <span class="exturl" data-url="aHR0cHM6Ly9hbGlzdGFwYXJ0LmNvbS9hcnRpY2xlL21vcmUtbWVhbmluZ2Z1bC10eXBvZ3JhcGh5Lw==">A List Appart 上的这篇文章<i class="fa fa-external-link-alt"></i></span> 和 <span class="exturl" data-url="aHR0cHM6Ly92aW1lby5jb20vMTcwNzkzODA=">Tim Brown 在 Build Conf 2010 上的演讲<i class="fa fa-external-link-alt"></i></span>。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jc3NncmFkaWVudC5pby8=">CSS gradient generetor<i class="fa fa-external-link-alt"></i></span> —— 创建渐变背景的在线工具。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9icnVtbS5hZi9zaGFkb3dz">Smooth shadow generator<i class="fa fa-external-link-alt"></i></span> —— 为网站添加美观的阴影。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jdWJpYy1iZXppZXIuY29tLw==">Bezier curve generator<i class="fa fa-external-link-alt"></i></span> —— 定制 CSS 的立方贝塞尔曲线定时函数。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9lYXNpbmdzLm5ldC9lbg==">Easing functions<i class="fa fa-external-link-alt"></i></span> —— 各种缓动函数，可用于 CSS 动画和变换。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9uZ3Jvay5jb20v">ngrok<i class="fa fa-external-link-alt"></i></span> —— 需要向别人展示作品或者测试不同设备上的效果时，我会使用 ngrok。ngrok 可以将本地运行的服务暴露到公网上。不过有的时候配合 Browserstack 的 localhost 扩展时不能工作。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zaGFyaW5nYnV0dG9ucy5pby8=">sharing buttons<i class="fa fa-external-link-alt"></i></span> —— 如果你只需要一个简单的分享按钮，不想用 JS，不想折腾追踪用户的复杂逻辑，那么这个工具特别好用。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9kZW5jb2RlLmNvbS9lbi9kYXRl">Unix timestamp converter<i class="fa fa-external-link-alt"></i></span> —— unix 时间戳转换器。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jc3MyanMuZG90ZW52LmRldi8=">CSS to JS converter<i class="fa fa-external-link-alt"></i></span> —— 可以将 CSS 转成 JS，也可以将 JS 转回 CSS。基于 CSS-in-JS 库开发时这个工具十分方便。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9icm93c2VyZGVmYXVsdHN0eWxlcy5jb20v">Browser default styles<i class="fa fa-external-link-alt"></i></span> —— 常见浏览器的默认样式。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>以上就是我在工作中使用的提高效率的工具，希望能帮你发现一些有用的工具。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/tool/" rel="tag"># tool</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/04/git/note-git-operate/" rel="prev" title="git用途讲解">
+      <i class="fa fa-chevron-left"></i> git用途讲解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/03/note/github-actions-hexo-deploy/" rel="next" title="Github Actions 自动部署Hexo">
+      Github Actions 自动部署Hexo <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#必备工具"><span class="nav-number">1.</span> <span class="nav-text">必备工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS"><span class="nav-number">2.</span> <span class="nav-text">CSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能优化"><span class="nav-number">3.</span> <span class="nav-text">性能优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可访问性"><span class="nav-number">4.</span> <span class="nav-text">可访问性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#值得一提"><span class="nav-number">5.</span> <span class="nav-text">值得一提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">6.</span> <span class="nav-text">结语</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

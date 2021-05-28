@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="在加入淘宝后，经历了大大小小的开发和部署方式的更迭，同时也有幸在整个的变革潮流中参与过其中的一些能力的建设。今天从一个亲历者的角度，通过自身经历与向同事考究，从“13年石器时代”、“14年白银时代”、“15年黄金时代”以及“未来时代”四个阶段和大家聊一聊大厂是怎样开发和部署前端代码的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大厂如何开发和部署前端代码？淘宝8年案例解读（转）">
+<meta property="og:url" content="https://themis.hirgb.com/2020/06/27/frontend/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="在加入淘宝后，经历了大大小小的开发和部署方式的更迭，同时也有幸在整个的变革潮流中参与过其中的一些能力的建设。今天从一个亲历者的角度，通过自身经历与向同事考究，从“13年石器时代”、“14年白银时代”、“15年黄金时代”以及“未来时代”四个阶段和大家聊一聊大厂是怎样开发和部署前端代码的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/1.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/2.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/3.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/4.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/5.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/13.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/6.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/7.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/8.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/9.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/10.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/11.webp">
+<meta property="og:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/12.webp">
+<meta property="article:published_time" content="2020-06-27T09:06:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="FrontEnd">
+<meta property="article:tag" content="SoftwareEngineering">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://themis.hirgb.com/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/1.webp">
+
+<link rel="canonical" href="https://themis.hirgb.com/2020/06/27/frontend/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>大厂如何开发和部署前端代码？淘宝8年案例解读（转） | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2020/06/27/frontend/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大厂如何开发和部署前端代码？淘宝8年案例解读（转）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-27 09:06:00" itemprop="dateCreated datePublished" datetime="2020-06-27T09:06:00Z">2020-06-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在加入淘宝后，经历了大大小小的开发和部署方式的更迭，同时也有幸在整个的变革潮流中参与过其中的一些能力的建设。今天从一个亲历者的角度，通过自身经历与向同事考究，从“13年石器时代”、“14年白银时代”、“15年黄金时代”以及“未来时代”四个阶段和大家聊一聊大厂是怎样开发和部署前端代码的。<br><a id="more"></a></p>
+<blockquote>
+<p>作者-张伟（上坡） 淘系前端团队</p>
+</blockquote>
+<p>在阿里的淘系前端团队，开发与部署的模式随着技术的发展，仍然正在处于不断变化的过程中。<strong>一方面体系内外纷繁复杂的能力模块不断地向前发展，另一方面 LSP、DAP 等底层技术基础也逐渐成熟。</strong> 在当下我们正在通过集成研发环境 IDE 的方式，将上一个阶段孵化沉淀的研发生态进行再一次的整合升华，将原有的链路再次重组，从当下用户的痛点中找到突破口，发掘当下各个研发场景中的最佳能力组合，搭建通用底层平台，升级变革现有模式。</p>
+<p>作为从 14 年实习到 15 年正式进入公司的前端开发，在前身为淘宝前端团队的淘系前端团队经历了大大小小的开发和部署方式的更迭，同时也有幸在整个的变革潮流中参与过其中的一些能力的建设。今天从一个亲历者的角度，通过自身经历与向同事考究，以分阶段的方式来进行回忆和描述。</p>
+<p>整个故事分成四个阶段，<strong>首先是 13 年左右以代码发布存储、部署改造成 Gitlab 技术体系为主旋律的 &quot;石器时代&quot;；14 年左右伴随着 NodeJS 技术成熟，用前端 JS 语言建设工程化工具的 &quot;白银时代&quot;；从 15 年开始，在借助 NodeJS 技术完成工程化工具尝试之后，更系统化建设线上线下前端工程化体系的 &quot;黄金时代&quot;；以及在当下我们正在通过客户端、容器、算法等多元化技术打造未来研发模式的&quot;未来时代&quot;</strong>。</p>
+<h2 id="石器时代"><a href="#石器时代" class="headerlink" title="石器时代"></a>石器时代</h2><p>在 2013 年前，前端的研发模式其实与后端研发的方式没有太大的差异，大部分是基于 SVN 进行SCM代码管理。在完成每天的代码研发工作后，通过 命令行 或者 小乌龟 等工具将代码上传到SVN服务器中完成一天的开发流程。在部署阶段，通过手动拷贝或者 FTP 上传的方式，将测试代码进行上传到测试服务器上，在完成测试之后，人工检查下代码版本及内容，然后进一步上传到生产环境，完整整个研发部署流程。</p>
+<p>在那个时期，代码管理工具除了 SVN 之外，也出现了基于 GIT 协议实现的代码管理工具 Gitlab。面对 SHA-1 算法带来的版本检测便利性、本地分布式的代码版本控制的灵活性等优势，我们逐步将部门内的 SVN 研发工作流程迁移到了 Gitlab 上。同时这个变化也算是淘系前端研发变革的起源。</p>
+<p>在经历代码版本管理工具切换带来的便利同时，我们思考当时较为操作繁琐、需要人工保证的部署流程是否也能进一步的在新的体系上得到改善。在新版发布系统的背景下，我们在新的 Gitlab 系统所提供的各种能力中，发现可以将 webhook 机制进行一定的上层封装，借助规则化的操作，来触发与发布系统的关连，自动完成发布上线流程。我们基于 publish/版本信息 这样固定规则的 Git Tag 来触发 webhook 事件通知，触发发布系统的调用上线流程，从而完成了第一个实际意义的前端研发全自动化发布流程。</p>
+<p>这个阶段就像 &quot;石器时代&quot; 般原始，不过在完成了研发基础设施这块如釜底抽薪般的改造之后，为后续的发展提供了坚实基础。同时随着前端技术发展的契机，我们也基于这套底层体系进入了新的阶段。</p>
+<h2 id="白银时代"><a href="#白银时代" class="headerlink" title="白银时代"></a>白银时代</h2><p>在 2014 年左右的时候，已经诞生 5 年多的 NodeJS 技术也逐渐变得成熟起来，当时团队基于 NodeJS，产出了一套名为 DEF 的研发本地端 CLI 终端工具，工具的核心是一套 Node 模块的安装、调用管理机制。工具开发者通过将研发功能模块封装成 DEF 体系下的 插件 形式，通过不同 插件 模块的调用组合，来实现对前端项目的编译、调试、上线等操作。</p>
+<p>在当时 KISSY 框架研发体系下，我们借助 NodeJS 的能力，通过正则匹配、 UglifyJS 解析 AST 等方式进行脚本编译处理，通过 JS 技术开始构建起前端领域的工程化工具，逐渐替代掉了以 java 体系中借助 Ant 平台实现的工具。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/1.webp" alt=""></p>
+<p>在当时我们除了借助使用 yeoman 等工具来完成初始化流程，也随着业务编译构建逻辑的不断抽象产出 <strong>构建器</strong> 这样的基础概念。</p>
+<p>当时在传统的项目组织中，构建编译的配置逻辑与项目的代码文件是放置到同一个代码目录中。从团队视角下，这块构建编译逻辑零散自由，谈不上有统一的更新管理逻辑。如果团队内某一类的研发场景构建编译工具本身有任何的更新变化，在团队范围内工具的更新覆盖将需要消耗非常大的成本；与此同时，在用户的角度，在相同类型的不同项目中，也存在着大量重复安装的构建依赖，每一个项目在构建前也都需要安装一遍构建依赖，在空间和时间上都有一定占比的浪费。</p>
+<p>通过 <strong>构建器</strong> 概念将编译构建依赖进行收敛、抽象，将项目的编译依赖维护在一个 npm 包中。这样编译逻辑就从多对多变成了一对多，在大幅降低构建逻辑的空间占用的同时，也能较好的复用已经安装的构建依赖，简化构建环节，提升构建效率。进一步也为后续的线上构建体系埋下了伏笔。</p>
+<p>在这个阶段，NodeJS 技术也逐渐变成了我们除日常页面开发之外的又一个基本技能。伴随着 NodeJS 工具的诞生与规模应用，前端开发与部署从 &quot;石器时代&quot; 进入到 &quot;白银时代&quot;。随着大家对 NodeJS 体系的基本运用变得愈发成熟，我们在基础体系的使用之上，进一步开始进行更深入的思考发散和抽象设计，开始建设更成熟的前端工程体系。</p>
+<h2 id="黄金时代"><a href="#黄金时代" class="headerlink" title="黄金时代"></a>黄金时代</h2><p>在团队完成基于 NodeJS 技术的工程工具以及 Web 服务框架等基础设施建设之后，在随后的几年时间内，越来越多的更为成熟的线上线下的工程化体系发展起来。在那个阶段设计、建设的服务、工具后续也逐步形成了如今淘系前端研发、部署流程中的基础设施。</p>
+<h3 id="研发套件"><a href="#研发套件" class="headerlink" title="研发套件"></a>研发套件</h3><p>随着本地 DEF 工具的发展，越来越多工具插件雨后春笋般地涌现出来。一方面用户有着非常多的工具选择，基本上本地研发过程中的功能都能在插件生态中找到；但是另一方面，在实际用户视角下，在某一个项目开发的时候，用户需要对这个项目使用到的插件以及插件用法要有一定的熟悉程度、知道最佳的组合使用方法。随着项目逐渐变多，对于工具组合的记忆成本变得高起来，同时也需要注意到不同项目之间插件组合的切换。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/2.webp" alt=""></p>
+<p>在百花齐放之后，面对延伸出来的问题，在原有的本地 DEF 工具之上，我们提出了 <strong>研发套件</strong> 的概念。通过对本地研发过程中进行总结收敛，抽象出 <strong>init</strong> 初始化、<strong>dev</strong> 编译预览、<strong>build</strong> 构建、<strong>test</strong> 测试、<strong>publish</strong> 发布 这五个本地工具的功能节点。将原有的插件能力根据项目研发类型进行分类后，总结沉淀出每一类研发类型的标准本地工具——研发套件。</p>
+<p>借助套件概念的封装，用户在不同项目之间研发的时候直接通过 统一的命令 ，就能完成项目研发对应工具服务的启动使用。同时在新的本地套件体系，也能针对每一位用户有着更细粒度、灵活的版本指定方式。配备更完善的日志监控体系，在使用工具的用户遇到问题时能实时感知、解决，最大程度保证一线同学本地研发工具的使用体验。</p>
+<h3 id="研发部署平台"><a href="#研发部署平台" class="headerlink" title="研发部署平台"></a>研发部署平台</h3><p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/3.webp" alt=""></p>
+<p>在借助 Gitlab 的 webhook 能力发布前端资源的流程成熟之后，一方面在发布流程上研发用户期望有更优化的发布体验，另一方面团队对于前端研发流程更体系化、结构化的流程治理、数据统计也有了更高的要求。</p>
+<p>在这样的背景下，我们通过打通原有链路上发布能力，将发布链路中各个环节进行更友好的串联，产出了前端体系下的研发部署平台。在体验上，用户可以借助一个简单的命令行命令直接开始发布任务的启动，简化了发布时 git 发布 tag 的操作流程。在整个发布流程中，通过长连接的方式将各个环节的运行信息、日志进行返回展示，提供了全新操作的一条发布链路。用户第一次开始对发布流程有着更全面的掌控，从开始进行代码的提交检测到最后资源 cdn 上线都有着完善的信息披露，极大的提高了发布体验。</p>
+<p>基于内部 NodeJS 实现的研发部署平台，在完成了基础链路的打通之后，在更体系化的角度上也逐步地开始作为工程研发上线流程的基础，对原有的上线发布链路的进行重塑。将原有流程中的环节进行抽象，逐步分散到 <strong>构建</strong>、<strong>检测</strong>、<strong>发布</strong> 三个主要步骤。在随着业务研发类型从 PC 到无线的切换过程中，基于三个基础步骤，在执行上层也逐步孵化出前端领域下 <strong>发布类型</strong> 的概念。例如在当时存在着 <strong>Web应用类型</strong>、<strong>前端资源类型</strong>、<strong>Weex应用</strong> 等类型，底层系统针对每个细分的 发布类型，在整体的发布流程的细节对接上采取不同的发布部署方案，本地研发结合套件工具，形成线上、线下链路关联统一的研发组合方式，更精细化地为每一种研发模式都提供最佳的研发部署体验。</p>
+<p>用户从此之后就不再需要通过 Gitlab 的 webhook 触发发布流程，&quot;一键上线&quot; 代表着前端工程体系又进入新的一个阶段。</p>
+<h3 id="云构建"><a href="#云构建" class="headerlink" title="云构建"></a>云构建</h3><p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/4.webp" alt=""></p>
+<p>在上一个阶段中，我们通过将编译逻辑经过中心化封装的方式，借助 npm 的形式，形成了在研发编译构建环节的规范描述。但是在部署上线环节，构建器并未与线上部署流程进行串联，而不同的本地系统环境，同样也会导致构建结果的不稳定。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/5.webp" alt=""></p>
+<p>在当时伴随着 docker 技术的发展，我们思考通过 docker 快速启停统一环境的能力来实现一个构建器运行的环境，通过 docker启动的 container 容器来模拟执行本地的编译构建流程。同时利用统一的容器环境，结合前文介绍的迁移之后的 Gitlab 提供的 commit等版本标识信息，能在最大程度上保证构建内容的稳定统一。</p>
+<p>经过了一段时间的摸索，通过在体系内经历了例如 建立前端 docker 容器集群、串联打通容器与应用的网路通道、建设构建任务调度策略逻辑、借助 redis 打通 docker 容器运行日志等技术环节的验证探索之后，我们基于容器技术搭建起来了在前端持续集成领域的 <strong>云构建</strong> 系统。</p>
+<p>在通过淘系的 NodeJS 应用框架 midwayjs 完成线上构建能力搭建的同时，在业务侧我们也在逐步建立更友好、完善的线上构建业务逻辑。借助在线上发布流程时调用 <strong>云构建</strong> 服务，在整个构建任务的执行流程中，串联起来了 <strong>构建器</strong>、<strong>仓库</strong>、<strong>用户</strong> 三者的业务关系。在这个关系网下，我们建立了完善的任务执行情况的调度管理，能完整记录构建器任务执行的具体情况。</p>
+<p>在构建器视角下，可以看到构建器针对不同仓库的执行情况，有着完整的运行日志与构建时间、构建错误记录，方便用户针对构建器进行错误排查以及性能优化。而针对构建器的迭代更新，构建器开发者可以针对用户进行灰度范围划分设置，在版本更迭时通过完整的灰度流程保证上线的稳定覆盖。在构建器发布过程中如有问题，立即取消灰度进行处理。通过这样的模式，最大化地降低发布版本的风险。在针对横向覆盖较大的场景下，完整的灰度发布机制起着举足轻重的作用。</p>
+<p><strong>用户在研发过程中需要将本地构建代码推送到仓库的这个环节也从此变成了历史，在源码完成开发之后，直接提交源码到仓库中，执行发布任务的同时，云构建系统会自动构建出稳定、统一的构建产出结果。</strong></p>
+<h3 id="门神"><a href="#门神" class="headerlink" title="门神"></a>门神</h3><p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/13.webp" alt=""></p>
+<p>在完成项目的编译、压缩过程之后，看似已经走到部署环节的前端资源，在面对不断复杂起来的业务场景下，实际仍然存在着许多隐蔽的问题，而以往通过人工检查的方式已经逐渐无法保障上线资源的可靠性。在这样的背景下，也需要一个流程化、规范化的方式进行系统干预、检测，做好发布资源的最后一道防线。</p>
+<p>与 <strong>云构建</strong> 类似，基于 NodeJS 搭建线上资源检查运行环境，通过将检查逻辑也进一步抽象化，同样以 npm 的形式进行承载抽象出 <strong>检查器</strong> 的概念。在用户资源完成所有的前置处理后，再进入到门神系统并行检查任务的执行，在完成例如 资源地址、敏感词、代码注释 等等检查之后，通过不同分级的检查结果，反馈用户相应的处理方式。作为上线前资源的最后一道关卡。<strong>系统取名 门神 寓意保障每一次的发布资源的上线基本质量和安全</strong>。</p>
+<p>通过门神自动化的方式，用户不再需要在上线前&quot;火眼金睛&quot;检验各种无法通过常规编译工具发现的问题，轻松上线。</p>
+<h3 id="能力开放"><a href="#能力开放" class="headerlink" title="能力开放"></a>能力开放</h3><p>一方面随着体系内前端工程领域不断的发展，不断有更多的研发解决方案随着业务场景的不断发展涌现出来，另一方面随着体系内 研发部署平台、云构建、门神 逐步成为集团前端研发场景的事实规范和基础设施。在这个背景下，底层能力得到了进一步抽象开放的契机，上层的业务体系可以根据自身的业务情况，通过借助成熟的底层工程中台能力搭建属于自身业务体系的前端研发流程。</p>
+<p>例如从阿里体系视角下，不同的投放客户端，不同的资源组织形式，借助通用抽象化的底层工程能力，最终让每一个业务场景的开发者都能拥有在项目业务场景下的最佳研发体验。</p>
+<h3 id="贝搭建平台"><a href="#贝搭建平台" class="headerlink" title="贝搭建平台"></a>贝搭建平台</h3><blockquote>
+<p>如何设计阿里经济体都在用的搭建服务—天马</p>
+</blockquote>
+<p>除了常规的项目研发，在电商体系下，特别是在营销场景下存在着需要快速生产页面的需求。在这样的业务场景背景下，孵化出来了通过模块生成页面的搭建平台。通过将页面进行重新划分，分割成 页面骨架和 页面模块 的方式，通过前端同学开发这些页面元素，完成开发后进行组合搭配，同时打通业务数据流，实现快速搭建页面的能力。</p>
+<p>前端研发同学在完成本地模块开发后，将模块资源进行发布到线上，在搭建系统中进行页面组装和上下文注入预览后，完成页面级别发布。在底层同样借助 NodeJS 实现的源站系统来承载 CDN 内容的分发回源，提供亿万用户的访问预览。这套体系经过几代的发展更迭，已经成为当下前端研发的最核心场景之一。</p>
+<p>大致从 2015 年开始的几年时间里，伴随着技术的发展，淘系前端的研发体系从最初的本地工具、研发部署平台作为排头兵，逐步发展成线上线下的体系化专业解决方案。在保证前端角色的研发基础体验不断突破升级的同时，企业化规模化的前端工程建设将日常零散的研发形式不断推向更体系化的、高效率的、可扩展的 研发模式，同时也为后续更上层的研发部署模式的突破和升级打下坚实的基础。</p>
+<h2 id="未来时代"><a href="#未来时代" class="headerlink" title="未来时代"></a>未来时代</h2><p>在逐步成熟的工程体系之上，在最近的几年时间内，我们也在思考面对 研发提效 这件事情上，是否还能有更突破的、面向未来的解法。随着许多内部产品不断地改造和迭代，也不断浮现出了星星之火可以燎原的方向和模式。</p>
+<h3 id="D2C"><a href="#D2C" class="headerlink" title="D2C"></a>D2C</h3><p><strong>imgcook</strong> 项目最初起源于可视化搭建，到目前外部看到的研发模式也是经历了不断的改进、变化。在整个的研发模式变化中，从外部的视角大致经历几个阶段：</p>
+<p>第一阶段: 当时的用户的使用方式是通过页面元素的拖拽进行页面搭建，产出源代码之后进行发布上线。</p>
+<p>第二阶段: 通过建立图像扫描引擎进行像素扫描布局，同时接入 sketch 等视觉设计工具，自动的将设计稿进行转换，这个阶段前端用户的研发方式式就开始变化成了将视觉稿进行上传到平台处理进行代码转换；</p>
+<p>第三阶段: 在当下的第三个阶段，平台正通过深度学习等人工智能技术来提效图像代码转换的能力，与此同时在平台端完善基础研发链路的打通。内部的研发模式也正逐步切换到了在设计、代码的工作台中进行操作，实现一站式研发、上线的操作体验。</p>
+<p>目前 D2C 能力逐步在智能化还原组件、表单、模块、页面的研发场景中逐步得到验证并收获一定的成果。</p>
+<h3 id="IDE"><a href="#IDE" class="headerlink" title="IDE"></a>IDE</h3><p>在最近的一年时间，我们也逐步投入到了新的 IDE 方向建设中，期望通过 IDE 的平台能力来孵化新的更高效的研发模式。</p>
+<h3 id="外部趋势"><a href="#外部趋势" class="headerlink" title="外部趋势"></a>外部趋势</h3><p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/6.webp" alt=""></p>
+<p>从外部视角来看，可以看到有两个趋势浮出水面。一个是 IDE 领域相关的创业公司逐渐浮现出来，出现了许多相关的创业明星公司，例如有 Eclipse 体系下的 theia ，通过兼容 VSCode 接口实现的 coder，以及研发编辑领域的行业新秀 codesandbox；另一个是云厂商的加入，AWS 收购 Cloud9、腾讯收购 Coding、Azure 提供 Codespace 服务。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/7.webp" alt=""></p>
+<p>在编辑器、Docker 等技术的不断发展成熟之下，各个 IDE 相关服务厂商都希望能借助集成研发环境的能力来找到研发效率、体验提升的机会，从而抓住用户的痛点，扩张产品市场。</p>
+<h3 id="内部体系"><a href="#内部体系" class="headerlink" title="内部体系"></a>内部体系</h3><p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/8.webp" alt=""></p>
+<p>前端研发模式随着不断的分化、发展，涌现出越来越多的工具、服务。当下工具、服务的形式也不单单只是前文提到的命令行终端工具，或者说终端工具也逐渐成为了富交互的工具、服务的启动入口。同时一种业务研发模式往往也需要串联到不同体系、不同团队提供的研发工具、服务。举一个例子，例如当下支付宝小程序的研发，除了基础的编译服务、预览服务之外，需要用到模拟器、调试器、真机调试等等服务。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/9.webp" alt=""></p>
+<p>支付宝小程序其实是内部很多场景的一个缩影，支付宝小程序当下的解法其实是借助 Electron 平台打造了一款本地的 IDE 研发工具。在这样的背景之下，体系内去年也开始了 IDE 底层体系 的搭建。期望能通过一套 IDE 底层实现线上、线下的基础 IDE 解决方案。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/10.webp" alt=""></p>
+<p>借助 IDE 底层插件机制，淘系也孵化出自己的 IDE 集成研发工具，例如前文提到的 D2C 、支付宝小程序、serverless 等场景都在紧锣密鼓的进行内部拓展和使用改进。我们通过 IDE 及 IDE 的插件体系，一方面借助 VSCode 的生态完善基本研发体验，另一方面通过插件在 VSCode 能力范围之上扩展的插件 UI 能力来串联起单个项目链路上所涉及到的所有的工具、服务。</p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/11.webp" alt=""></p>
+<p><img data-src="/images/how-to-develop-and-deploy-front-end-code-an-interpretation-of-taobao-8-year-case/12.webp" alt=""></p>
+<p>与以往的流程的不同的是，除了将线上的发布部署流程进行串联整合，研发同学在当下所有的在研发过程的操作包括 研发编码、调试预览、部署流程 都在统一的研发 IDE 中有机的衔接起来，直接通过研发面板完成所有操作。这是我们为未来埋下的一颗种子，正在慢慢发芽。</p>
+<p>整篇答案其实从一个在体系内的员工角度向大家介绍了关于淘系前端研发部署相关的一些历程，当下的研发模式我们也在日赴夜继的探索突破，最后介绍下团队做的事情。</p>
+<h2 id="One-More-Thing"><a href="#One-More-Thing" class="headerlink" title="One More Thing"></a>One More Thing</h2><p>淘系前端团队-工程中台团队，作为淘系前端及阿里集团前端的前端研发的基础设施，目前在做前端工程相关的体系建设，主要有几件事情</p>
+<ol>
+<li>下一代前端研发模式: 通过自建阿里 IDE 核心底层 KAITIAN，借助底层两端一致、可视化插件体系等基础能力深度整合集成现有研发服务资产，搭建当下及未来研发模式，新的领域等你来架构 </li>
+<li>前端工程基础服务：基于 NodeJS、Docker 等能力建设前端研发持续集成流程，百万级别任务量等你来优化、挑战 </li>
+<li>大规模 CDN 源站: 基于 NodeJS 实现集团核心 CDN 回源核心服务，大促基础设施，亿级流量等你来&quot;开飞机换引擎&quot;</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FrontEnd/" rel="tag"># FrontEnd</a>
+              <a href="/tags/SoftwareEngineering/" rel="tag"># SoftwareEngineering</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/02/thinking/how-to-get-rich-without-luck/" rel="prev" title="如何不靠运气致富">
+      <i class="fa fa-chevron-left"></i> 如何不靠运气致富
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/07/knowledge/important-mathematical-formulas-for-the-past-500-years/" rel="next" title="高考了，给你份过去500年重要的数学公式压压惊">
+      高考了，给你份过去500年重要的数学公式压压惊 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#石器时代"><span class="nav-number">1.</span> <span class="nav-text">石器时代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#白银时代"><span class="nav-number">2.</span> <span class="nav-text">白银时代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#黄金时代"><span class="nav-number">3.</span> <span class="nav-text">黄金时代</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#研发套件"><span class="nav-number">3.1.</span> <span class="nav-text">研发套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#研发部署平台"><span class="nav-number">3.2.</span> <span class="nav-text">研发部署平台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#云构建"><span class="nav-number">3.3.</span> <span class="nav-text">云构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#门神"><span class="nav-number">3.4.</span> <span class="nav-text">门神</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#能力开放"><span class="nav-number">3.5.</span> <span class="nav-text">能力开放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贝搭建平台"><span class="nav-number">3.6.</span> <span class="nav-text">贝搭建平台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未来时代"><span class="nav-number">4.</span> <span class="nav-text">未来时代</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#D2C"><span class="nav-number">4.1.</span> <span class="nav-text">D2C</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IDE"><span class="nav-number">4.2.</span> <span class="nav-text">IDE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#外部趋势"><span class="nav-number">4.3.</span> <span class="nav-text">外部趋势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内部体系"><span class="nav-number">4.4.</span> <span class="nav-text">内部体系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#One-More-Thing"><span class="nav-number">5.</span> <span class="nav-text">One More Thing</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

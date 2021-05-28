@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="REST、gRPC、GraphQL、Webhooks是四种常用的接口规范，适用于不同的场景。本文就来结合实际谈一谈各自适用场景及如何选型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="REST、gRPC、GraphQL、Webhooks接口规范对比">
+<meta property="og:url" content="https://themis.hirgb.com/2020/01/11/softwareengineering/restful-graphql-grpc-webhooks/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="REST、gRPC、GraphQL、Webhooks是四种常用的接口规范，适用于不同的场景。本文就来结合实际谈一谈各自适用场景及如何选型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-11T16:08:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.365Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="SoftwareEngineering">
+<meta property="article:tag" content="Restful">
+<meta property="article:tag" content="gRPC">
+<meta property="article:tag" content="GraphQL">
+<meta property="article:tag" content="Webhooks">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2020/01/11/softwareengineering/restful-graphql-grpc-webhooks/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>REST、gRPC、GraphQL、Webhooks接口规范对比 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2020/01/11/softwareengineering/restful-graphql-grpc-webhooks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          REST、gRPC、GraphQL、Webhooks接口规范对比
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-11 16:08:00" itemprop="dateCreated datePublished" datetime="2020-01-11T16:08:00Z">2020-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SoftwareEngineering/" itemprop="url" rel="index"><span itemprop="name">SoftwareEngineering</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>REST、gRPC、GraphQL、Webhooks是四种常用的接口规范，适用于不同的场景。本文就来结合实际谈一谈各自适用场景及如何选型。<br><a id="more"></a></p>
+<h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h2><p>每当项目进入联调阶段，或者提前约定接口时，前后端就会聚在一起热火朝天的讨论起来。可能 99% 的场景都在约定 Http 接口，讨论 URL 是什么，入参是什么，出参是什么。</p>
+<p>有的团队前后端接口约定更加高效，后端会拿出接口定义代码，前端会转换成（或自动转成）Typescript 定义文件。</p>
+<p>但这些工作都针对于 Http 接口，今天抛开联调时千遍一律的 Http 接口，一起看看接口还可以怎么约定，分别适用于哪些场景，你现在处于哪个场景。</p>
+<h2 id="2-概述"><a href="#2-概述" class="headerlink" title="2 概述"></a>2 概述</h2><p>本文主要讲了四种接口设计方案，分别是：REST、gRPC、GraphQL、Webhooks，下面分别介绍一下。</p>
+<h3 id="REST"><a href="#REST" class="headerlink" title="REST"></a>REST</h3><p>REST 也许是最通用，也是最常用的接口设计方案，它是<strong>无状态</strong>的，以<strong>资源</strong>为核心，针对如何操作资源定义了一系列 URL 约定，而操作类型通过 <code>GET</code> <code>POST</code> <code>PUT</code> <code>DELETE</code> 等 HTTP Methods 表示。</p>
+<p>REST 基于原生 HTTP 接口，因此改造成本很小，而且其无状态的特性，降低了前后端耦合程度，利于快速迭代。</p>
+<p>随着未来发展，REST 可能更适合提供微服务 API。</p>
+<p>使用举例：<br><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -v -X GET https://api.sandbox.paypal.com/v1/activities/activities?start_time=2012-01-01T00:00:01.000Z&amp;amp;end_time=2014-10-01T23:59:59.999Z&amp;amp;page_size=10 \</span><br><span class="line">-H <span class="string">"Content-Type: application/json"</span> \</span><br><span class="line">-H <span class="string">"Authorization: Bearer Access-Token"</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC"></a>gRPC</h3><p>gRPC 是对 RPC 的一个新尝试，最大特点是使用 <strong>protobufs</strong> 语言格式化数据。</p>
+<p>RPC 主要用来做服务器之间的方法调用，影响其性能最重要因素就是 序列化/反序列化 效率。RPC 的目的是打造一个高效率、低消耗的服务调用方式，因此比较适合 IOT 等对资源、带宽、性能敏感的场景。而 gRPC 利用 protobufs 进一步提高了序列化速度，降低了数据包大小。</p>
+<p>使用举例：</p>
+<p>gRPC 主要用于服务之间传输，这里拿 Nodejs 举例：</p>
+<p>定义接口。由于 gRPC 使用 protobufs，所以接口定义文件就是 helloword.proto:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// The greeting service definition.</span></span><br><span class="line">service Greeter &#123;</span><br><span class="line">  <span class="comment">// Sends a greeting</span></span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">  <span class="comment">// Sends another greeting</span></span><br><span class="line">  rpc SayHelloAgain (HelloRequest) returns (HelloReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The request message containing the user's name.</span></span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  string name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The response message containing the greetings</span></span><br><span class="line">message HelloReply &#123;</span><br><span class="line">  string message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>这里定义了服务 <code>Greeter</code>，拥有两个方法：<code>SayHello</code> 与 <code>SayHelloAgain</code>，通过 <code>message</code> 关键字定义了入参与出参的结构。</p>
+<p>事实上利用 <code>protobufs</code>，传输数据时仅传送很少的内容，作为代价，双方都要知道接口定义规则才能序列化/反序列化。</p>
+<p>定义服务器：<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sayHello</span>(<span class="params">call, callback</span>) </span>&#123;</span><br><span class="line">  callback(<span class="literal">null</span>, &#123; <span class="attr">message</span>: <span class="string">"Hello "</span> + call.request.name &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sayHelloAgain</span>(<span class="params">call, callback</span>) </span>&#123;</span><br><span class="line">  callback(<span class="literal">null</span>, &#123; <span class="attr">message</span>: <span class="string">"Hello again, "</span> + call.request.name &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> server = <span class="keyword">new</span> grpc.Server();</span><br><span class="line">  server.addProtoService(hello_proto.Greeter.service, &#123;</span><br><span class="line">    sayHello: sayHello,</span><br><span class="line">    sayHelloAgain: sayHelloAgain</span><br><span class="line">  &#125;);</span><br><span class="line">  server.bind(<span class="string">"0.0.0.0:50051"</span>, grpc.ServerCredentials.createInsecure());</span><br><span class="line">  server.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>我们在 50051 端口支持了 gRPC 服务，并注册了服务 <code>Greeter</code>，并对 <code>sayHello</code> <code>sayHelloAgain</code> 方法做了一些业务处理，并返回给调用方一些数据。</p>
+<p>定义客户端：<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> client = <span class="keyword">new</span> hello_proto.Greeter(</span><br><span class="line">    <span class="string">"localhost:50051"</span>,</span><br><span class="line">    grpc.credentials.createInsecure()</span><br><span class="line">  );</span><br><span class="line">  client.sayHello(&#123; <span class="attr">name</span>: <span class="string">"you"</span> &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, response</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"Greeting:"</span>, response.message);</span><br><span class="line">  &#125;);</span><br><span class="line">  client.sayHelloAgain(&#123; <span class="attr">name</span>: <span class="string">"you"</span> &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, response</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"Greeting:"</span>, response.message);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>可以看到，客户端和服务端同时需要拿到 proto 结构，客户端数据发送也要依赖 proto 包提供的方法，框架会内置做掉序列化/反序列化的工作。</p>
+<p>也有一些额外手段将 gRPC 转换为 http 服务，让网页端也享受到其高效、低耗的好处。但是不要忘了，RPC 最常用的场景是 IOT 等硬件领域，网页场景也许不会在乎节省几 KB 的流量。</p>
+<h3 id="GraphQL"><a href="#GraphQL" class="headerlink" title="GraphQL"></a>GraphQL</h3><p><code>GraphQL</code> 不是 <code>REST</code> 的替代品，而是另一种交互形式：前端决定后端的返回结果。</p>
+<p><code>GraphQL</code> 带来的最大好处是精简请求响应内容，不会出现冗余字段，前端可以决定后端返回什么数据。但要注意的是，前端的决定权取决于后端支持什么数据，因此 <code>GraphQL</code> 更像是精简了返回值的 <code>REST</code>，而后端接口也可以一次性定义完所有功能，而不需要逐个开发。</p>
+<p>再次强调，相比 <code>REST</code> 和 <code>gRPC</code>，<code>GraphQL</code> 是由前端决定返回结果的反模式。</p>
+<p>使用举例：</p>
+<p>比如查询某个组织下的成员，REST 风格接口可能是：<br><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -v https://api.github.com/orgs/:org/members</span><br></pre></td></tr></table></figure><br>含义很明确，但问题是返回结果不明确，必须实际调试才知道。换成等价的 <code>GraphQL</code> 是这样的<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">query &#123;</span><br><span class="line">  organization(login: &quot;github&quot;) &#123;</span><br><span class="line">    members(first: 100) &#123;</span><br><span class="line">      edges &#123;</span><br><span class="line">        node &#123;</span><br><span class="line">          name</span><br><span class="line">          avatarUrl</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>返回的结果和约定的格式结构一致，且不会有多余的字段：<br><figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"data"</span>: &#123;</span><br><span class="line">    <span class="attr">"organization"</span>: &#123;</span><br><span class="line">      <span class="attr">"members"</span>: &#123;</span><br><span class="line">        <span class="attr">"edges"</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"node"</span>: &#123;</span><br><span class="line">              <span class="attr">"name"</span>: <span class="string">"Chris Wanstrath"</span>,</span><br><span class="line">              <span class="attr">"avatarUrl"</span>: <span class="string">"https://avatars0.githubusercontent.com/u/2?v=4"</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">"node"</span>: &#123;</span><br><span class="line">              <span class="attr">"name"</span>: <span class="string">"Justin Palmer"</span>,</span><br><span class="line">              <span class="attr">"avatarUrl"</span>: <span class="string">"https://avatars3.githubusercontent.com/u/25?v=4"</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>但是能看出来，这样做需要一个系统帮助你写 query，很多框架都提供这个功能，比如 <code>apollo-client</code>。</p>
+<h3 id="Webhooks"><a href="#Webhooks" class="headerlink" title="Webhooks"></a>Webhooks</h3><p>如果说 GraphQL 颠覆了前后端交互模式，那 <code>Webhooks</code> 可以说是彻头彻尾的反模式了，因为其定义就是，前端不主动发送请求，完全由后端推送。</p>
+<p>它最适合解决轮询问题。或者说轮询就是一种妥协的行为，当后端不支持 <code>Webhooks</code> 模式时。</p>
+<p>使用举例：</p>
+<p><code>Webhooks</code> 本身也可以由 <code>REST</code> 或者 <code>gRPC</code> 实现，所以就不贴代码了。举个常用例子，比如你的好友发了一条朋友圈，后端将这条消息推送给所有其他好友的客户端，就是 <code>Webhooks</code> 的典型场景。</p>
+<p>最后的结论是，这四个场景各有不同使用场景，无法相互替代：</p>
+<ul>
+<li>REST：无状态的数据传输结构，适用于通用、快速迭代和标准化语义的场景。</li>
+<li>gRPC：轻量的传输方式，特殊适合对性能高要求或者环境苛刻的场景，比如 IOT。</li>
+<li>GraphQL: 请求者可以自定义返回格式，某些程度上可以减少前后端联调成本。</li>
+<li>Webhooks: 推送服务，主要用于服务器主动更新客户端资源的场景。</li>
+</ul>
+<h2 id="3-选型"><a href="#3-选型" class="headerlink" title="3 选型"></a>3 选型</h2><h3 id="REST-并非适用所有场景"><a href="#REST-并非适用所有场景" class="headerlink" title="REST 并非适用所有场景"></a>REST 并非适用所有场景</h3><p>本文给了我们一个更大的视角看待日常开发中的接口问题，对于奋战在一线的前端同学，接触到 90% 的接口都是非 REST 规则的 Http 接口，能真正落实 REST 的团队其实非常少。这其实暴露了一个重要问题，就是 REST 所带来的好处，在整套业务流程中到底占多大的比重？</p>
+<p>不仅接口设计方案的使用要分场景，针对某个接口方案的重要性也要再继续细分：在做一个开放接口的项目，提供 Http 接口给第三方使用，这时必须好好规划接口的语义，所以更容易让大家达成一致使用 REST 约定；而开发一个产品时，其实前后端不关心接口格式是否规范，甚至在开发内网产品时，性能和冗余都不会考虑，效率放在了第一位。所以第一点启示是，不要埋冤当前团队业务为什么没有使用某个更好的接口约定，因为接口约定很可能是业务形态决定的，而不是凭空做技术对比从而决定的。</p>
+<h3 id="gRPC-是服务端交互的首选"><a href="#gRPC-是服务端交互的首选" class="headerlink" title="gRPC 是服务端交互的首选"></a>gRPC 是服务端交互的首选</h3><p>前端同学转 node 开发时，很喜欢用 Http 方式进行服务器间通讯，但可能会疑惑，为什么公司内部 Java 或者 C++ 写的服务都不提供 Http 方式调用，而是另外一个名字。了解 gRPC 后，可以认识到这些平台都是对 RPC 方式的封装，服务器间通信对性能和延时要求非常高，所以比较适合专门为性能优化的 gRPC 等服务。</p>
+<h3 id="GraphQL-需要配套"><a href="#GraphQL-需要配套" class="headerlink" title="GraphQL 需要配套"></a>GraphQL 需要配套</h3><p><code>GraphQL</code> 不是 <code>REST</code> 的替代品，所以不要想着团队从 Http 接口迁移到 <code>GraphQL</code> 就能提升 X% 的开发效率。<code>GraphQL</code> 方案是一种新的前后端交互约定，所以上手成本会比较高，同时，为了方便前端同学拼 query，等于把一部分后端工作量转移给了前端，如果此时没有一个足够好用的平台快速查阅、生成、维护这些定义，开发效率可能不升反降。</p>
+<p>总的来说，对外开放 API 或者拥有完整配套的场景，使用 <code>GraphQL</code> 是比较理想的，但对于快速迭代，平台又不够成熟的团队，继续使用标准 Http 接口可以更快完成项目。</p>
+<h3 id="Webhooks-解决特殊场景问题"><a href="#Webhooks-解决特殊场景问题" class="headerlink" title="Webhooks 解决特殊场景问题"></a>Webhooks 解决特殊场景问题</h3><p>对于第三方平台验权、登陆等 没有前端界面做中转的场景，或者强安全要求的支付场景等，适合用 <code>Webhooks</code> 做数据主动推送。说白了就是在前端无从参与，或者因为前端安全问题不适合参与时，就是 <code>Webhooks</code> 的场景。很显然 <code>Webhooks</code> 也不是 <code>Http</code> 的替代品，不过的确是一种新的前后端交互方式。</p>
+<p>对于慢查询等场景，前端普遍使用轮询完成，这和 <code>Socket</code> 相比体验更弱，但无状态的特性反而会降低服务器负担，所以慢查询和即时通讯要区分对待，用户对消息及时性的敏感程度决定了使用哪种方案。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SoftwareEngineering/" rel="tag"># SoftwareEngineering</a>
+              <a href="/tags/Restful/" rel="tag"># Restful</a>
+              <a href="/tags/gRPC/" rel="tag"># gRPC</a>
+              <a href="/tags/GraphQL/" rel="tag"># GraphQL</a>
+              <a href="/tags/Webhooks/" rel="tag"># Webhooks</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/30/read/the-most-important-thing/" rel="prev" title="《投资中最重要的事》书摘">
+      <i class="fa fa-chevron-left"></i> 《投资中最重要的事》书摘
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/11/android/common-commands-of-adb/" rel="next" title="adb常用命令">
+      adb常用命令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-引言"><span class="nav-number">1.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-概述"><span class="nav-number">2.</span> <span class="nav-text">2 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#REST"><span class="nav-number">2.1.</span> <span class="nav-text">REST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC"><span class="nav-number">2.2.</span> <span class="nav-text">gRPC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphQL"><span class="nav-number">2.3.</span> <span class="nav-text">GraphQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Webhooks"><span class="nav-number">2.4.</span> <span class="nav-text">Webhooks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-选型"><span class="nav-number">3.</span> <span class="nav-text">3 选型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#REST-并非适用所有场景"><span class="nav-number">3.1.</span> <span class="nav-text">REST 并非适用所有场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC-是服务端交互的首选"><span class="nav-number">3.2.</span> <span class="nav-text">gRPC 是服务端交互的首选</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphQL-需要配套"><span class="nav-number">3.3.</span> <span class="nav-text">GraphQL 需要配套</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Webhooks-解决特殊场景问题"><span class="nav-number">3.4.</span> <span class="nav-text">Webhooks 解决特殊场景问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

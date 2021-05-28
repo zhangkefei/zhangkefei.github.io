@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="随着初始化函数的执行，实例的生命周期也开始运转，在初始化函数里可以看到每个模块向实例集成的功能，这些功能的具体内容以后在单独的文章里继续探索。现在来详细看看类初始化函数的详细代码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue刨根问底-全局初始化">
+<meta property="og:url" content="https://themis.hirgb.com/2018/12/12/frontend/vue-class-init/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="随着初始化函数的执行，实例的生命周期也开始运转，在初始化函数里可以看到每个模块向实例集成的功能，这些功能的具体内容以后在单独的文章里继续探索。现在来详细看看类初始化函数的详细代码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-12T19:09:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="FrontEnd">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2018/12/12/frontend/vue-class-init/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue刨根问底-全局初始化 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2018/12/12/frontend/vue-class-init/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue刨根问底-全局初始化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-12 19:09:00" itemprop="dateCreated datePublished" datetime="2018-12-12T19:09:00Z">2018-12-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/Vue/" itemprop="url" rel="index"><span itemprop="name">Vue</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>随着初始化函数的执行，实例的生命周期也开始运转，在初始化函数里可以看到每个模块向实例集成的功能，这些功能的具体内容以后在单独的文章里继续探索。现在来详细看看类初始化函数的详细代码。<br><a id="more"></a></p>
+<h3 id="头部引用"><a href="#头部引用" class="headerlink" title="头部引用"></a>头部引用</h3><blockquote>
+<p>下面代码位于vue/src/core/instance/init.js</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import config from &#39;..&#x2F;config&#39;</span><br><span class="line">import &#123; initProxy &#125; from &#39;.&#x2F;proxy&#39;</span><br><span class="line">import &#123; initState &#125; from &#39;.&#x2F;state&#39;</span><br><span class="line">import &#123; initRender &#125; from &#39;.&#x2F;render&#39;</span><br><span class="line">import &#123; initEvents &#125; from &#39;.&#x2F;events&#39;</span><br><span class="line">import &#123; mark, measure &#125; from &#39;..&#x2F;util&#x2F;perf&#39;</span><br><span class="line">import &#123; initLifecycle, callHook &#125; from &#39;.&#x2F;lifecycle&#39;</span><br><span class="line">import &#123; initProvide, initInjections &#125; from &#39;.&#x2F;inject&#39;</span><br><span class="line">import &#123; extend, mergeOptions, formatComponentName &#125; from &#39;..&#x2F;util&#x2F;index&#39;</span><br></pre></td></tr></table></figure>
+<p>复制代码头部注入的一些方法是在生命周期运行中开始初始化的功能。config对象是作为基本的配置参数，在不同运行环境里会更改当中的属性值来适应不同的平台需求，在这个文件中只用到了其中的性能检测属性，与具体的类的实现没有太大关联，与引入的mark、measure、formatComponentName方法配合主要是做性能评估用的。</p>
+<p>在初始化组件的时候主要用到的是工具方法<code>extend</code>、<code>mergeOptions</code>。</p>
+<h3 id="辅助函数extend"><a href="#辅助函数extend" class="headerlink" title="辅助函数extend"></a>辅助函数extend</h3><p>extend函数是一个很简单的为对象扩展属性的方法，代码位于这个文件中vue/src/shared/util.js，具体实现非常基础，看看就好。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Mix properties into target object.</span><br><span class="line"> *&#x2F;</span><br><span class="line">export function extend (to: Object, _from: ?Object): Object &#123;</span><br><span class="line">  for (const key in _from) &#123;</span><br><span class="line">    to[key] &#x3D; _from[key]</span><br><span class="line">  &#125;</span><br><span class="line">  return to</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="辅助函数mergeOptions"><a href="#辅助函数mergeOptions" class="headerlink" title="辅助函数mergeOptions"></a>辅助函数mergeOptions</h3><p>mergeOptions函数代码位于<code>vue/src/core/util/options.js</code>中，它是初始化合并options对象时非常重要的函数，为了看明白它在初始化函数里的用途，稍微花点时间来仔细看一下它的具体实现。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 该函数用于将两个配置对象合并为一个新的配置对象，</span><br><span class="line">&#x2F;&#x2F; 核心实体既用于实例化也用于继承</span><br><span class="line">&#x2F;**</span><br><span class="line"> * Merge two option objects into a new one.</span><br><span class="line"> * Core utility used in both instantiation and inheritance.</span><br><span class="line"> *&#x2F;</span><br><span class="line">&#x2F;&#x2F; 导出mergeOptions函数</span><br><span class="line">&#x2F;&#x2F; 接收Object类型的parent、child参数，Component类型的vm参数</span><br><span class="line">&#x2F;&#x2F; 函数返回对象</span><br><span class="line">export function mergeOptions (</span><br><span class="line">  parent: Object,</span><br><span class="line">  child: Object,</span><br><span class="line">  vm?: Component</span><br><span class="line">): Object &#123;</span><br><span class="line">  &#x2F;&#x2F; 非生产环境时检查child对象的components属性中是否有不合适的引用组件名称</span><br><span class="line">  &#x2F;&#x2F; 不合适的组建名主要是指与Vue内建html标签或保留标签名相同的组件名称如slot,component</span><br><span class="line">  &#x2F;&#x2F; 有兴趣了解的可以参照同一文件中的L246到L269查看具体实现</span><br><span class="line">  &#x2F;&#x2F; 其中的辅助工具函数位于src&#x2F;shared&#x2F;util.js的L94到L112</span><br><span class="line">  if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    checkComponents(child)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 如果child传入的是函数对象，则将函数的options属性赋值给child，确保child引用options</span><br><span class="line">  if (typeof child &#x3D;&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">    child &#x3D; child.options</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 下面三个函数都是将child的各个属性格式化成预定好的对象格式</span><br><span class="line">  &#x2F;&#x2F; 标准化属性</span><br><span class="line">  normalizeProps(child, vm)</span><br><span class="line">  &#x2F;&#x2F; 标准化注入</span><br><span class="line">  normalizeInject(child, vm)</span><br><span class="line">  &#x2F;&#x2F; 标准化指令</span><br><span class="line">  normalizeDirectives(child)</span><br><span class="line">  &#x2F;&#x2F; 定义扩展</span><br><span class="line">  const extendsFrom &#x3D; child.extends</span><br><span class="line">  &#x2F;&#x2F; 如果存在则向下递归合并</span><br><span class="line">  if (extendsFrom) &#123;</span><br><span class="line">    parent &#x3D; mergeOptions(parent, extendsFrom, vm)</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 如果存在mixins，则合并每一个mixin对象</span><br><span class="line">  if (child.mixins) &#123;</span><br><span class="line">    for (let i &#x3D; 0, l &#x3D; child.mixins.length; i &lt; l; i++) &#123;</span><br><span class="line">      parent &#x3D; mergeOptions(parent, child.mixins[i], vm)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 定义以空对象options</span><br><span class="line">  const options &#x3D; &#123;&#125;</span><br><span class="line">  let key</span><br><span class="line">  &#x2F;&#x2F; 对每一个parent中的属性进行合并，添加到options中</span><br><span class="line">  for (key in parent) &#123;</span><br><span class="line">    mergeField(key)</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 如果parent中不含有key属性，则对每一个child中key属性进行合并</span><br><span class="line">  for (key in child) &#123;</span><br><span class="line">    if (!hasOwn(parent, key)) &#123;</span><br><span class="line">      mergeField(key)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 定义mergeField函数，接收key参数</span><br><span class="line">  function mergeField (key) &#123;</span><br><span class="line">    &#x2F;&#x2F; 如果strats[key]有定义好的合并策略函数，则复制给strat</span><br><span class="line">    &#x2F;&#x2F; 否则将默认的defaultStrat方法赋给strat</span><br><span class="line">    const strat &#x3D; strats[key] || defaultStrat</span><br><span class="line">    &#x2F;&#x2F; 合并属性</span><br><span class="line">    options[key] &#x3D; strat(parent[key], child[key], vm, key)</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 返回最终options对象</span><br><span class="line">  return options</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>尽管 mergeOptions 函数的实现有些复杂，但它的作用其实比较明确，就是 <strong>解决初始化的过程中对继承的类的options对象和新传入的options对象之间同名属性的冲突</strong> ，即使用继承的属性值还是新传入的属性值的问题。在代码的一开始官方就已说明它是一个递归函数，可以一并解决添加了扩展内容和使用了mixins的场景，总而言之，这个步骤就是确保我们初始化的实例的options对象正确唯一。</p>
+<p>代码中有几个标准化属性的函数，具体实现也在以上代码的同一文件中，虽然有一堆代码，但实现还是比较简单，主要目的就是把传入的options对象的各个属性格式化成基于对象的预定格式，在以后的运行中方便使用。</p>
+<p>hasOwn 函数是对 Object.prototype.hasOwnProperty 方法的一个包装，比较简单，需要了解的话就去util工具函数文件中查看。</p>
+<p>值得一提的是 strats 的使用。在代码的一开始的部分就定义 strats 变量，并说明它是用来处理父子选项合并属性的功能。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Option overwriting strategies are functions that handle</span><br><span class="line"> * how to merge a parent option value and a child option</span><br><span class="line"> * value into the final value.</span><br><span class="line"> *&#x2F;</span><br><span class="line">const strats &#x3D; config.optionMergeStrategies</span><br></pre></td></tr></table></figure>
+<p>对于 el 和 propsData 属性的合并策略赋予 <code>defaultStrat</code> 函数，该函数的原则是child对象属性优先，没有child对象属性则返回parent的对应属性。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Options with restrictions</span><br><span class="line"> *&#x2F;</span><br><span class="line">if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">  strats.el &#x3D; strats.propsData &#x3D; function (parent, child, vm, key) &#123;</span><br><span class="line">    if (!vm) &#123;</span><br><span class="line">      warn(</span><br><span class="line">        &#96;option &quot;$&#123;key&#125;&quot; can only be used during instance &#96; +</span><br><span class="line">        &#39;creation with the &#96;new&#96; keyword.&#39;</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    return defaultStrat(parent, child)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><code>data</code>、<code>watch</code>、<code>props</code>、<code>methods</code>、<code>inject</code>、<code>computed</code>、<code>provide</code>、各种钩子函数和<code>ASSET_TYPES</code>里包含的<code>component</code>、<code>directive</code>、<code>filter</code>三个属性都分别定义了相关的合并方法，有兴趣继续了解的同学可以在同一分文件中查看，代码太长但是实现比较基础，所以没什么好详说的，可以关注一下的是某些属性是替换覆盖，而某些属性是合并成数组如各种钩子的监听函数。</p>
+<h3 id="初始化内部组件时options的合并"><a href="#初始化内部组件时options的合并" class="headerlink" title="初始化内部组件时options的合并"></a>初始化内部组件时options的合并</h3><p>对于初始化合并options的操作分为了两个方向，一是创建内部组件时的合并，二是创建非内部组件实例时的合并，先来说说内部组件初始化的详细内容，在类的实现中对应着这一句代码 <code>initInternalComponent(vm, options)</code><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 输出initInternalComponent函数</span><br><span class="line">&#x2F;&#x2F; 接受Component类型的vm参数和InternalComponentOptions类型的options参数</span><br><span class="line">&#x2F;&#x2F; 这里vm和options分别是创建实例时将要传入的实例对象和配置对象</span><br><span class="line">export function initInternalComponent (vm: Component, options: InternalComponentOptions) &#123;</span><br><span class="line"> &#x2F;&#x2F; 定义opts，为opts和vm.$options创建以vm.constructor.options为原型的对象</span><br><span class="line"> const opts &#x3D; vm.$options &#x3D; Object.create(vm.constructor.options)</span><br><span class="line"> &#x2F;&#x2F; 以下为手动赋值，目的为了提升性能，因为比通过动态枚举属性来赋值的过程快</span><br><span class="line"> &#x2F;&#x2F; doing this because it&#39;s faster than dynamic enumeration.</span><br><span class="line"> &#x2F;&#x2F; 定义父虚拟节点parentVnode并赋值</span><br><span class="line"> const parentVnode &#x3D; options._parentVnode</span><br><span class="line"> &#x2F;&#x2F; 设置opts对象parent和_parentVnode属性</span><br><span class="line"> opts.parent &#x3D; options.parent</span><br><span class="line"> opts._parentVnode &#x3D; parentVnode</span><br><span class="line"></span><br><span class="line"> &#x2F;&#x2F; 定义vnodeComponentOptions并赋值</span><br><span class="line"> const vnodeComponentOptions &#x3D; parentVnode.componentOptions</span><br><span class="line"> &#x2F;&#x2F; 定义opts各属性</span><br><span class="line"> opts.propsData &#x3D; vnodeComponentOptions.propsData</span><br><span class="line"> opts._parentListeners &#x3D; vnodeComponentOptions.listeners</span><br><span class="line"> opts._renderChildren &#x3D; vnodeComponentOptions.children</span><br><span class="line"> opts._componentTag &#x3D; vnodeComponentOptions.tag</span><br><span class="line"></span><br><span class="line"> &#x2F;&#x2F; options.render属性存在，则设置opts的render和staticRenderFns属性</span><br><span class="line"> if (options.render) &#123;</span><br><span class="line">   opts.render &#x3D; options.render</span><br><span class="line">   opts.staticRenderFns &#x3D; options.staticRenderFns</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>可以看出 <code>initInternalComponent</code> 函数的内容比较简单，主要是为创建的内部组件的options对象手动赋值，提升性能，因为按照官方注释的说法是所有的内部组件的初始化都没有列外可以同样处理。至于什么时候会创建内部组件，这种场景目前还不太了解，能确定的是通常创建Vue实例来初始化视图页面的用法是非内部组件性质的。在这里留下一个疑问。</p>
+<h3 id="初始化实例时options的合并"><a href="#初始化实例时options的合并" class="headerlink" title="初始化实例时options的合并"></a>初始化实例时options的合并</h3><p>下面三个函数就是初始化实例合并options这条线时用到的方法，后两个函数作辅助用。对应如下带代码。主要是用来解决构造函数的默认配置选项和扩展选项之间的合并问题。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vm.$options &#x3D; mergeOptions(</span><br><span class="line">  resolveConstructorOptions(vm.constructor),</span><br><span class="line">  options || &#123;&#125;,</span><br><span class="line">  vm</span><br><span class="line">)</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 导出resolveConstructorOptions函数，接受Component构造函数Ctor参数</span><br><span class="line">export function resolveConstructorOptions (Ctor: Class&lt;Component&gt;) &#123;</span><br><span class="line">  &#x2F;&#x2F; 定义传入的构造函数的options属性</span><br><span class="line">  let options &#x3D; Ctor.options</span><br><span class="line">  &#x2F;&#x2F; 如果Ctor.super存在则执行下面代码，这里是用来判断实例对象是否有继承</span><br><span class="line">  &#x2F;&#x2F; 如果有的话递归的把继承的父级对象的options都拿出来合并</span><br><span class="line">  if (Ctor.super) &#123;</span><br><span class="line">    const superOptions &#x3D; resolveConstructorOptions(Ctor.super)</span><br><span class="line">    const cachedSuperOptions &#x3D; Ctor.superOptions</span><br><span class="line">    if (superOptions !&#x3D;&#x3D; cachedSuperOptions) &#123;</span><br><span class="line">      &#x2F;&#x2F; 如果父级的option变化了则要更新</span><br><span class="line">      &#x2F;&#x2F; super option changed,</span><br><span class="line">      &#x2F;&#x2F; need to resolve new options.</span><br><span class="line">      Ctor.superOptions &#x3D; superOptions</span><br><span class="line">      &#x2F;&#x2F; 检查是否有任何后期修改&#x2F;附加选项，这是为了解决之前误删注入选项的问题</span><br><span class="line">      &#x2F;&#x2F; check if there are any late-modified&#x2F;attached options (#4976)</span><br><span class="line">      const modifiedOptions &#x3D; resolveModifiedOptions(Ctor)</span><br><span class="line">      &#x2F;&#x2F; 如果返回有修改的选项，则扩展Ctor.extendOptions</span><br><span class="line">      &#x2F;&#x2F; update base extend options</span><br><span class="line">      if (modifiedOptions) &#123;</span><br><span class="line">        extend(Ctor.extendOptions, modifiedOptions)</span><br><span class="line">      &#125;</span><br><span class="line">      &#x2F;&#x2F; 合并继承选项和扩展选项</span><br><span class="line">      options &#x3D; Ctor.options &#x3D; mergeOptions(superOptions, Ctor.extendOptions)</span><br><span class="line">      &#x2F;&#x2F; 设置options.components[options.name]的引用</span><br><span class="line">      if (options.name) &#123;</span><br><span class="line">        options.components[options.name] &#x3D; Ctor</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 返回options</span><br><span class="line">  return options</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 以下两个函数是为了解决#4976问题的方案</span><br><span class="line">&#x2F;&#x2F; 定义resolveModifiedOptions函数，接受Ctor参数，返回Object</span><br><span class="line">function resolveModifiedOptions (Ctor: Class&lt;Component&gt;): ?Object &#123;</span><br><span class="line">  &#x2F;&#x2F; 定义modified变量储存最终要选择保留的属性</span><br><span class="line">  let modified</span><br><span class="line">  &#x2F;&#x2F; 分别定义最新、扩展和密封的配置选项</span><br><span class="line">  const latest &#x3D; Ctor.options</span><br><span class="line">  const extended &#x3D; Ctor.extendOptions</span><br><span class="line">  const sealed &#x3D; Ctor.sealedOptions</span><br><span class="line">  &#x2F;&#x2F; 遍历传入的配置选项对象</span><br><span class="line">  for (const key in latest) &#123;</span><br><span class="line">    &#x2F;&#x2F; 如果最新的属性与密封的属性不相等，则执行去重处理</span><br><span class="line">    if (latest[key] !&#x3D;&#x3D; sealed[key]) &#123;</span><br><span class="line">      if (!modified) modified &#x3D; &#123;&#125;</span><br><span class="line">      modified[key] &#x3D; dedupe(latest[key], extended[key], sealed[key])</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 返回modified</span><br><span class="line">  return modified</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 定义dedupe函数，接收latest最新对象，extended扩展对象，sealed密封对象</span><br><span class="line">function dedupe (latest, extended, sealed) &#123;</span><br><span class="line">  &#x2F;&#x2F; 合并选项的时候比较最新和密封的属性，确保生命周期钩子不重复</span><br><span class="line">  &#x2F;&#x2F; compare latest and sealed to ensure lifecycle hooks won&#39;t be duplicated</span><br><span class="line">  &#x2F;&#x2F; between merges</span><br><span class="line">  &#x2F;&#x2F; 如果latest是数组</span><br><span class="line">  if (Array.isArray(latest)) &#123;</span><br><span class="line">    &#x2F;&#x2F; 定义res变量</span><br><span class="line">    const res &#x3D; []</span><br><span class="line">    &#x2F;&#x2F; 格式化sealed和extended为数组对象</span><br><span class="line">    sealed &#x3D; Array.isArray(sealed) ? sealed : [sealed]</span><br><span class="line">    extended &#x3D; Array.isArray(extended) ? extended : [extended]</span><br><span class="line">    for (let i &#x3D; 0; i &lt; latest.length; i++) &#123;</span><br><span class="line">      &#x2F;&#x2F; 返回扩展的选项中存在的最新对象的属性而非密封选项以排除重复选项</span><br><span class="line">      &#x2F;&#x2F; push original options and not sealed options to exclude duplicated options</span><br><span class="line">      if (extended.indexOf(latest[i]) &gt;&#x3D; 0 || sealed.indexOf(latest[i]) &lt; 0) &#123;</span><br><span class="line">        res.push(latest[i])</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 返回包含了扩展选项的数组变量</span><br><span class="line">    return res</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    &#x2F;&#x2F; 否则直接返回latest</span><br><span class="line">    return latest</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>使用 <code>resolveConstructorOptions</code> 函数解决了继承的构造函数的选项之后，新创建的实例vm的$options对象就是继承选项和创建时传入的options选项的合并。其中虽然有很多复杂的递归调用，但是这些函数的目的都是为了确定最终的选项，理解这个目的非常重要。</p>
+<p>初始化函数的执行不仅在于开始生命周期的运行，对于options对象的各个属性值如何取舍的问题给出了非常复杂但健全的解决方法，这为生命周期正常运行铺垫了非常坚实的基础，有了清晰的options选项，之后的功能才能如期顺利执行。在这里也可以看出Vue处理各种属性的合并原则，对此有良好的理解可以确保在使用时立即定位遇到的相关问题。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FrontEnd/" rel="tag"># FrontEnd</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/12/frontend/front-end-code-checklist/" rel="prev" title="前端代码审查清单">
+      <i class="fa fa-chevron-left"></i> 前端代码审查清单
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/13/frontend/vue-init-global-api-1/" rel="next" title="Vue刨根问底-初始化全局API（一）">
+      Vue刨根问底-初始化全局API（一） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#头部引用"><span class="nav-number">1.</span> <span class="nav-text">头部引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#辅助函数extend"><span class="nav-number">2.</span> <span class="nav-text">辅助函数extend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#辅助函数mergeOptions"><span class="nav-number">3.</span> <span class="nav-text">辅助函数mergeOptions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化内部组件时options的合并"><span class="nav-number">4.</span> <span class="nav-text">初始化内部组件时options的合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化实例时options的合并"><span class="nav-number">5.</span> <span class="nav-text">初始化实例时options的合并</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

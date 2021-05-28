@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="1. webpack简介webpack 是一个模块打包工具。它使得模块相互依赖并且可构建等价于这些模块的静态资源。相比于已经存在的模块打包器（module bundler），webpack的开发动机是实现代码分包（Code Splitting ）和通过模块化完成代码的无缝集成。webpack可以根据项目需求合并代码，并且支持按需加载。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webpack 常用配置">
+<meta property="og:url" content="https://themis.hirgb.com/2017/06/22/note/note-webpack-common-config/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="1. webpack简介webpack 是一个模块打包工具。它使得模块相互依赖并且可构建等价于这些模块的静态资源。相比于已经存在的模块打包器（module bundler），webpack的开发动机是实现代码分包（Code Splitting ）和通过模块化完成代码的无缝集成。webpack可以根据项目需求合并代码，并且支持按需加载。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-06-22T19:09:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.365Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta property="article:tag" content="webpack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2017/06/22/note/note-webpack-common-config/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Webpack 常用配置 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2017/06/22/note/note-webpack-common-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Webpack 常用配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-22 19:09:00" itemprop="dateCreated datePublished" datetime="2017-06-22T19:09:00Z">2017-06-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tools/" itemprop="url" rel="index"><span itemprop="name">tools</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-webpack简介"><a href="#1-webpack简介" class="headerlink" title="1. webpack简介"></a>1. webpack简介</h2><p>webpack 是一个模块打包工具。它使得模块相互依赖并且可构建等价于这些模块的静态资源。相比于已经存在的模块打包器（module bundler），webpack的开发动机是实现代码分包（Code Splitting ）和通过模块化完成代码的无缝集成。webpack可以根据项目需求合并代码，并且支持按需加载。<br><a id="more"></a></p>
+<p>webpack的实现目标是：</p>
+<ul>
+<li>拆分依赖树（dependency tree）为多个按需加载的chunk</li>
+<li>保证快速首屏加载</li>
+<li>每种静态资源都可成为模块</li>
+<li>能够将第三方库视作一个模块来处理</li>
+<li>能够定制模块打包器的几乎任何部分</li>
+<li>适合大型项目</li>
+</ul>
+<h2 id="2-webpack基本使用"><a href="#2-webpack基本使用" class="headerlink" title="2. webpack基本使用"></a>2. webpack基本使用</h2><p>安装webpack之前，请确认node已经安装完毕，且npm包管理器可用。</p>
+<h3 id="2-1-全局安装webpack"><a href="#2-1-全局安装webpack" class="headerlink" title="2.1 全局安装webpack"></a>2.1 全局安装webpack</h3><p>npm install webpack -g</p>
+<h3 id="2-2-全局安装-webpack-dev-server"><a href="#2-2-全局安装-webpack-dev-server" class="headerlink" title="2.2 全局安装 webpack-dev-server"></a>2.2 全局安装 webpack-dev-server</h3><p>npm install webpack-dev-server -g</p>
+<h3 id="2-3-项目搭建"><a href="#2-3-项目搭建" class="headerlink" title="2.3 项目搭建"></a>2.3 项目搭建</h3><p>在项目的根目录下运行：</p>
+<p><code>npm install webpack</code></p>
+<p>在项目根目录下新建webpack.config.js。我们通过这个文件来处理控制webpack，给出我们想要的输出。</p>
+<p>webpack.config.js的简单的配置如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">context: __dirname + &#39;&#x2F;src&#39;,</span><br><span class="line">entry: &#39;.&#x2F;index&#x2F;index.js&#39;,</span><br><span class="line">output: &#123;</span><br><span class="line">path: __dirname + &#39;&#x2F;build&#39;,</span><br><span class="line">filename: &#39;bundle.js&#39;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-4-开发调试"><a href="#2-4-开发调试" class="headerlink" title="2.4 开发调试"></a>2.4 开发调试</h3><p>项目根目录运行：</p>
+<p><code>webpack-dev-server --progress --colors</code></p>
+<p>此时，访问： <span class="exturl" data-url="aHR0cDovL2xvY2FsaG9zdDo4MDgwL2luZGV4LmJ1bmRsZS5qcw==">http://localhost:8080/index.bundle.js<i class="fa fa-external-link-alt"></i></span> 即可访问到编译之后的js了。</p>
+<h3 id="2-5-产品发布"><a href="#2-5-产品发布" class="headerlink" title="2.5 产品发布"></a>2.5 产品发布</h3><p>通过webpack打包发布，运行：</p>
+<p>webpack -p</p>
+<p>按照我们上面的webpack.config.js文件的配置，打包成功之后会生成一个build文件夹，里面会包含打包好的js文件，集成了所有的依赖库和业务逻辑代码，我们只需将此build文件夹发布到线上即可。</p>
+<p>至此一个完整流程的webpack运行流程梳理完毕，当然webpack还有很多功能来实现我们开发中所遇到的各种变态需求，在第三章中我抽出了一些项目中常用的功能。</p>
+<h2 id="3-常用功能"><a href="#3-常用功能" class="headerlink" title="3. 常用功能"></a>3. 常用功能</h2><h3 id="3-1-设置入口"><a href="#3-1-设置入口" class="headerlink" title="3.1 设置入口"></a>3.1 设置入口</h3><p>配置那些js需要处理，entry有三种写法，每个入口称为一个chunk。</p>
+<h4 id="字符串："><a href="#字符串：" class="headerlink" title="字符串："></a>字符串：</h4><p>entry: &quot;./index/index.js&quot; ：配置模块会被解析为模块，并在启动时加载。chunk名为默认为main， 具体打包文件名视output配置而定。</p>
+<h4 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h4><p>entry: [&#39;./src/mod1.js&#39;, [...,] &#39;./src/index.js&#39;] ：所有的模块会在启动时 按照配置顺序 加载，合并到最后一个模块会被导出。chunk名默认为main</p>
+<h4 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h4><p>entry: {index: &#39;...&#39;, login : [...] }：如果传入Object，则会生成多个入口打包文件， key是chunk名，value可以是字符串，也可是数组。</p>
+<h5 id="例如"><a href="#例如" class="headerlink" title="例如"></a>例如</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">entry: &#123;</span><br><span class="line">index: &#39;.&#x2F;index&#x2F;index.js&#39;,</span><br><span class="line">login: [&#39;.&#x2F;mod&#x2F;mod1.js&#39;, &#39;.&#x2F;index&#x2F;login.js&#39;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-配置输出目录"><a href="#3-2-配置输出目录" class="headerlink" title="3.2 配置输出目录"></a>3.2 配置输出目录</h3><p>设置入口配置的文件的输出规则，通过output对象实现，常用设置：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">output: &#123;</span><br><span class="line">path: __dirname + &#39;&#x2F;build&#39;,</span><br><span class="line">filename: &#39;[name]-[id].js&#39;,</span><br><span class="line">publicPath: &#39;&#x2F;asstes&#x2F;&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>其中：</p>
+<ul>
+<li>output.path ：指定输出文件路径，通常设置为__dirname + ‘/build’,</li>
+<li>output.filename: 输出文件名称，有下面列出的四种可选的变量。 filename项的配置可以是这几种的任意一种或多种的组合。 如 output.filename = ‘[name]-[id].js’, 则输出就是 index-1.js、 login-2.js。</li>
+<li>[id], chunk的id</li>
+<li>[name] ,chunk名</li>
+<li>[hash], 编译哈希值</li>
+<li>[chunkhash] , chunk的hash值</li>
+<li>output.publicPath：设置为想要的资源访问路径。访问时，则需要通过类似<span class="exturl" data-url="aHR0cDovL2xvY2FsaG9zdDo4MDgwL2Fzc3Rlcy9pbmRleC0xLmpz5p2l6K6/6Zeu6LWE5rqQ77yM5aaC5p6c5rKh5pyJ6K6+572u77yM5YiZ6buY6K6k5LuO56uZ54K55qC555uu5b2V5Yqg6L2944CC">http://localhost:8080/asstes/index-1.js来访问资源，如果没有设置，则默认从站点根目录加载。<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<h3 id="3-3-设置loader"><a href="#3-3-设置loader" class="headerlink" title="3.3 设置loader"></a>3.3 设置loader</h3><p>loader是webpack中比较重要的部分，她是处理各类资源的执行者。它们是一系列的函数（运行在node.js中），将资源中的代码作为参数，然后返回新的代码。你可以用loader告诉webpack可以加载哪些文件，或者不加载哪些文件。</p>
+<h4 id="Loader的特点"><a href="#Loader的特点" class="headerlink" title="Loader的特点"></a>Loader的特点</h4><ul>
+<li>可以链式执行。它们在一个管道中被提交，只需要保证最后的loader返回JavaScript即可，其他loader可以返回任意方便下一个loader处理的内容。</li>
+<li>可以异步or同步执行</li>
+<li>运行在Node.js中，可以做几乎任何事儿</li>
+<li>可以接收query参数，用于向loader传递参数</li>
+<li>配置中可与正则/扩展结合使用</li>
+<li>可以在npm中发布并使用</li>
+<li>除了main,其他模块可以导出成loader</li>
+<li>可以通过配置调入</li>
+<li>和插件（plugins）配合可获得更多功能</li>
+<li>可生成其他格式文件</li>
+</ul>
+<h5 id="安装loader"><a href="#安装loader" class="headerlink" title="安装loader"></a>安装loader</h5><p>npm install xxx-loader --save</p>
+<p>或者</p>
+<p>npm install xxx-loader --save-dev</p>
+<p>其中，XXX为webpack支持的loader名，常用的有：html、css、jsx、coffee、jade、less、sass、style等。<br>你可以通过webpack loader 列表 查看所有支持的loader。当然你可以自己根据需求创建并发布loader。</p>
+<h5 id="配置loader"><a href="#配置loader" class="headerlink" title="配置loader"></a>配置loader</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">modules: &#123;</span><br><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.js$&#x2F;, &#x2F;&#x2F;匹配希望处理文件的路径</span><br><span class="line">exclude: &#x2F;node_modules&#x2F;, &#x2F;&#x2F; 匹配不希望处理文件的路径</span><br><span class="line">loaders: &#39;xxx-loader?a&#x3D;x&amp;b&#x3D;y&#39; &#x2F;&#x2F;此处xxx-loader 可以简写成xxx , ？后以query方式传递给loader参数</span><br><span class="line">&#125;,</span><br><span class="line">...</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>多loader调用示例:</p>
+<p>在js中，如果要直接解析某个文件，你可以采用：</p>
+<p>require(&#39;jade!./index.jade&#39;)</p>
+<p>如果要解析css，并内联之，需要使用到分隔符 !</p>
+<p>require(!style!css!./style.css)</p>
+<p>同理，如果要解析less， 转换成css之后，再内联之，写法如：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">require(&#39;!style!css!less!.&#x2F;style.less!&#39;) ; &#x2F;&#x2F; 此语句的含义是，先调用less-loader解析style.less文件，输出结果会被css-loader处理, 然后再被style-loader处理</span><br></pre></td></tr></table></figure><br>同理，在webpack.config.jsp配置文件中，只需要制定处理的loader序列：<br>即：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.less$&#x2F;,</span><br><span class="line">loader: &quot;style!css!less&quot;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">...</span><br></pre></td></tr></table></figure><br>本章会介绍比较常用的loader的配置方法。</p>
+<h4 id="3-3-1-解析并抽取css"><a href="#3-3-1-解析并抽取css" class="headerlink" title="3.3.1 解析并抽取css"></a>3.3.1 解析并抽取css</h4><p>在webpack中css默认方案是，将css编译并通过内联的方式在html页面中插入<code>&lt;style&gt;</code>样式标签。当然这远远不能满足我们的要求，webpack提供css-loader模块用于编译css文件，并且提供了插件extract-text-webpack-plugin将css从js代码中抽出并合并。你可以访问此处,查看文档和例子。</p>
+<p>这样你可以在模块中，尽情使用 require(style.css), webpack会帮你做解析，合并entry中定义js及其依赖中所用到的所有css，然后生成一个指定的css文件。</p>
+<p>配置如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var ExtractTextPlugin &#x3D; require(&#39;extract-text-webpack-plugin&#39;);</span><br><span class="line">...</span><br><span class="line">module: &#123;</span><br><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.css$&#x2F;,</span><br><span class="line">loader: ExtractTextPlugin.extract(</span><br><span class="line">&quot;style-loader&quot;,****</span><br><span class="line">&quot;css-loader?sourceMap&quot;</span><br><span class="line">)</span><br><span class="line">&#125;, &#123;</span><br><span class="line">test: &#x2F;\.less$&#x2F;,</span><br><span class="line">loader: ExtractTextPlugin.extract(&quot;style-loader&quot;, &quot;css-loader!less-loader&quot;)</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">&#125;,</span><br><span class="line">plugins: [</span><br><span class="line">new ExtractTextPlugin(&quot;css&#x2F;[name].css?[hash]-[chunkhash]-[contenthash]-[name]&quot;, &#123;</span><br><span class="line">disable: false,</span><br><span class="line">allChunks: true</span><br><span class="line">&#125;)</span><br><span class="line">]</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h4 id="3-3-2-处理图片、字体等文件"><a href="#3-3-2-处理图片、字体等文件" class="headerlink" title="3.3.2 处理图片、字体等文件"></a>3.3.2 处理图片、字体等文件</h4><p>在css中或者js逻辑中，都会涉及到require图片的情况，webpack可以内联图片地址到打包js中并且通过require()返回图片路径。当然，不只是图片，还有css中用到的iconfont，特殊情况用到的flash等，都可以相似处理。这里，我们需要用到url-loader 或 file-loader。</p>
+<p>file-loader: 将匹配到的文件复制到输出文件夹，并根据output.publicPath的设置返回文件路径<br>url-loader: 类似file-loader ,但是它可以返回一个DataUrl (base 64)如果文件小于设置的限制值limit。<br>同样，这之前，你需要实现配置相关loader。</p>
+<h5 id="安装url-loader-和-file-loader"><a href="#安装url-loader-和-file-loader" class="headerlink" title="安装url-loader 和 file-loader:"></a>安装url-loader 和 file-loader:</h5><p><code>npm install url-loader file-loader --save</code></p>
+<p>配置：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">module:&#123;</span><br><span class="line">loaders:[</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.(png|jpg)$&#x2F;,</span><br><span class="line">loader: &#39;url-loader?limit&#x3D;8192&#39; &#x2F;&#x2F;  &lt;&#x3D; 8kb的图片base64内联</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.woff(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10000&amp;minetype&#x3D;application&#x2F;font-woff&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.woff2(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10&amp;minetype&#x3D;application&#x2F;font-woff&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.ttf(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10&amp;minetype&#x3D;application&#x2F;octet-stream&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.eot(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;file&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.svg(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10&amp;minetype&#x3D;image&#x2F;svg+xml&#39;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>通过向url-loader传递参数，如果图片小于8kb，则base64内联，大于8kb，则通过output.publishPath配置的前缀将图片路径写入代码，并提取图片到输出目录。</p>
+<h4 id="3-3-3-解析JSX"><a href="#3-3-3-解析JSX" class="headerlink" title="3.3.3 解析JSX"></a>3.3.3 解析JSX</h4><p>在React项目中，需要解析JSX和相关JavaScript文件，需要下载loader：</p>
+<p>npm install react-hot-loader jsx-loader --save</p>
+<p>同样，配置loader:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.js$&#x2F;,</span><br><span class="line">exclude: &#x2F;node_modules&#x2F;,</span><br><span class="line">loader: &#39;react-hot!jsx-loader?harmony&#39;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h4 id="3-3-4解析VUE"><a href="#3-3-4解析VUE" class="headerlink" title="3.3.4解析VUE"></a>3.3.4解析VUE</h4><p>和React项目类似，如果要解析VUE框架编写的.vue文件，需要下载laoder:</p>
+<p>npm install vue-loader --save</p>
+<p>配置loader:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.vue$&#x2F;,</span><br><span class="line">loader: &#39;vue-loader&#39;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure><br>但需要注意的是，如果你的代码中用到了如jade，less等其他语法，可能需要提前下载相应loader到本地。vue-loader的介绍可以查看： vue-loader</p>
+<h4 id="3-3-5-解析ES6语法"><a href="#3-3-5-解析ES6语法" class="headerlink" title="3.3.5 解析ES6语法"></a>3.3.5 解析ES6语法</h4><p>babel可以让我们在编写代码的时候，使用更高级的ECMAScript6的语法。然后我们编写的JS文件可以被编译成可被低版本浏览器处理的常规代码。</p>
+<p>使用方法</p>
+<p>安装loader:</p>
+<p>npm install babel-loader --save</p>
+<p>配置loader:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.js$&#x2F;,</span><br><span class="line">exclude: &#x2F;node_modules&#x2F;,</span><br><span class="line">loader: &#39;babel&#39;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure><br>例如:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const a &#x3D; 1;</span><br><span class="line">console.log(a);</span><br><span class="line">if (true) &#123;</span><br><span class="line">let a &#x3D; 3;</span><br><span class="line">console.log(a);</span><br><span class="line">&#125;</span><br><span class="line">console.log(a);</span><br></pre></td></tr></table></figure><br>解析为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var a &#x3D; 1;</span><br><span class="line">console.log(a);</span><br><span class="line">if (true) &#123;</span><br><span class="line">var _a &#x3D; 3;</span><br><span class="line">console.log(_a);</span><br><span class="line">&#125;</span><br><span class="line">console.log(a);</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-4-其他"><a href="#3-4-其他" class="headerlink" title="3.4 其他"></a>3.4 其他</h3><h4 id="3-4-1-借助web-modules引用外部库"><a href="#3-4-1-借助web-modules引用外部库" class="headerlink" title="3.4.1 借助web_modules引用外部库"></a>3.4.1 借助web_modules引用外部库</h4><p>有些时候，我们用到的第三方库并没有采用CommonJS或AMD规范，也没有提交到npm。这样的话，我们无法通过npm来下载，并通过require()来引用这些库。</p>
+<p>webpack给我们提供了一个很好的实现方式。我们可以在项目根目录下，创建一个叫做web_modules的文件夹，然后将需要用到的第三方库存放在此处。那么之后，不需要做任何设置，可以在我们的逻辑代码中使用require(<br>‘xx-lib.js’)并且使用了。</p>
+<p>文件组织如下：</p>
+<p>此时，我们就可以在业务逻辑中，大胆地使用web_modules中配置的库了，打包的时候，webpack会自动将web_modules中被用到的库封装。</p>
+<p><strong>例如：</strong></p>
+<p>var director = require(&#39;director&#39;)<br>var Router = director.Router();<br>...</p>
+<h4 id="3-4-2-去除多个文件中的频繁依赖"><a href="#3-4-2-去除多个文件中的频繁依赖" class="headerlink" title="3.4.2 去除多个文件中的频繁依赖"></a>3.4.2 去除多个文件中的频繁依赖</h4><p>当我们经常使用React、jQuery等外部第三方库的时候，通常在每个业务逻辑JS中都会遇到这些库。<br>如我们需要在各个文件中都是有jQuery的$对象，因此我们需要在每个用到jQuery的JS文件的头部通过require(&#39;jquery&#39;)来依赖jQuery。 这样做非常繁琐且重复，因此webpack提供了我们一种比较高效的方法，我们可以通过在配置文件中配置使用到的变量名，那么webpack会自动分析，并且在编译时帮我们完成这些依赖的引入。</p>
+<p>webpack.config.js中：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var webpack &#x3D; require(&#39;webpack&#39;);</span><br><span class="line">...</span><br><span class="line">plugins: [</span><br><span class="line">new webpack.ProvidePlugin(&#123;</span><br><span class="line">&#39;Moment&#39;: &#39;moment&#39;,</span><br><span class="line">&quot;$&quot;: &quot;jquery&quot;,</span><br><span class="line">&quot;jQuery&quot;: &quot;jquery&quot;,</span><br><span class="line">&quot;window.jQuery&quot;: &quot;jquery&quot;,</span><br><span class="line">&quot;React&quot;: &quot;react&quot;</span><br><span class="line">&#125;)</span><br><span class="line">]</span><br><span class="line">...</span><br></pre></td></tr></table></figure><br>这样，我们在JS中，就不需要引入jQuery等常用模块了，直接使用配置的这些变量，webpack就会自动引入配置的库。</p>
+<h4 id="3-4-3-开发环境与发布环境配置"><a href="#3-4-3-开发环境与发布环境配置" class="headerlink" title="3.4.3 开发环境与发布环境配置"></a>3.4.3 开发环境与发布环境配置</h4><p>某些情况，我们需要在页面中输出开发调试内容，但是又不想让这些调试内容在发布的时候泄露出去，那么我们可以采用魔力变量(magic globals)来处理。</p>
+<p>配置文件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var webpack &#x3D; require(&#39;webpack&#39;);</span><br><span class="line">var definePlugin &#x3D; new webpack.DefinePlugin(&#123;</span><br><span class="line">__DEV__: JSON.stringify(JSON.parse(process.env.BUILD_DEV || &#39;false&#39;)),</span><br><span class="line">__PRERELEASE__: JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || &#39;true&#39;))</span><br><span class="line">&#125;);</span><br><span class="line">...</span><br><span class="line">plugins: [</span><br><span class="line">definePlugin</span><br><span class="line">]</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h5 id="业务逻辑代码中写入"><a href="#业务逻辑代码中写入" class="headerlink" title="业务逻辑代码中写入"></a>业务逻辑代码中写入</h5><p>按照下面的代码写入，我们就可以在我们自己设定的环境下进行更具针对性的调试。比如我们希望在开发环境下可以AJAX可以调试本地mock数据，然后在发布的时候，可以正常访问服务端数据。那么通过此种方式可以完全实现。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (__DEV__) &#123;</span><br><span class="line">console.warn(&#39;Extra logging&#39;);</span><br><span class="line">&#x2F;&#x2F;开发环境需要进行的处理</span><br><span class="line">&#x2F;&#x2F;...</span><br><span class="line">&#125;</span><br><span class="line">if (__PRERELEASE__) &#123;</span><br><span class="line">console.log(&#39;prerelease&#39;);</span><br><span class="line">&#x2F;&#x2F;预发环境需要进行的处理</span><br><span class="line">&#x2F;&#x2F;...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="设置环境命令"><a href="#设置环境命令" class="headerlink" title="设置环境命令"></a>设置环境命令</h5><p>要告诉webpack我们希望当前是什么环境，只需要在命令中写入 BUILD<em>DEV=1 webpck 那么webpack通过配置，就会将所有我们引用到的<em>_DEV</em></em>变量设置为true。</p>
+<p>我们可以在package.json中事先定义好命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">&quot;dev&quot;: &quot;BUILD_DEV&#x3D;1 webpack-dev-server --progress --colors&quot;,</span><br><span class="line">&quot;build&quot;: &quot;BUILD_PRERELEASE&#x3D;1 webpack -p&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>那么就可以避免输入冗长的命令了：</p>
+<p>开发时输入：</p>
+<p>npm run dev</p>
+<p>发布时输入:</p>
+<p>npm run build</p>
+<h4 id="3-4-5-合并公共代码"><a href="#3-4-5-合并公共代码" class="headerlink" title="3.4.5 合并公共代码"></a>3.4.5 合并公共代码</h4><p>项目中，对于一些常用的组件，站点公用模块经常需要与其他逻辑分开，然后合并到同一个文件，以便于长时间的缓存。要实现这一功能，配置参照:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var webpack &#x3D; require(&#39;webpack&#39;);</span><br><span class="line">var CommonsChunkPlugin &#x3D; webpack.optimize.CommonsChunkPlugin;</span><br><span class="line">...</span><br><span class="line">entry: &#123;</span><br><span class="line">a: &#39;.&#x2F;index&#x2F;a.js&#39;,</span><br><span class="line">b: &#39;.&#x2F;idnex&#x2F;b.js&#39;,</span><br><span class="line">c: &#39;.&#x2F;index&#x2F;c.js&#39;,</span><br><span class="line">d: &#39;.&#x2F;index&#x2F;d.js&#39;</span><br><span class="line">&#125;,</span><br><span class="line">...</span><br><span class="line">plugins: [</span><br><span class="line">new CommonsChunkPlugin(&#39;part1.js&#39;, [&#39;a&#39;, &#39;b&#39;]),</span><br><span class="line">new CommonsChunkPlugin(&#39;common.js&#39;, [&#39;part1&#39;, &#39;c&#39;])</span><br><span class="line">]</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-使用devtool调试"><a href="#4-使用devtool调试" class="headerlink" title="4 使用devtool调试"></a>4 使用devtool调试</h2><p>可以通过在配置中加入devtool项，选择预设调试工具来提高代码调试质量和效率：</p>
+<ul>
+<li>eval – 每个模块采用eval和 //@ sourceURL 来执行</li>
+<li>source-map – sourceMap是发散的，和output.sourceMapFilename协调使用</li>
+<li>hidden-source-map – 和source-map类似，但是不会添加一个打包文件的尾部添加引用注释</li>
+<li>inline-source-map – SourceMap以DataUrl的方式插入打包文件的尾部</li>
+<li>eval-source-map – 每个模块以eval方式执行并且SourceMap以DataUrl的方式添加进eval</li>
+<li>cheap-source-map – 去除column-mappings的SourceMap， 来自于loader中的内容不会被使用。</li>
+<li>cheap-module-source-map – 去除column-mappings的SourceMap, 来自于loader中的SourceMaps被简化为单个mapping文件</li>
+</ul>
+<p>各种模式的对比：</p>
+<ul>
+<li>devtool    构建速度    再次构建速度    支持发布版    质量</li>
+<li>eval    +++    +++    no    生成代码</li>
+<li>cheap-eval-source-map    +    ++    no    转换代码(lines only)</li>
+<li>cheap-source-map    +    o    yes    转换代码(lines only)</li>
+<li>cheap-module-eval-source-map    o    ++    no    源代码 (lines only)</li>
+<li>cheap-module-source-map    o    –    yes    源代码(lines only)</li>
+<li>eval-source-map    —    +    no    源代码</li>
+<li>source-map    —    —    yes    源代码<h2 id="5-一个常用的配置"><a href="#5-一个常用的配置" class="headerlink" title="5. 一个常用的配置"></a>5. 一个常用的配置</h2>为了方便大家摘取，和补全文章中用于示例的代码片段，特将配置文件整理如下，作参考：</li>
+</ul>
+<p>配置文件:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var webpack &#x3D; require(&#39;webpack&#39;);</span><br><span class="line">var CommonsChunkPlugin &#x3D; webpack.optimize.CommonsChunkPlugin;</span><br><span class="line">var ExtractTextPlugin &#x3D; require(&#39;extract-text-webpack-plugin&#39;);</span><br><span class="line">&#x2F;&#x2F;自定义&quot;魔力&quot;变量</span><br><span class="line">var definePlugin &#x3D; new webpack.DefinePlugin(&#123;</span><br><span class="line">__DEV__: JSON.stringify(JSON.parse(process.env.BUILD_DEV || &#39;false&#39;)),</span><br><span class="line">__PRERELEASE__: JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || &#39;false&#39;))</span><br><span class="line">&#125;);</span><br><span class="line">module.exports &#x3D; &#123;</span><br><span class="line">&#x2F;&#x2F;上下文</span><br><span class="line">context: __dirname + &#39;&#x2F;src&#39;,</span><br><span class="line">&#x2F;&#x2F;配置入口</span><br><span class="line">entry: &#123;</span><br><span class="line">a: &#39;.&#x2F;view&#x2F;index&#x2F;index.js&#39;,</span><br><span class="line">b: &#39;.&#x2F;view&#x2F;index&#x2F;b.js&#39;,</span><br><span class="line">vender: [&#39;.&#x2F;view&#x2F;index&#x2F;c.js&#39;, &#39;.&#x2F;view&#x2F;index&#x2F;d.js&#39;]</span><br><span class="line">&#125;,</span><br><span class="line">&#x2F;&#x2F;配置输出</span><br><span class="line">output: &#123;</span><br><span class="line">path: __dirname + &#39;&#x2F;build&#x2F;&#39;,</span><br><span class="line">filename: &#39;[name].js?[hash]&#39;,</span><br><span class="line">publicPath: &#39;&#x2F;assets&#x2F;&#39;,</span><br><span class="line">sourceMapFilename: &#39;[file].map&#39;</span><br><span class="line">&#125;,</span><br><span class="line">devtool: &#39;#source-map&#39;,</span><br><span class="line">&#x2F;&#x2F;模块</span><br><span class="line">module: &#123;</span><br><span class="line">loaders: [</span><br><span class="line">&#123;</span><br><span class="line">&#x2F;&#x2F;处理javascript</span><br><span class="line">test: &#x2F;\.js$&#x2F;,</span><br><span class="line">exclude: &#x2F;node_modules&#x2F;,</span><br><span class="line">loader: &#39;babel&#39;</span><br><span class="line">&#125;, &#123;</span><br><span class="line">test: &#x2F;\.css$&#x2F;,</span><br><span class="line">loader: ExtractTextPlugin.extract(</span><br><span class="line">&quot;style-loader&quot;,</span><br><span class="line">&quot;css-loader?sourceMap&quot;</span><br><span class="line">)</span><br><span class="line">&#125;, &#123;</span><br><span class="line">test: &#x2F;\.less$&#x2F;,</span><br><span class="line">loader: ExtractTextPlugin.extract(</span><br><span class="line">&quot;style-loader&quot;,</span><br><span class="line">&quot;css-loader!less-loader&quot;</span><br><span class="line">)</span><br><span class="line">&#125;, &#123;</span><br><span class="line">test: &#x2F;\.(png|jpg)$&#x2F;,</span><br><span class="line">loader: &#39;url-loader?limit&#x3D;1024&#39;</span><br><span class="line">&#125;, &#123;</span><br><span class="line">&#x2F;&#x2F;处理vue</span><br><span class="line">test: &#x2F;\.vue$&#x2F;,</span><br><span class="line">loader: &#39;vue-loader&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.woff(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10000&amp;minetype&#x3D;application&#x2F;font-woff&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.woff2(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10&amp;minetype&#x3D;application&#x2F;font-woff&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.ttf(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10&amp;minetype&#x3D;application&#x2F;octet-stream&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.eot(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;file&#39;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">test: &#x2F;\.svg(\?v&#x3D;\d+\.\d+\.\d+)?$&#x2F;,</span><br><span class="line">loader: &#39;url?limit&#x3D;10&amp;minetype&#x3D;image&#x2F;svg+xml&#39;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">&#125;,</span><br><span class="line">plugins: [</span><br><span class="line">&#x2F;&#x2F;公用模块</span><br><span class="line">new CommonsChunkPlugin(&#39;common.js&#39;, [&#39;a&#39;, &#39;b&#39;]),</span><br><span class="line">&#x2F;&#x2F;设置抽出css文件名</span><br><span class="line">new ExtractTextPlugin(&quot;css&#x2F;[name].css?[hash]-[chunkhash]-[contenthash]-[name]&quot;, &#123;</span><br><span class="line">disable: false,</span><br><span class="line">allChunks: true</span><br><span class="line">&#125;),</span><br><span class="line">&#x2F;&#x2F;定义全局变量</span><br><span class="line">definePlugin,</span><br><span class="line">&#x2F;&#x2F;设置此处，则在JS中不用类似require(&#39;.&#x2F;base&#39;)引入基础模块， 只要直接使用Base变量即可</span><br><span class="line">&#x2F;&#x2F;此处通常可用做，对常用组件，库的提前设置</span><br><span class="line">new webpack.ProvidePlugin(&#123;</span><br><span class="line">Moment: &#39;moment&#39;, &#x2F;&#x2F;直接从node_modules中获取</span><br><span class="line">Base: &#39;..&#x2F;..&#x2F;base&#x2F;index.js&#39; &#x2F;&#x2F;从文件中获取</span><br><span class="line">&#125;)</span><br><span class="line">],</span><br><span class="line">&#x2F;&#x2F;添加了此项，则表明从外部引入，内部不会打包合并进去</span><br><span class="line">externals: &#123;</span><br><span class="line">jquery: &#39;window.jQuery&#39;,</span><br><span class="line">react: &#39;window.React&#39;,</span><br><span class="line">&#x2F;&#x2F;...</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+              <a href="/tags/webpack/" rel="tag"># webpack</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/12/22/note/note-es6-promise/" rel="prev" title="ES6 Promise">
+      <i class="fa fa-chevron-left"></i> ES6 Promise
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/22/note/note-yarn-common-commands/" rel="next" title="Yarn 常用命令">
+      Yarn 常用命令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-webpack简介"><span class="nav-number">1.</span> <span class="nav-text">1. webpack简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-webpack基本使用"><span class="nav-number">2.</span> <span class="nav-text">2. webpack基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-全局安装webpack"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 全局安装webpack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-全局安装-webpack-dev-server"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 全局安装 webpack-dev-server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-项目搭建"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 项目搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-开发调试"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 开发调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-产品发布"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 产品发布</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-常用功能"><span class="nav-number">3.</span> <span class="nav-text">3. 常用功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-设置入口"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 设置入口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串："><span class="nav-number">3.1.1.</span> <span class="nav-text">字符串：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数组"><span class="nav-number">3.1.2.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象"><span class="nav-number">3.1.3.</span> <span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#例如"><span class="nav-number">3.1.3.1.</span> <span class="nav-text">例如</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-配置输出目录"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 配置输出目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-设置loader"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 设置loader</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Loader的特点"><span class="nav-number">3.3.1.</span> <span class="nav-text">Loader的特点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装loader"><span class="nav-number">3.3.1.1.</span> <span class="nav-text">安装loader</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置loader"><span class="nav-number">3.3.1.2.</span> <span class="nav-text">配置loader</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-1-解析并抽取css"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.3.1 解析并抽取css</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-2-处理图片、字体等文件"><span class="nav-number">3.3.3.</span> <span class="nav-text">3.3.2 处理图片、字体等文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装url-loader-和-file-loader"><span class="nav-number">3.3.3.1.</span> <span class="nav-text">安装url-loader 和 file-loader:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-3-解析JSX"><span class="nav-number">3.3.4.</span> <span class="nav-text">3.3.3 解析JSX</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-4解析VUE"><span class="nav-number">3.3.5.</span> <span class="nav-text">3.3.4解析VUE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-5-解析ES6语法"><span class="nav-number">3.3.6.</span> <span class="nav-text">3.3.5 解析ES6语法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-其他"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 其他</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-1-借助web-modules引用外部库"><span class="nav-number">3.4.1.</span> <span class="nav-text">3.4.1 借助web_modules引用外部库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-2-去除多个文件中的频繁依赖"><span class="nav-number">3.4.2.</span> <span class="nav-text">3.4.2 去除多个文件中的频繁依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-3-开发环境与发布环境配置"><span class="nav-number">3.4.3.</span> <span class="nav-text">3.4.3 开发环境与发布环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#业务逻辑代码中写入"><span class="nav-number">3.4.3.1.</span> <span class="nav-text">业务逻辑代码中写入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#设置环境命令"><span class="nav-number">3.4.3.2.</span> <span class="nav-text">设置环境命令</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-5-合并公共代码"><span class="nav-number">3.4.4.</span> <span class="nav-text">3.4.5 合并公共代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-使用devtool调试"><span class="nav-number">4.</span> <span class="nav-text">4 使用devtool调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-一个常用的配置"><span class="nav-number">5.</span> <span class="nav-text">5. 一个常用的配置</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

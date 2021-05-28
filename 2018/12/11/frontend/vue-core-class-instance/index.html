@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="几乎所有JS框架或插件的编写都有一个类似的模式，即向全局输出一个类或者说构造函数，通过创建实例来使用这个类的公开方法，或者使用类的静态全局方法辅助实现功能。相信精通Jquery或编写过Jquery插件的开发者会对这个模式非常熟悉。Vue.js也如出一辙。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue刨根问底-核心类的实现">
+<meta property="og:url" content="https://themis.hirgb.com/2018/12/11/frontend/vue-core-class-instance/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="几乎所有JS框架或插件的编写都有一个类似的模式，即向全局输出一个类或者说构造函数，通过创建实例来使用这个类的公开方法，或者使用类的静态全局方法辅助实现功能。相信精通Jquery或编写过Jquery插件的开发者会对这个模式非常熟悉。Vue.js也如出一辙。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-11T19:09:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="FrontEnd">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2018/12/11/frontend/vue-core-class-instance/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue刨根问底-核心类的实现 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2018/12/11/frontend/vue-core-class-instance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue刨根问底-核心类的实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-11 19:09:00" itemprop="dateCreated datePublished" datetime="2018-12-11T19:09:00Z">2018-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/Vue/" itemprop="url" rel="index"><span itemprop="name">Vue</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>几乎所有JS框架或插件的编写都有一个类似的模式，即向全局输出一个类或者说构造函数，通过创建实例来使用这个类的公开方法，或者使用类的静态全局方法辅助实现功能。相信精通Jquery或编写过Jquery插件的开发者会对这个模式非常熟悉。Vue.js也如出一辙。<br><a id="more"></a></p>
+<blockquote>
+<p>本篇源代码所在路径vue/src/core/instance/</p>
+</blockquote>
+<h3 id="核心类"><a href="#核心类" class="headerlink" title="核心类"></a>核心类</h3><p>Vue的核心类的构建文件，代码非常简单，就是一串定义构造函数的基础代码:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 定义Vue构造函数，形参options</span><br><span class="line">function Vue (options) &#123;</span><br><span class="line">  &#x2F;&#x2F; 安全性判断，如果不是生产环境且不是Vue的实例，在控制台输出警告</span><br><span class="line">  if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39; &amp;&amp; !(this instanceof Vue) &#123;</span><br><span class="line">    warn(&#39;Vue is a constructor and should be called with the &#96;new&#96; keyword&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">  &#x2F;&#x2F; 满足条件后执行初始化</span><br><span class="line">  this._init(options)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>但是Vue所有功能的实现，这只是一个开始：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 引入初始化混合函数</span><br><span class="line">import &#123; initMixin &#125; from &#39;.&#x2F;init&#39;</span><br><span class="line">&#x2F;&#x2F; 引入状态混合函数</span><br><span class="line">import &#123; stateMixin &#125; from &#39;.&#x2F;state&#39;</span><br><span class="line">&#x2F;&#x2F; 引入视图渲染混合函数</span><br><span class="line">import &#123; renderMixin &#125; from &#39;.&#x2F;render&#39;</span><br><span class="line">&#x2F;&#x2F; 引入事件混合函数</span><br><span class="line">import &#123; eventsMixin &#125; from &#39;.&#x2F;events&#39;</span><br><span class="line">&#x2F;&#x2F; 引入生命周期混合函数</span><br><span class="line">import &#123; lifecycleMixin &#125; from &#39;.&#x2F;lifecycle&#39;</span><br><span class="line">&#x2F;&#x2F; 引入warn控制台错误提示函数</span><br><span class="line">import &#123; warn &#125; from &#39;..&#x2F;util&#x2F;index&#39;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 挂载初始化方法</span><br><span class="line">initMixin(Vue)</span><br><span class="line">&#x2F;&#x2F; 挂载状态处理相关方法</span><br><span class="line">stateMixin(Vue)</span><br><span class="line">&#x2F;&#x2F; 挂载事件响应相关方法</span><br><span class="line">eventsMixin(Vue)</span><br><span class="line">&#x2F;&#x2F; 挂载生命周期相关方法</span><br><span class="line">lifecycleMixin(Vue)</span><br><span class="line">&#x2F;&#x2F; 挂载视图渲染方法</span><br><span class="line">renderMixin(Vue)</span><br></pre></td></tr></table></figure><br>在类构造文件的头部引入了同目录下5个文件中的混合函数（我认为这里只是为了要表示把一些方法混入到初始类中才统一用了Mixin的后缀，所以不要深究以为这是什么特殊的函数），分别是初始化 <code>initMixin</code> 、状态 <code>stateMixin</code> 、渲染 <code>renderMixin</code>、事件 <code>eventsMixin</code>、生命周期 <code>lifecycleMixin</code>。在文件尾部将这几个函数里包含的具体方法挂载到Vue原始类上。</p>
+<p>从各个细化模块，可以看出作者是如何进行逻辑架构分类的。这里又学到了一种模块开发的好方法，将类继承方法按模块独立编写，单独进行挂载实现了可插拔的便利性。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export default Vue</span><br></pre></td></tr></table></figure>
+<p>文件最后的经典代码。到此Vue的类构造完成！<br>就这样完成了么！且慢，来稍微看一下初始化混合函数初步做了些啥：</p>
+<h3 id="初始化的过程"><a href="#初始化的过程" class="headerlink" title="初始化的过程"></a>初始化的过程</h3><blockquote>
+<p>下面代码位于vue/src/core/instance/init.js</p>
+</blockquote>
+<p>最先为基础类挂载的方法就是_init()，这是唯一在类实例化的过程中执行的函数，位于整个函数栈的最底层，其他的功能将在此方法里初步分化。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 导出ininMixin函数，接收形参Vue，</span><br><span class="line">&#x2F;&#x2F; 使用Flow进行静态类型检查指定为Component类</span><br><span class="line">export function initMixin (Vue: Class&lt;Component&gt;) &#123;</span><br><span class="line">  &#x2F;&#x2F; 在Vue类的原型上挂载_init()方法</span><br><span class="line">  &#x2F;&#x2F; 接收类型为原始对象的options形参，此参数为非必选参数</span><br><span class="line">  Vue.prototype._init &#x3D; function (options?: Object) &#123;</span><br><span class="line">    &#x2F;&#x2F; 将实例对象赋值给vm变量</span><br><span class="line">    &#x2F;&#x2F; 这里会再次进行Component类型检查确保vm接收到的是Vue类的实例</span><br><span class="line">    const vm: Component &#x3D; this</span><br><span class="line">    &#x2F;&#x2F; 给实例对象vm定义_uid属性，作为vue实例的唯一标识ID</span><br><span class="line">    &#x2F;&#x2F; uid是在函数外定义的变量，从0开始增量赋值</span><br><span class="line">    &#x2F;&#x2F; a uid</span><br><span class="line">    vm._uid &#x3D; uid++</span><br><span class="line">    &#x2F;&#x2F; 定义startTag、endTag变量</span><br><span class="line">    let startTag, endTag</span><br><span class="line">    &#x2F;&#x2F; 注释的意思是代码覆盖率检测工具istanbul会忽略if分支</span><br><span class="line">    &#x2F;&#x2F; 因为下面代码是专为性能分析使用的，以后都不做分析</span><br><span class="line">    &#x2F;* istanbul ignore if *&#x2F;</span><br><span class="line">    &#x2F;&#x2F; 非生产环境且进行性能分析的时候执行以下代码</span><br><span class="line">    if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39; &amp;&amp; config.performance &amp;&amp; mark) &#123;</span><br><span class="line">      startTag &#x3D; &#96;vue-perf-start:$&#123;vm._uid&#125;&#96;</span><br><span class="line">      endTag &#x3D; &#96;vue-perf-end:$&#123;vm._uid&#125;&#96;</span><br><span class="line">      &#x2F;&#x2F; mark是进行性能分析的工具函数，目前可忽略</span><br><span class="line">      mark(startTag)</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 给vm设置一个_isVue属性作为标记，避免被观察</span><br><span class="line">    &#x2F;&#x2F; 猜想可能是之后观察者进行监视的时候会忽略掉有这个标记的对象</span><br><span class="line">    &#x2F;&#x2F; 具体原因待以后分析</span><br><span class="line">    &#x2F;&#x2F; a flag to avoid this being observed</span><br><span class="line">    vm._isVue &#x3D; true</span><br><span class="line">    &#x2F;&#x2F; 合并options对象</span><br><span class="line">    &#x2F;&#x2F; merge options</span><br><span class="line">    &#x2F;&#x2F; 如果是内部组件则执行初始化内部组件函数</span><br><span class="line">    &#x2F;&#x2F; 这里特意区分出内部定义的组件，是为了进行特别处理提升优化</span><br><span class="line">    if (options &amp;&amp; options._isComponent) &#123;</span><br><span class="line">      &#x2F;&#x2F; optimize internal component instantiation</span><br><span class="line">      &#x2F;&#x2F; since dynamic options merging is pretty slow, and none of the</span><br><span class="line">      &#x2F;&#x2F; internal component options needs special treatment.</span><br><span class="line">      initInternalComponent(vm, options)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; 否则执行合并options函数，并赋值给vm的公共属性</span><br><span class="line">      &#x2F;&#x2F; 在这里的合并函数主要是解决与继承自父类的配置对象的合并</span><br><span class="line">      vm.$options &#x3D; mergeOptions(</span><br><span class="line">        resolveConstructorOptions(vm.constructor),</span><br><span class="line">        options || &#123;&#125;,</span><br><span class="line">        vm</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; 忽略代码覆盖，在非生产环境初始化代理</span><br><span class="line">    &#x2F;* istanbul ignore else *&#x2F;</span><br><span class="line">    if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">      initProxy(vm)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      vm._renderProxy &#x3D; vm</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; expose real self</span><br><span class="line">    &#x2F;&#x2F; 暴露实例对象</span><br><span class="line">    vm._self &#x3D; vm</span><br><span class="line">    &#x2F;&#x2F; 初始化实例的生命周期相关属性</span><br><span class="line">    initLifecycle(vm)</span><br><span class="line">    &#x2F;&#x2F; 初始化事件相关属性和监听功能</span><br><span class="line">    initEvents(vm)</span><br><span class="line">    &#x2F;&#x2F; 初始化渲染相关属性和功能</span><br><span class="line">    initRender(vm)</span><br><span class="line">    &#x2F;&#x2F; 调用生命周期钩子函数beforeCreate</span><br><span class="line">    callHook(vm, &#39;beforeCreate&#39;)</span><br><span class="line">    &#x2F;&#x2F; 初始化父组件注入属性</span><br><span class="line">    initInjections(vm) &#x2F;&#x2F; resolve injections before data&#x2F;props</span><br><span class="line">    &#x2F;&#x2F; 初始化状态相关属性和功能</span><br><span class="line">    initState(vm)</span><br><span class="line">    &#x2F;&#x2F; 初始化子组件属性提供器</span><br><span class="line">    initProvide(vm) &#x2F;&#x2F; resolve provide after data&#x2F;props</span><br><span class="line">    &#x2F;&#x2F; 调用生命周期钩子函数created</span><br><span class="line">    callHook(vm, &#39;created&#39;)</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 性能检测代码</span><br><span class="line">    &#x2F;* istanbul ignore if *&#x2F;</span><br><span class="line">    if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39; &amp;&amp; config.performance &amp;&amp; mark) &#123;</span><br><span class="line">      vm._name &#x3D; formatComponentName(vm, false)</span><br><span class="line">      mark(endTag)</span><br><span class="line">      measure(&#96;vue $&#123;vm._name&#125; init&#96;, startTag, endTag)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 执行DOM元素挂载函数</span><br><span class="line">    if (vm.$options.el) &#123;</span><br><span class="line">      vm.$mount(vm.$options.el)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还记得在文件组织里分析的，<code>Component</code>类的的具体定义可参照这个文件。</p>
+<p>初始化函数内容不多，主要做了这么几件事：</p>
+<ul>
+<li>整理options配置对象</li>
+<li>开始进入Vue实例的生命周期进程，并在生命周期相应阶段初始化实例属性和方法</li>
+<li>将初始化好的对象挂载到Dom元素上，继续生命周期的运行</li>
+</ul>
+<p>这部分代码已经完整地展示出了将Vue实例对象挂载到DOM元素上并执行渲染的大半程生命周期的进程，在此之后就是视图的交互过程，直到实例对象被销毁。后半段代码清晰地呈现了生命周期中各个功能的初始化顺序，也就是那张著名的生命周期图示的对应代码。</p>
+<p>各个生命周期的初始化函数内容比较丰富，决定在另一个文档中做一个单独讨论《全局类初始化》</p>
+<p>虽然核心类的定义代码寥寥数行，但是在类初始化的过程中执行了非常多的其他功能的初始化，从这个基础的类的实现去一步步解开每一个更复杂的功能的实现可能会让学习者能逐步深入了解Vue的丰富内容，基于源代码一句句的解释虽然非常冗余，但是希望即便是基础不是特别扎实的同学也能看懂，认识到源码学习不再是大难题。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FrontEnd/" rel="tag"># FrontEnd</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/10/frontend/vue-source-file-organization/" rel="prev" title="Vue刨根问底-文件组织">
+      <i class="fa fa-chevron-left"></i> Vue刨根问底-文件组织
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/11/thinking/google-methodology-20181211/" rel="next" title="我们面临的世界和我们的对策（下）">
+      我们面临的世界和我们的对策（下） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#核心类"><span class="nav-number">1.</span> <span class="nav-text">核心类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化的过程"><span class="nav-number">2.</span> <span class="nav-text">初始化的过程</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

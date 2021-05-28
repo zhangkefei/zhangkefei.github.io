@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"themis.hirgb.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="话不多说，直接开始">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue刨根问底-初始化全局API（一）">
+<meta property="og:url" content="https://themis.hirgb.com/2018/12/13/frontend/vue-init-global-api-1/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="话不多说，直接开始">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-13T19:09:00.000Z">
+<meta property="article:modified_time" content="2021-05-28T23:10:40.357Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="FrontEnd">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://themis.hirgb.com/2018/12/13/frontend/vue-init-global-api-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue刨根问底-初始化全局API（一） | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">113</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">58</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://themis.hirgb.com/2018/12/13/frontend/vue-init-global-api-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue刨根问底-初始化全局API（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-13 19:09:00" itemprop="dateCreated datePublished" datetime="2018-12-13T19:09:00Z">2018-12-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 23:10:40" itemprop="dateModified" datetime="2021-05-28T23:10:40Z">2021-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/Vue/" itemprop="url" rel="index"><span itemprop="name">Vue</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>话不多说，直接开始<br><a id="more"></a></p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">initGlobalAPI(Vue);</span><br></pre></td></tr></table></figure>
+<p>这个时候，初始化调用initGlobalAPI，传入Vue构造函数。这里是在Vue构造函数实例化之前要做的事情，所以这里先不讲Vue对象里面做了什么，先讲实例化之前做了什么。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function initGlobalAPI (Vue) &#123;</span><br><span class="line">  &#x2F;&#x2F; config</span><br><span class="line">  var configDef &#x3D; &#123;&#125;;</span><br><span class="line">  configDef.get &#x3D; function () &#123; return config; &#125;;</span><br><span class="line">  if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    configDef.set &#x3D; function () &#123;</span><br><span class="line">      warn(</span><br><span class="line">        &#39;Do not replace the Vue.config object, set individual fields instead.&#39;</span><br><span class="line">      );</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  Object.defineProperty(Vue, &#39;config&#39;, configDef);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; exposed util methods.</span><br><span class="line">  &#x2F;&#x2F; NOTE: these are not considered part of the public API - avoid relying on</span><br><span class="line">  &#x2F;&#x2F; them unless you are aware of the risk.</span><br><span class="line">  Vue.util &#x3D; &#123;</span><br><span class="line">    warn: warn,</span><br><span class="line">    extend: extend,</span><br><span class="line">    mergeOptions: mergeOptions,</span><br><span class="line">    defineReactive: defineReactive</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  Vue.set &#x3D; set;</span><br><span class="line">  Vue.delete &#x3D; del;</span><br><span class="line">  Vue.nextTick &#x3D; nextTick;</span><br><span class="line"></span><br><span class="line">  Vue.options &#x3D; Object.create(null);</span><br><span class="line">  ASSET_TYPES.forEach(function (type) &#123;</span><br><span class="line">    Vue.options[type + &#39;s&#39;] &#x3D; Object.create(null);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; this is used to identify the &quot;base&quot; constructor to extend all plain-object</span><br><span class="line">  &#x2F;&#x2F; components with in Weex&#39;s multi-instance scenarios.</span><br><span class="line">  Vue.options._base &#x3D; Vue;</span><br><span class="line"></span><br><span class="line">  extend(Vue.options.components, builtInComponents);</span><br><span class="line"></span><br><span class="line">  initUse(Vue);</span><br><span class="line">  initMixin$1(Vue);</span><br><span class="line">  initExtend(Vue);</span><br><span class="line">  initAssetRegisters(Vue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>这是initGlobalAPI方法的所有代码，行数不多，但是知识点很多。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var configDef &#x3D; &#123;&#125;;</span><br></pre></td></tr></table></figure><br>这个函数声明了一个configDef的空对象；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">configDef.get &#x3D; function () &#123; return config; &#125;;</span><br></pre></td></tr></table></figure><br>然后在给configDef添加了一个get属性，这个属性返回的是一个config对象，这个cofig对象里面，有n个属性，下面来一一解释一下：</p>
+<h4 id="config对象"><a href="#config对象" class="headerlink" title="config对象"></a>config对象</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var config &#x3D; (&#123;</span><br><span class="line">  optionMergeStrategies: Object.create(null),</span><br><span class="line">  silent: false,</span><br><span class="line">  productionTip: process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;,</span><br><span class="line">  devtools: process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;,</span><br><span class="line">  performance: false,</span><br><span class="line">  errorHandler: null,</span><br><span class="line">  warnHandler: null,</span><br><span class="line">  ignoredElements: [],</span><br><span class="line">  keyCodes: Object.create(null),</span><br><span class="line">  isReservedTag: no,</span><br><span class="line">  isReservedAttr: no,</span><br><span class="line">  isUnknownElement: no,</span><br><span class="line">  getTagNamespace: noop,</span><br><span class="line">  parsePlatformTagName: identity,</span><br><span class="line">  mustUseProp: no,</span><br><span class="line">  _lifecycleHooks: LIFECYCLE_HOOKS</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>optionMergeStrategies：选项合并，用于合并core / util / options<br>默认值：object.creart(null)</p>
+<blockquote>
+<p>注：object.creart(null)去创建的一个是原子，什么是原子呢，就是它是对象，但是不继承Object() ，这里对原子的概念不做深究，大家如果感兴趣，可以去查“js元系统”，aimingoo对这方面有做过详细的说明。</p>
+</blockquote>
+</li>
+<li><p>silent：是否取消警告<br>默认值：false</p>
+</li>
+<li>productionTip：项目启动时，是否显示提示信息<br>默认值：process.env.NODE_ENV !== &#39;production&#39;<br>如果是开发环境，则是true，表示显示提示信息，在生产环境则不显示</li>
+<li>devtools：是否启用devtools<br>默认值：同productionTip</li>
+<li>performance：是否记录性能<br>默认值：false</li>
+<li>errorHandler：观察程序错误的错误处理程序<br>默认值：null</li>
+<li>warnHandler：观察程序警告的警告处理程序<br>默认值：null</li>
+<li>ignoredElements：忽略某些自定义元素<br>默认值：[]</li>
+<li>keyCodes：v - on的自定义用户keyCode<br>默认值：object.creart(null)</li>
+<li>isReservedTag：检查是否保留了标记，以便它不能注册为组件。这取决于平台，可能会被覆盖</li>
+<li><code>var no = function (a, b, c) { return false; };</code><br>默认值：一个名为no的function，这个function接收三个参数，但是结果永远返回的是false</li>
+<li>isReservedAttr：检查属性是否被保留，以便不能用作组件道具。这取决于平台，可能会被覆盖<br>默认值：同上</li>
+<li>isUnknownElement：检查标记是否为未知元素。取决于平台<br>默认值：同上</li>
+<li>getTagNamespace：获取元素的命名空间</li>
+<li>function noop (a, b, c) {}<br>默认值：一个名为noop的函数，里面什么都没有做</li>
+<li>parsePlatformTagName：解析特定平台的真实标签名称</li>
+<li><code>var identity = function (_) { return _;};</code><br>默认值：一个名为identity的函数，输入的什么就输出的什么</li>
+<li>mustUseProp：检查是否必须使用属性（例如值）绑定属性。这个取决于平台<br>默认值：一个名为no的function</li>
+<li><code>_lifecycleHooks</code>：生命周期钩子数组<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var LIFECYCLE_HOOKS &#x3D; [</span><br><span class="line">  &#39;beforeCreate&#39;,</span><br><span class="line">  &#39;created&#39;,</span><br><span class="line">  &#39;beforeMount&#39;,</span><br><span class="line">  &#39;mounted&#39;,</span><br><span class="line">  &#39;beforeUpdate&#39;,</span><br><span class="line">  &#39;updated&#39;,</span><br><span class="line">  &#39;beforeDestroy&#39;,</span><br><span class="line">  &#39;destroyed&#39;,</span><br><span class="line">  &#39;activated&#39;,</span><br><span class="line">  &#39;deactivated&#39;,</span><br><span class="line">  &#39;errorCaptured&#39;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+默认值：一个数组，里面有所有生命周期的方法名<br>以上就是config里面所有的属性</li>
+</ul>
+<h3 id="config-set"><a href="#config-set" class="headerlink" title="config.set"></a>config.set</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    configDef.set &#x3D; function () &#123;</span><br><span class="line">      warn(</span><br><span class="line">        &#39;Do not replace the Vue.config object, set individual fields instead.&#39;</span><br><span class="line">      );</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>做了一个判断是否是生产环境，如果不是生产环境，给configDef添加一个set方法<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Object.defineProperty(Vue, &#39;config&#39;, configDef);</span><br></pre></td></tr></table></figure><br>在这里，为Vue的构造函数，添加一个要通过<code>Object.defineProperty</code>监听的属性<code>config</code>，获取的时候，获取到的是上面描述的那个config对象，如果对这个config对象直接做变更，就会提示“不要替换vue.config对象，而是设置单个字段”，说明，作者不希望我们直接去替换和变更整个config对象，如果有需要，希望去直接修改我们需要修改的值</p>
+<h3 id="公开util"><a href="#公开util" class="headerlink" title="公开util"></a>公开util</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Vue.util &#x3D; &#123;</span><br><span class="line">    warn: warn,</span><br><span class="line">    extend: extend,</span><br><span class="line">    mergeOptions: mergeOptions,</span><br><span class="line">    defineReactive: defineReactive</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在这里，设置了一个公开的util对象，但是它不是公共的api，避免依赖，除非你意识到了风险，下面来介绍一下它的属性：</p>
+<h4 id="warn：警示"><a href="#warn：警示" class="headerlink" title="warn：警示"></a>warn：警示</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var warn &#x3D; noop;</span><br><span class="line">var generateComponentTrace &#x3D; (noop);</span><br><span class="line">if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    warn &#x3D; function (msg, vm) &#123;</span><br><span class="line">        var trace &#x3D; vm ? generateComponentTrace(vm) : &#39;&#39;;</span><br><span class="line">        if (config.warnHandler) &#123;</span><br><span class="line">          config.warnHandler.call(null, msg, vm, trace);</span><br><span class="line">        &#125; else if (hasConsole &amp;&amp; (!config.silent)) &#123;</span><br><span class="line">          console.error((&quot;[Vue warn]: &quot; + msg + trace));</span><br><span class="line">        &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>warn</code>是一个function，初始化的时候，只定义了一个<code>noop</code>方法，如果在开发环境，这个<code>warn</code>是可以接收两个参数，一个是msg，一个是vm，msg不用说，大家都知道这里是一个提示信息，vm就是实例化的vue对象，或者是实例化的vue对象的某一个属性。</p>
+<p>接下来是一个三元表达式trace，用来判断调用warn方法时，是否有传入了vm，如果没有，返回的是空，如果有，那么就返回<code>generateComponentTrace</code>这个function，这个方法初始化的值也是<code>noop</code>，什么都没有做，目的是解决流量检查问题<br>如果<code>config.warnHandler</code>被使用者变更成了值，不在是null，那么就把<code>config.warnHandler</code>的this指向null，其实就是指向的window，再把msg, vm, trace传给<code>config.warnHandler</code><br>否则判断当前环境使用支持conosle并且开启了警告，如果开启了，那就把警告提示信息打印出来</p>
+<h4 id="extend：继承"><a href="#extend：继承" class="headerlink" title="extend：继承"></a>extend：继承</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function extend (to, _from) &#123;</span><br><span class="line">  for (var key in _from) &#123;</span><br><span class="line">    to[key] &#x3D; _from[key];</span><br><span class="line">  &#125;</span><br><span class="line">  return to</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法是用于做继承操作的，接收两个值<code>to</code>, <code>_from</code>，将属性<code>_from</code>混合到目标对象<code>to</code>中，如果<code>to</code>存在<code>_from</code>中的属性，则直接覆盖，最后返回新的to</p>
+<p><code>mergeOptions</code>：将两个选项对象合并为一个新对象，用于实例化和继承的核心实用程序（这是一个很重要的方法，在后面多处会用到，所以建议大家仔细看这里）<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function mergeOptions (parent, child, vm) &#123;</span><br><span class="line"></span><br><span class="line">  if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    checkComponents(child);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if (typeof child &#x3D;&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">    child &#x3D; child.options;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  normalizeProps(child, vm);</span><br><span class="line">  normalizeInject(child, vm);</span><br><span class="line">  normalizeDirecitives(child);</span><br><span class="line">  var extendsFrom &#x3D; child.extends;</span><br><span class="line">  if (extendsFrom) &#123;</span><br><span class="line">    parent &#x3D; mergeOptions(parent, extendsFrom, vm);</span><br><span class="line">  &#125;</span><br><span class="line">  if (child.mixins) &#123;</span><br><span class="line">    for (var i &#x3D; 0, l &#x3D; child.mixins.length; i &lt; l; i++) &#123;</span><br><span class="line">      parent &#x3D; mergeOptions(parent, child.mixins[i], vm);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  var options &#x3D; &#123;&#125;;</span><br><span class="line">  var key;</span><br><span class="line">  for (key in parent) &#123;</span><br><span class="line">    mergeField(key);</span><br><span class="line">  &#125;</span><br><span class="line">  for (key in child) &#123;</span><br><span class="line">    if (!hasOwn(parent, key)) &#123;</span><br><span class="line">      mergeField(key);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  function mergeField (key) &#123;</span><br><span class="line">    var strat &#x3D; strats[key] || defaultStrat;</span><br><span class="line">    options[key] &#x3D; strat(parent[key], child[key], vm, key);</span><br><span class="line">  &#125;</span><br><span class="line">  return options</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    checkComponents(child);</span><br><span class="line">&#125;</span><br><span class="line">function checkComponents (options) &#123;</span><br><span class="line">  for (var key in options.components) &#123;</span><br><span class="line">    validateComponentName(key);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">function validateComponentName (name) &#123;</span><br><span class="line">  if (!&#x2F;^[a-zA-Z][\w-]*$&#x2F;.test(name)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      &#39;Invalid component name: &quot;&#39; + name + &#39;&quot;. Component names &#39; +</span><br><span class="line">      &#39;can only contain alphanumeric characters and the hyphen, &#39; +</span><br><span class="line">      &#39;and must start with a letter.&#39;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">  if (isBuiltInTag(name) || config.isReservedTag(name)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      &#39;Do not use built-in or reserved HTML elements as component &#39; +</span><br><span class="line">      &#39;id: &#39; + name</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>这个方法接收三个参数<code>parent</code>,<code>child</code>,<code>vm</code>，在不是生产环境的情况下，会去检测参数child中，是否存在<code>components</code>，如果存在该对象，遍历所有的<code>componets</code>，进行名称是否符合规范，这里有一个正则，是用来判断以字母开头，以0个或多个任意字母和字符“-”结尾的字符串，如果不符合这个规定的话，就会提示警告信息<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (typeof child &#x3D;&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">    child &#x3D; child.options;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>如果<code>child</code>是一个function的话，则把<code>child</code>自己指向<code>child</code>的<code>options</code>属性</p>
+<p>接下来要做的就是规范child里面的<code>Props</code>、<code>Inject</code>、<code>Direcitives</code><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">normalizeProps(child, vm);</span><br><span class="line">normalizeInject(child, vm);</span><br><span class="line">normalizeDirecitives(child);</span><br></pre></td></tr></table></figure></p>
+<h4 id="normalizeProps：规范属性，确保所有的props的规范都是基于对象的"><a href="#normalizeProps：规范属性，确保所有的props的规范都是基于对象的" class="headerlink" title="normalizeProps：规范属性，确保所有的props的规范都是基于对象的"></a>normalizeProps：规范属性，确保所有的props的规范都是基于对象的</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function normalizeProps (options, vm) &#123;</span><br><span class="line">  var props &#x3D; options.props;</span><br><span class="line">  if (!props) &#123; return &#125;</span><br><span class="line">  var res &#x3D; &#123;&#125;;</span><br><span class="line">  var i, val, name;</span><br><span class="line">  if (Array.isArray(props)) &#123;</span><br><span class="line">    i &#x3D; props.length;</span><br><span class="line">    while (i--) &#123;</span><br><span class="line">      val &#x3D; props[i];</span><br><span class="line">      if (typeof val &#x3D;&#x3D;&#x3D; &#39;string&#39;) &#123;</span><br><span class="line">        name &#x3D; camelize(val);</span><br><span class="line">        res[name] &#x3D; &#123; type: null &#125;;</span><br><span class="line">      &#125; else if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">        warn(&#39;props must be strings when using array syntax.&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else if (isPlainObject(props)) &#123;</span><br><span class="line">    for (var key in props) &#123;</span><br><span class="line">      val &#x3D; props[key];</span><br><span class="line">      name &#x3D; camelize(key);</span><br><span class="line">      res[name] &#x3D; isPlainObject(val)</span><br><span class="line">        ? val</span><br><span class="line">        : &#123; type: val &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      &quot;Invalid value for option \&quot;props\&quot;: expected an Array or an Object, &quot; +</span><br><span class="line">      &quot;but got &quot; + (toRawType(props)) + &quot;.&quot;,</span><br><span class="line">      vm</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">  options.props &#x3D; res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var props &#x3D; options.props;</span><br><span class="line">if (!props) &#123; return &#125;</span><br></pre></td></tr></table></figure>
+<p>一开始，会检查child是否存在props属性，如果不存在，直接return出去，如果存在的话则是去声明了几个变量，一个名为res的对象，还有i, val, name<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (Array.isArray(props)) &#123;</span><br><span class="line">    i &#x3D; props.length;</span><br><span class="line">    while (i--) &#123;</span><br><span class="line">      val &#x3D; props[i];</span><br><span class="line">      if (typeof val &#x3D;&#x3D;&#x3D; &#39;string&#39;) &#123;</span><br><span class="line">        name &#x3D; camelize(val);</span><br><span class="line">        res[name] &#x3D; &#123; type: null &#125;;</span><br><span class="line">      &#125; else if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">        warn(&#39;props must be strings when using array syntax.&#39;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure><br>检查props是数组还是对象，如果是数组的话，则是去循环它，并判断每一个数组项，是否是字符串，如果是字符串那么就去执行camelize方法。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">camelize：</span><br><span class="line">var camelizeRE &#x3D; &#x2F;-(\w)&#x2F;g;</span><br><span class="line">var camelize &#x3D; cached(function (str) &#123;</span><br><span class="line">  return str.replace(camelizeRE, function (_, c) &#123; return c ? c.toUpperCase() : &#39;&#39;; &#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><br>把名称格式为“xx-xx”的变为“xxXx”，这里接收的是当前的props属性值，一个字符串<code>cached</code>：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function cached (fn) &#123;</span><br><span class="line">  var cache &#x3D; Object.create(null);</span><br><span class="line">  return (function cachedFn (str) &#123;</span><br><span class="line">    var hit &#x3D; cache[str];</span><br><span class="line">    return hit || (cache[str] &#x3D; fn(str))</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>在调用camelize方法的时候，camelize调用了cached，这是一个暂存式函数，对暂存式函数不了解的朋友，可以去看看函数式编程，在cached也是创建了一个原子cache，然后会返回一个cachedFn方法，这里会检测cache是否存在当前props属性值的属性，如果存在，直接返回，如果不存在，则是调用，调用cached的方法传过来的function，在调用cached方法的方法中返回的结果，返回到调用cached方法的方法</p>
+<p>然后把所有的数组项，并且是字符串的，全部都遍历一遍，做这样的处理，然后在res对象里面，去添加一个属性，它是一个对象，属性名就是遍历后的这个遍历后的值（把-转换成大写字母），属性值有一个初始化的type属性，值为null<br>当然不是生产环境下，并且props虽然是数组，但是数组项不是字符串的话，会警告你“使用数组语法时，props必须是字符串”<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var _toString &#x3D; Object.prototype.toString;</span><br><span class="line">function isPlainObject (obj) &#123;</span><br><span class="line">  return _toString.call(obj) &#x3D;&#x3D;&#x3D; &#39;[object Object]&#39;</span><br><span class="line">&#125;</span><br><span class="line">else if (isPlainObject(props)) &#123;</span><br><span class="line">    for (var key in props) &#123;</span><br><span class="line">      val &#x3D; props[key];</span><br><span class="line">      name &#x3D; camelize(key);</span><br><span class="line">      res[name] &#x3D; isPlainObject(val)</span><br><span class="line">        ? val</span><br><span class="line">        : &#123; type: val &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">options.props &#x3D; res;</span><br></pre></td></tr></table></figure><br>如果child的props不是数组，使用<code>isPlainObject</code>去判断props是否是对象，这个方法代码就一行，很简单，也比较好理解，我也就不浪费篇幅去解释了;</p>
+<p>如果是对象的话，就去遍历它，把所有的属性名按照上面数组项的处理方式，去处理所有的数组名，并且当作res的属性名，该属性名的值需要去判断原props的该属性的值是否是对象，如果是对象，直接当作当前属性名的属性值，如果不是的话，则给当前处理后的属性名，传一个对象，type属性的值就是原props该属性名的属性值</p>
+<p>这里，就把child里面所有的props给规范化了，最后覆盖了源child的props属性</p>
+<h4 id="normalizeInject：规范Inject"><a href="#normalizeInject：规范Inject" class="headerlink" title="normalizeInject：规范Inject"></a>normalizeInject：规范Inject</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function normalizeInject (options, vm) &#123;</span><br><span class="line">  var inject &#x3D; options.inject;</span><br><span class="line">  if (!inject) &#123; return &#125;</span><br><span class="line">  var normalized &#x3D; options.inject &#x3D; &#123;&#125;;</span><br><span class="line">  if (Array.isArray(inject)) &#123;</span><br><span class="line">    for (var i &#x3D; 0; i &lt; inject.length; i++) &#123;</span><br><span class="line">      normalized[inject[i]] &#x3D; &#123; from: inject[i] &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else if (isPlainObject(inject)) &#123;</span><br><span class="line">    for (var key in inject) &#123;</span><br><span class="line">      var val &#x3D; inject[key];</span><br><span class="line">      normalized[key] &#x3D; isPlainObject(val)</span><br><span class="line">        ? extend(&#123; from: key &#125;, val)</span><br><span class="line">        : &#123; from: val &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else if (process.env.NODE_ENV !&#x3D;&#x3D; &#39;production&#39;) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      &quot;Invalid value for option \&quot;inject\&quot;: expected an Array or an Object, &quot; +</span><br><span class="line">      &quot;but got &quot; + (toRawType(inject)) + &quot;.&quot;,</span><br><span class="line">      vm</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>和props一样，先检查是否存在，不存在直接返回；</p>
+<p>如果存在的话，把child的inject存在一个变量inject里，把child里面的inject变成空对象，并且把该值传给一个normalized的变量；</p>
+<p>如果inject是一个数组的话，则遍历它，normalized的每一个属性名，就是每一个inject的数组项，每一个属性值都是一个对象，对象的属性from的值，就是每一个inject的数组项</p>
+<p>如果inject是一个对象的话，则遍历它，把每一个属性值存为变量val，normalized的key，就是inject的key，如果val是一个对象的话，则把{ from: key }和val合并，val覆盖{ from: key }</p>
+<h4 id="normalizeDirectives：规范Directives"><a href="#normalizeDirectives：规范Directives" class="headerlink" title="normalizeDirectives：规范Directives"></a>normalizeDirectives：规范Directives</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function normalizeDirectives (options) &#123;</span><br><span class="line">  var dirs &#x3D; options.directives;</span><br><span class="line">  if (dirs) &#123;</span><br><span class="line">    for (var key in dirs) &#123;</span><br><span class="line">      var def &#x3D; dirs[key];</span><br><span class="line">      if (typeof def &#x3D;&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line">        dirs[key] &#x3D; &#123; bind: def, update: def &#125;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码里只处理了child.directives的对象格式，如果存在的话遍历它，如果每一个属性值def都是function的话则把每一个directives的属性值改为{ bind: def, update: def };<br>到这里，规范化的事情就做完了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var extendsFrom &#x3D; child.extends;</span><br><span class="line">if (extendsFrom) &#123;</span><br><span class="line">parent &#x3D; mergeOptions(parent, extendsFrom, vm);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>看child是否存在extends，递归当前的mergeOptions方法，parent就是当前的parent，child就是当前child的extends的值；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (child.mixins) &#123;</span><br><span class="line">    for (var i &#x3D; 0, l &#x3D; child.mixins.length; i &lt; l; i++) &#123;</span><br><span class="line">      parent &#x3D; mergeOptions(parent, child.mixins[i], vm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>检测child是否存在mixins，如果存在的话，递归当前的mergeOptions方法，并把最新的结果，去覆盖上一次调用mergeOptions方法的parent；<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var defaultStrat &#x3D; function (parentVal, childVal) &#123;</span><br><span class="line">  return childVal &#x3D;&#x3D;&#x3D; undefined</span><br><span class="line">    ? parentVal</span><br><span class="line">    : childVal</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var strats &#x3D; config.optionMergeStrategies;&#x2F;&#x2F;这只是初始化的值</span><br><span class="line"></span><br><span class="line">var options &#x3D; &#123;&#125;;</span><br><span class="line">var key;</span><br><span class="line">for (key in parent) &#123;</span><br><span class="line">    mergeField(key);</span><br><span class="line">&#125;</span><br><span class="line">for (key in child) &#123;</span><br><span class="line">    if (!hasOwn(parent, key)) &#123;</span><br><span class="line">      mergeField(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">function mergeField (key) &#123;</span><br><span class="line">    var strat &#x3D; strats[key] || defaultStrat;</span><br><span class="line">    options[key] &#x3D; strat(parent[key], child[key], vm, key);</span><br><span class="line">&#125;</span><br><span class="line">return options</span><br></pre></td></tr></table></figure><br>现在声明了一个options的对象，然后分别去遍历了parent和child，parent和child的key传给了一个mergeField的方法；</p>
+<p>在mergeField中声明一个start变量，如果strats下的存在当前这个key的属性，则返回，否则就返回一个默认的defaultStrat；</p>
+<p>defaultStrat接收两个参数，第一个参数是parent，第二个是child，如果child存在就返回child，否则就返回parent；<br>把mergeField接收到的key，当作之前optins的key，它的值就是前面返回的变量start方法返回的值；</p>
+<p>最后，把整个options返回。</p>
+<p>到这里，Vue.util的四个属性已经讲了三个了，第四个属性是一个defineReactive方法，我不打算在这一篇去讲，因为这个方法，就是实现一个数据双向绑定的核心方法，内容可能会比较多，而且这一篇的内容也已经够长了，写的再多的话，不适合学习了，所以我打算在下一篇单独去讲一下defineReactive这个方法。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FrontEnd/" rel="tag"># FrontEnd</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/12/12/frontend/vue-class-init/" rel="prev" title="Vue刨根问底-全局初始化">
+      <i class="fa fa-chevron-left"></i> Vue刨根问底-全局初始化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/14/frontend/vue-define-reactive/" rel="next" title="Vue刨根问底-响应式数据的实现原理">
+      Vue刨根问底-响应式数据的实现原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">1.</span> <span class="nav-text">初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#config对象"><span class="nav-number">1.1.</span> <span class="nav-text">config对象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#config-set"><span class="nav-number">2.</span> <span class="nav-text">config.set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#公开util"><span class="nav-number">3.</span> <span class="nav-text">公开util</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#warn：警示"><span class="nav-number">3.1.</span> <span class="nav-text">warn：警示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extend：继承"><span class="nav-number">3.2.</span> <span class="nav-text">extend：继承</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#normalizeProps：规范属性，确保所有的props的规范都是基于对象的"><span class="nav-number">3.3.</span> <span class="nav-text">normalizeProps：规范属性，确保所有的props的规范都是基于对象的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#normalizeInject：规范Inject"><span class="nav-number">3.4.</span> <span class="nav-text">normalizeInject：规范Inject</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#normalizeDirectives：规范Directives"><span class="nav-number">3.5.</span> <span class="nav-text">normalizeDirectives：规范Directives</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGdtYWlsLmNvbQ==" title="E-Mail → mailto:zhkf.hunter@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
