@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="为什么飞机的速度在过去的半个多世纪里没有进一步提高？通常给出的原因有四个，这里面有些原因是真的，有些则是完全可以解决的，只是大家硬要找一些原因。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么飞机不能飞得更快？">
+<meta property="og:url" content="https://zhangkefei.github.io/2018/01/16/thinking/google-methodology-20180116/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="为什么飞机的速度在过去的半个多世纪里没有进一步提高？通常给出的原因有四个，这里面有些原因是真的，有些则是完全可以解决的，只是大家硬要找一些原因。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-16T10:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.448Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="thinking">
+<meta property="article:tag" content="谷歌方法论">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2018/01/16/thinking/google-methodology-20180116/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>为什么飞机不能飞得更快？ | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2018/01/16/thinking/google-methodology-20180116/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          为什么飞机不能飞得更快？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-01-16 10:09:00" itemprop="dateCreated datePublished" datetime="2018-01-16T10:09:00Z">2018-01-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/thinking/" itemprop="url" rel="index"><span itemprop="name">thinking</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>为什么飞机的速度在过去的半个多世纪里没有进一步提高？通常给出的原因有四个，这里面有些原因是真的，有些则是完全可以解决的，只是大家硬要找一些原因。<br><a id="more"></a></p>
+<p>我在前两天通过飞机发明的过程，介绍了它被发明背后的逻辑，特别强调测试的重要性。</p>
+<p>在莱特兄弟发明飞机的一个多世纪里，飞行技术有了长足的进步。不过，如果把从1903年至今的这114年作一个划分，那么1969年是一个分界点，这一年波音747首飞成功。从这往前是67年，往后是48年，时间上相差不多。</p>
+<p>1969年之前的第一个阶段，是飞行技术高速发展的阶段，后一阶段没有什么本质变化，今天商业飞机的飞行时速依然没有超过波音747。我们今天依然在使用波音747，虽然空客A380更大，波音787更舒服，但是波音747这个1969年的产品依然是最快的民航飞机。</p>
+<p>在追求高性能的军用飞机方面，60年代末的侦察机SR-71和轰炸机XB-70（女武神）已经超过了3倍的音速，比今天的战斗机要快得多。事实上不仅飞机如此，轮船、火车和汽车，经历了一段时间快速发展后，都呈现出停滞的趋势。</p>
+<p>很多人也因此觉得，当半导体行业按照摩尔定律划定的速度快速发展了半个多世纪后，也会陷入飞机和其他交通工具发展停滞的厄运。</p>
+<p>为什么飞机的速度在过去的半个多世纪里没有进一步提高？通常给出的原因有四个，这里面有些原因是真的，有些则是完全可以解决的，只是大家硬要找一些原因，我们先看看这些“已知”的原因。</p>
+<h3 id="第一个是突破音障困难。"><a href="#第一个是突破音障困难。" class="headerlink" title="第一个是突破音障困难。"></a>第一个是突破音障困难。</h3><p>莱特兄弟的第一架自带动力、成功试飞的飞机时速慢得和自行车差不多（一分钟飞了260米），每小时15公里，但是早期飞机的进步速度非常快。</p>
+<p>到了1916年波音公司推出第一代飞机时，时速已经达到每小时100公里以上了。到二战时，英国的喷气式飞机Gloster Meteor的时速已经达到900公里／小时，接近音速了。</p>
+<p>但是，在此之后，人们发现飞机的飞行速度几乎难以进一步提高了，不仅飞行的阻力剧增，而且难以操控，经常会动不动就栽跟头。因此人们曾以为声速是飞机速度不可逾越的障碍，因此提出了音障的概念。</p>
+<p>开始的时候工程师们还以为是动力不足，但是等到了1944年，约翰·霍普金斯大学研究出能够达到超音速飞行的喷气式发动机后，飞机依然没有能突破音障。</p>
+<p>为什么会产生音障呢？因为当飞机飞到声波的速度时，飞机产生的声波开始在物体前面堆积，形成干扰飞机飞行的“波浪”，会严重干扰飞机的飞行。因此，这不是简单地增加发动机功率就可以实现的。</p>
+<p>怎样突破音障呢？ 工程师们在一系列尝试失败后，决定回到问题的原点，重新研究空气动力学。 当时美国和前苏联的飞机工程师都在和空气动力学家密切合作，试图率先研制出超音速飞机。所谓回到原点，就是像当初莱特兄弟那样，从头开始试验飞机的形状和气动特征。</p>
+<p>经过进行了一系列试验，两国的工程师都发现，原先飞机的外形根本不适合做超音速飞行，要想做超音速飞行，机翼和整个飞机都要“非常薄”，因此如果你看图片会发现，今天的超音速飞机（比如战斗机）比亚音速的民航客机都要“薄”很多。</p>
+<p>当然，如果只采用现有的研究方法，还是难以进一步突破，因此在研究超音速飞机的过程中，美苏双方的工程师都发明了一些新的试验方法。</p>
+<p>比如前苏联茹科夫斯基中央空气流体力学研究院的奥斯托斯拉夫斯基，就把很多火箭推动的模型小飞机先用大飞机带到高空，然后通过火箭点火加速，让模型飞机的速度超过音速后，进行试验和测量。这样工作的成本可想而知。</p>
+<p>在重新认识飞行的原理后，美、苏两国先后研制出超音速飞机。1946年，美国的X－1飞机达到了1.3倍的音速，很快前苏联也赶了上来。到了60年代，两国都可以制造出3倍音速以上的飞机了，至此第一个困难算是解决了。</p>
+<h3 id="第二个制造超音速飞机的困难在于成本。"><a href="#第二个制造超音速飞机的困难在于成本。" class="headerlink" title="第二个制造超音速飞机的困难在于成本。"></a>第二个制造超音速飞机的困难在于成本。</h3><p>我们知道军用飞机可以不计成本地生产和使用，但是民用飞机不行。世界上成功运营了近三十年的协和式超音速客机，从伦敦（或者巴黎）飞到纽约的单程票价高达6000-7000美元，而一般飞机头等舱的票价不过是这个价钱的一半。</p>
+<h3 id="第三个问题出在乘坐不舒服。"><a href="#第三个问题出在乘坐不舒服。" class="headerlink" title="第三个问题出在乘坐不舒服。"></a>第三个问题出在乘坐不舒服。</h3><p>协和式飞机虽然将横跨大西洋的时间从六个小时缩短到三个小时，但是飞机坐得并不让人感到舒服。里面只有经济舱大小的座位，而且非常吵。</p>
+<p>根据我一位坐过协和式飞机的同事讲，它唯一的好处就是在两万多米的高空能看到其他任何地方都看不到的“宇宙的景色”，而在其他方面，你还不如坐一个普通飞机的经济舱。我问他最大的问题是什么，他说首先是所谓的爆音（Sonic Boom），即吓人的噪音。</p>
+<p>如果按照今天对噪音污染的标准，协和式飞机飞行时无论是在地面上，还是在机舱里都是不合格的。除了噪音大，飞机在冲破音障时，人坐在里面并不舒服，当然，在超过音速，把声音甩到后面之后，这个问题不再会困扰乘客。</p>
+<h3 id="第四个问题是所谓机场的架构和运行方式不支持提速。"><a href="#第四个问题是所谓机场的架构和运行方式不支持提速。" class="headerlink" title="第四个问题是所谓机场的架构和运行方式不支持提速。"></a>第四个问题是所谓机场的架构和运行方式不支持提速。</h3><p>因为如果飞机的速度提高一倍，机场的管理会出现混乱。</p>
+<p>那么上面的原因哪些是真实的呢？</p>
+<p>第一个原因，也就是技术上的难度是肯定存在的。不过它在上个世纪50至60年代已经得到了解决，因此不能算。</p>
+<p>第二个原因，即昂贵的运营成本，这确实是一个原因。但如果再仔细看一下，其成本增加的最大部分是燃油——运送一个乘客，燃油的消耗是今天波音747或者777的7倍左右。</p>
+<p>但是这个问题本身可能是一个伪命题，因为全世界石油价格浮动范围很大，从2000年前后每桶原油不到10美元，到2008年一度高达150美元，再到现在回到50多美元，航空公司通过调整票价，从来没有因为耗油太多无法经营，更何况协和式飞机的票价是同样大小舱位的近十倍，而且当时不缺乘客。</p>
+<p>协和式飞机计划之所以长期亏损，是因为体量太小，运营的边际成本极高，另外它基本上是三家“国企”（英航、法航、协和公司）在运作，效率也很低。</p>
+<p>第三个问题倒真是一个问题，因为乘客花这么多钱是为了舒服的，而不是为了受罪的。在协和飞机运营的20多年里，大部分乘客只是为了体验一次超音速飞机的目的乘坐它，而不是因为它比普通客机好到哪儿去。</p>
+<p>第四个问题也是一个伪命题。如果航空公司飞机的时速从现在的0.85马赫提高到2马赫以上，这个过程会是渐进的，不会一夜之间所有的飞机都提速，然后导致所有机场的运作都要重新规划。实际上，大部分机场的航班计划都是不断调整的，每增加一条航线或者一些季节性的航班，机场的计划都要调整。</p>
+<p>实际上，火车的提速所带来的管理变化，要远比飞机提速大得多，既然前者能做到，后者没有理由做不到，只是想做和不想做的问题。</p>
+<p>在上述原因中，只有人不舒服是一个大问题，其他问题只要形成市场规模，自然会有人考虑如何改进技术，是可以将它们慢慢解决的。但现实情况是那些问题并没有解决，必然有更深层的原因，这些我明天再谈。</p>
+<p>咱们来总结一下今天的知识点：</p>
+<ol>
+<li><strong>在人类试图突破音障这件事情上，解决问题不是靠沿着原来的方向努力，而是回到了原点，重新考虑飞机的空气动力学问题。</strong><br>很多时候，我们考虑问题的维度不够多，比如飞机速度上不去，通常大家只会考虑动力问题。<br>今天很多人收入不高，想到的只是简单地加班，延长工作时间，做更多的事情，没有从更高的层次想问题。<br>此外，面对新问题，简单套用当年莱特兄弟的做法还不够，工程师们还要创造出一系列新的试验方法。<br>我把这个创新和超越的过程概括成三步， “回到原点重新思考，重复过去成功的工作方法，根据新问题适当增加新方法”。 这应该可以用于各行各业。</li>
+<li><strong>任何让人花钱找罪受的产品都很难赢利， 这也是今天VR没有真正形成市场的重要原因。</strong> 今天哪怕再好的VR眼镜，都很难做到使用半小时以上头不晕。</li>
+<li><strong>在商业上，不仅要关心一个东西好不好，还要问一下贵不贵。</strong><br>明天我会进一步分析没有超音速客机的原因，并且以马斯克为特斯拉公司设计的产品线为例，说明从高端往低端占领市场的策略。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/thinking/" rel="tag"># thinking</a>
+              <a href="/tags/%E8%B0%B7%E6%AD%8C%E6%96%B9%E6%B3%95%E8%AE%BA/" rel="tag"># 谷歌方法论</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/01/15/thinking/google-methodology-20180115/" rel="prev" title="莱特兄弟成功的关键——不打无准备之仗">
+      <i class="fa fa-chevron-left"></i> 莱特兄弟成功的关键——不打无准备之仗
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/02/21/thinking/google-methodology-20180221/" rel="next" title="风险投资如何帮助创业公司成长并获利">
+      风险投资如何帮助创业公司成长并获利 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一个是突破音障困难。"><span class="nav-number">1.</span> <span class="nav-text">第一个是突破音障困难。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二个制造超音速飞机的困难在于成本。"><span class="nav-number">2.</span> <span class="nav-text">第二个制造超音速飞机的困难在于成本。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三个问题出在乘坐不舒服。"><span class="nav-number">3.</span> <span class="nav-text">第三个问题出在乘坐不舒服。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四个问题是所谓机场的架构和运行方式不支持提速。"><span class="nav-number">4.</span> <span class="nav-text">第四个问题是所谓机场的架构和运行方式不支持提速。</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

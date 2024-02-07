@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="JavaScript中有两个非常常用但又非常容易混淆的函数：substr()和substring()，两者都是String类型的方法，作用都是返回目标字符串的一个子串。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="substr( )和substring( )的区别">
+<meta property="og:url" content="https://zhangkefei.github.io/2014/09/22/note/note-substr-substring/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="JavaScript中有两个非常常用但又非常容易混淆的函数：substr()和substring()，两者都是String类型的方法，作用都是返回目标字符串的一个子串。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-09-22T19:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2014/09/22/note/note-substr-substring/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>substr( )和substring( )的区别 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2014/09/22/note/note-substr-substring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          substr( )和substring( )的区别
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-09-22 19:09:00" itemprop="dateCreated datePublished" datetime="2014-09-22T19:09:00Z">2014-09-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>JavaScript中有两个非常常用但又非常容易混淆的函数：substr()和substring()，两者都是String类型的方法，作用都是返回目标字符串的一个子串。<br><a id="more"></a></p>
+<p>关于两者的详细文档可以参考：String.prototype.substr() 和 String.prototype.substring()</p>
+<p>两者都接收两个参数以控制子串的起止位置。第一个参数作用相同，都表示子串的起点位置，主要区别在于第二个参数：substr()要求获取一个长度len，通过子串的长度来计算截止点，而substring()则是直接定义终点的位置，从终点开始往后的字符串不被截取。换句话说，前者是“起点+长度”，后者是“起点+终点”。</p>
+<h3 id="substr-start-length"><a href="#substr-start-length" class="headerlink" title="substr( start [ , length ] )"></a>substr( start [ , length ] )</h3><h4 id="start"><a href="#start" class="headerlink" title="start"></a>start</h4><p>介于0（包含）和字符串长度之间的整数，表示从这个字符串开始截取子串；<br>若 ≥ 字符串长度，则返回空字符串；<br>若 &lt; 0，则从右起计数；<br>若 &lt; 0且绝对值超过字符串长度的，视为0；  </p>
+<h4 id="length（可选）"><a href="#length（可选）" class="headerlink" title="length（可选）"></a>length（可选）</h4><p>介于0（包含）和剩余字符串长度之间的整数，表示最大截取该长度的字符串作为子串；<br>若超过剩余字符串长度，则截取到字符串结束，超出部分不计；<br>若 ≤ 0，返回空字符串；<br>若不指定，则默认从start截取到字符串末尾；  </p>
+<p>举几个例子：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var str &#x3D; &quot;abcgefghij&quot;;</span><br><span class="line"></span><br><span class="line">console.log(&#39;(1, 2): &#39;   + str.substr(1, 2));   &#x2F;&#x2F; &#39;(1, 2): bc&#39;</span><br><span class="line">console.log(&#39;(-3, 2): &#39;  + str.substr(-3, 2));  &#x2F;&#x2F; &#39;(-3, 2): hi&#39;</span><br><span class="line">console.log(&#39;(-3): &#39;     + str.substr(-3));     &#x2F;&#x2F; &#39;(-3): hij&#39;</span><br><span class="line">console.log(&#39;(1): &#39;      + str.substr(1));      &#x2F;&#x2F; &#39;(1): bcdefghij&#39;</span><br><span class="line">console.log(&#39;(-20, 2): &#39; + str.substr(-20, 2)); &#x2F;&#x2F; &#39;(-20, 2): ab&#39;</span><br><span class="line">console.log(&#39;(20, 2): &#39;  + str.substr(20, 2));  &#x2F;&#x2F; &#39;(20, 2): &#39;</span><br></pre></td></tr></table></figure></p>
+<h3 id="substring-start-end"><a href="#substring-start-end" class="headerlink" title="substring( start [ , end ] )"></a>substring( start [ , end ] )</h3><h4 id="start-1"><a href="#start-1" class="headerlink" title="start"></a>start</h4><p>介于0（包含）和字符串长度之间的整数，表示从该字符串开始截取子串；<br>若 ≥ 字符串长度，则返回空字符串；  </p>
+<h4 id="end（可选）"><a href="#end（可选）" class="headerlink" title="end（可选）"></a>end（可选）</h4><p>介于0（包含）和字符串长度之间的整数，表示从该字符开始不再被截取；<br>若 &gt; 字符串长度，则自动指定为字符串末尾；<br>若不指定，则自动指定为字符串末尾；  </p>
+<h4 id="特殊情况"><a href="#特殊情况" class="headerlink" title="特殊情况"></a>特殊情况</h4><p>任一参数 &lt; 0，或为 NaN，则将其视为0；<br>若 start == end，则返回空字符串；<br>若 start &gt; end，则两者交换数值；  </p>
+<p>举几个例子：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var str &#x3D; &#39;abcdefg&#39;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Displays &#39;abc&#39;</span><br><span class="line">console.log(str.substring(0, 3));</span><br><span class="line">console.log(str.substring(3, 0));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Displays &#39;efg&#39;</span><br><span class="line">console.log(str.substring(4, 7));</span><br><span class="line">console.log(str.substring(7, 4));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Displays &#39;abcdef&#39;</span><br><span class="line">console.log(str.substring(0, 6));</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Displays &#39;abcdefg&#39;</span><br><span class="line">console.log(str.substring(0, 7));</span><br><span class="line">console.log(str.substring(-2, 7));</span><br><span class="line">console.log(str.substring(0, 10));</span><br></pre></td></tr></table></figure></p>
+<h3 id="永恒的字符串"><a href="#永恒的字符串" class="headerlink" title="永恒的字符串"></a>永恒的字符串</h3><p>和许多其他编程语言一样，JavaScript中的字符串也是不可改变的，substr()和substring()都只是返回子串，要想保存结果还需要单独定义变量，否则就能即时输出一下。</p>
+<h3 id="跨界好基友slice-start-end"><a href="#跨界好基友slice-start-end" class="headerlink" title="跨界好基友slice( start [ , end ] )"></a>跨界好基友slice( start [ , end ] )</h3><p>除了本文的两个主角，JavaScript中还有一个函数也可用于获取子串，那就是主角们的好基友slice()，而之所以说它“跨界”，是因为slice()函数在 String 和 Array 类中都有定义。</p>
+<p>slice()函数有点像是substr()和substring()的杂合体：它的标记方式和substring()一样，通过标记起点和终点来进行子串的截取，但当任意参数为负数时，并不视其为0，而是从字符串末尾往前倒推，这一点却和substr()很像。（注意：slice()的两个参数都是这样，而substr()只有第一个参数可以这样，）。同样的，第二个参数是可选的，不指定、或超出字符串长度时，默认截取到字符串末尾。并且，因为两个参数都是介于0（包含）和字符串长度之间的，所以当第一个参数大于第二个参数时，并不会发生交换，而是返回空字符串。</p>
+<p>slice()在数组中的表现也是一样的，只不过操作对象变成了数组元素，不过JavaScript中字符串和数组本来就傻傻分不清楚，因此这里也不难理解其原理。</p>
+<h3 id="为什么要有3个"><a href="#为什么要有3个" class="headerlink" title="为什么要有3个"></a>为什么要有3个</h3><p>substr()、substring()、slice()分别提供了3中不同的截取字符串的思路，分别是：根据长度、从正向确定起止位置、从两端确定起止位置，开发人员可以根据需要灵活地选择最方便的用法。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2014/09/21/blockchain/blockchain-smart-contract-and-ethereum/" rel="prev" title="第18讲 | 智能合约与以太坊">
+      <i class="fa fa-chevron-left"></i> 第18讲 | 智能合约与以太坊
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/09/22/mouse/ice-and-fire-in-distributed-system-architecture/" rel="next" title="分布式系统架构的冰与火">
+      分布式系统架构的冰与火 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#substr-start-length"><span class="nav-number">1.</span> <span class="nav-text">substr( start [ , length ] )</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#start"><span class="nav-number">1.1.</span> <span class="nav-text">start</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#length（可选）"><span class="nav-number">1.2.</span> <span class="nav-text">length（可选）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#substring-start-end"><span class="nav-number">2.</span> <span class="nav-text">substring( start [ , end ] )</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#start-1"><span class="nav-number">2.1.</span> <span class="nav-text">start</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#end（可选）"><span class="nav-number">2.2.</span> <span class="nav-text">end（可选）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特殊情况"><span class="nav-number">2.3.</span> <span class="nav-text">特殊情况</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#永恒的字符串"><span class="nav-number">3.</span> <span class="nav-text">永恒的字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨界好基友slice-start-end"><span class="nav-number">4.</span> <span class="nav-text">跨界好基友slice( start [ , end ] )</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要有3个"><span class="nav-number">5.</span> <span class="nav-text">为什么要有3个</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

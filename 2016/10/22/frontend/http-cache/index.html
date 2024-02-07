@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="浏览器缓存是浏览器在本地磁盘对用户最近请求过的文档进行存储，当访问者再次访问同一页面时，浏览器就可以直接从本地磁盘加载文档。本文对浏览器缓存过程及策略作一分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器缓存">
+<meta property="og:url" content="https://zhangkefei.github.io/2016/10/22/frontend/http-cache/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="浏览器缓存是浏览器在本地磁盘对用户最近请求过的文档进行存储，当访问者再次访问同一页面时，浏览器就可以直接从本地磁盘加载文档。本文对浏览器缓存过程及策略作一分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zhangkefei.github.io/images/http-cache/1.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/http-cache/2.png">
+<meta property="article:published_time" content="2016-10-22T19:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.440Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="http">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhangkefei.github.io/images/http-cache/1.png">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2016/10/22/frontend/http-cache/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浏览器缓存 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2016/10/22/frontend/http-cache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浏览器缓存
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-10-22 19:09:00" itemprop="dateCreated datePublished" datetime="2016-10-22T19:09:00Z">2016-10-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/" itemprop="url" rel="index"><span itemprop="name">FrontEnd</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/FrontEnd/http/" itemprop="url" rel="index"><span itemprop="name">http</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>浏览器缓存是浏览器在本地磁盘对用户最近请求过的文档进行存储，当访问者再次访问同一页面时，浏览器就可以直接从本地磁盘加载文档。本文对浏览器缓存过程及策略作一分析。<br><a id="more"></a><br>根据上面的特点，浏览器缓存有下面的优点：</p>
+<ul>
+<li>减少冗余的数据传输</li>
+<li>减少服务器负担</li>
+<li>加快客户端加载网页的速度</li>
+</ul>
+<p>浏览器缓存是Web性能优化的重要方式。那么浏览器缓存的过程究竟是怎么样的呢？</p>
+<p>在浏览器第一次发起请求时，本地无缓存，向web服务器发送请求，服务器起端响应请求，浏览器端缓存。过程如下：</p>
+<p><img data-src="/images/http-cache/1.png" alt=""></p>
+<p>在第一次请求时，服务器会将页面最后修改时间通过<code>Last-Modified</code>标识由服务器发送给客户端，客户端记录修改时间；服务器还会生成一个<code>Etag</code>，并发送给客户端。</p>
+<p>浏览器后续再次进行请求时：</p>
+<p><img data-src="/images/http-cache/2.png" alt=""></p>
+<p>浏览器缓存主要分为<strong>强缓存</strong>（也称<strong>本地缓存</strong>）和<strong>弱缓存</strong>（也称<strong>协商缓存</strong>）。根据上图，浏览器在第一次请求发生后，再次发送请求时：</p>
+<ul>
+<li>浏览器请求某一资源时，会先获取该资源缓存的<code>header</code>信息，然后根据<code>header</code>中的<code>Cache-Control</code>和<code>Expires</code>来判断是否过期。若没过期则直接从缓存中获取资源信息，包括缓存的<code>header</code>的信息，所以此次请求不会与服务器进行通信。这里判断是否过期，则是强缓存相关。后面会讲<code>Cache-Control</code>和<code>Expires</code>相关。</li>
+<li>如果显示已过期，浏览器会向服务器端发送请求，这个请求会携带第一次请求返回的有关缓存的<code>header</code>字段信息，比如客户端会通过<code>If-None-Match</code>头将先前服务器端发送过来的<code>Etag</code>发送给服务器，服务会对比这个客户端发过来的<code>Etag</code>是否与服务器的相同，若相同，就将<code>If-None-Match</code>的值设为<code>false</code>，返回状态<code>304</code>，客户端继续使用本地缓存，不解析服务器端发回来的数据，若不相同就将<code>If-None-Match</code>的值设为<code>true</code>，返回状态为<code>200</code>，客户端重新机械服务器端返回的数据；客户端还会通过<code>If-Modified-Since</code>头将先前服务器端发过来的最后修改时间戳发送给服务器，服务器端通过这个时间戳判断客户端的页面是否是最新的，如果不是最新的，则返回最新的内容，如果是最新的，则返回304，客户端继续使用本地缓存。</li>
+</ul>
+<h2 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h2><p>强缓存是利用http头中的<code>Expires</code>和<code>Cache-Control</code>两个字段来控制的，用来表示资源的缓存时间。强缓存中，普通刷新会忽略它，但不会清除它，需要强制刷新。浏览器强制刷新，请求会带上<code>Cache-Control:no-cache</code>和<code>Pragma:no-cache</code></p>
+<h3 id="Expires"><a href="#Expires" class="headerlink" title="Expires"></a>Expires</h3><p><code>Expires</code>是http1.0的规范，它的值是一个绝对时间的GMT格式的时间字符串。如我现在这个网页的<code>Expires</code>值是：<code>expires:Fri, 14 Apr 2017 10:47:02 GMT</code>。这个时间代表这这个资源的失效时间，只要发送请求时间是在<code>Expires</code>之前，那么本地缓存始终有效，则在缓存中读取数据。所以这种方式有一个明显的缺点，由于失效的时间是一个绝对时间，所以当服务器与客户端时间偏差较大时，就会导致缓存混乱。如果同时出现<code>Cache-Control:max-age</code>和<code>Expires</code>，那么<code>max-age</code>优先级更高。如我主页的response headers部分如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cache-control:max-age&#x3D;691200</span><br><span class="line">expires:Fri, 14 Apr 2017 10:47:02 GMT</span><br></pre></td></tr></table></figure><br>那么表示资源可以被缓存的最长时间为691200秒，会优先考虑<code>max-age</code>。</p>
+<h3 id="Cache-Control"><a href="#Cache-Control" class="headerlink" title="Cache-Control"></a>Cache-Control</h3><p><code>Cache-Control</code>是在http1.1中出现的，主要是利用该字段的<code>max-age</code>值来进行判断，它是一个相对时间，例如<code>Cache-Control:max-age=3600</code>，代表着资源的有效期是3600秒。<code>cache-control</code>除了该字段外，还有下面几个比较常用的设置值：</p>
+<p>no-cache：不使用本地缓存。需要使用缓存协商，先与服务器确认返回的响应是否被更改，如果之前的响应中存在<code>ETag</code>，那么请求的时候会与服务端验证，如果资源未被更改，则可以避免重新下载。</p>
+<p>no-store：直接禁止浏览器缓存数据，每次用户请求该资源，都会向服务器发送一个请求，每次都会下载完整的资源。</p>
+<p>public：可以被所有的用户缓存，包括终端用户和CDN等中间代理服务器。</p>
+<p>private：只能被终端用户的浏览器缓存，不允许CDN等中继缓存服务器对其缓存。</p>
+<p><code>Cache-Control</code>与<code>Expires</code>可以在服务端配置同时启用，同时启用的时候<code>Cache-Control</code>优先级高。</p>
+<h2 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h2><p>协商缓存就是由服务器来确定缓存资源是否可用，所以客户端与服务器端要通过某种标识来进行通信，从而让服务器判断请求资源是否可以缓存访问。</p>
+<p>普通刷新会启用弱缓存，忽略强缓存。只有在地址栏或收藏夹输入网址、通过链接引用资源等情况下，浏览器才会启用强缓存，这也是为什么有时候我们更新一张图片、一个js文件，页面内容依然是旧的，但是直接浏览器访问那个图片或文件，看到的内容却是新的。</p>
+<p>这个主要涉及到两组header字段：<code>Etag</code>和<code>If-None-Match</code>、<code>Last-Modified</code>和<code>If-Modified-Since</code>。</p>
+<h3 id="Etag和If-None-Match"><a href="#Etag和If-None-Match" class="headerlink" title="Etag和If-None-Match"></a>Etag和If-None-Match</h3><p><code>Etag</code>/<code>If-None-Match</code>返回的是一个校验码。ETag可以保证每一个资源是唯一的，资源变化都会导致<code>ETag</code>变化。服务器根据浏览器上送的<code>If-None-Match</code>值来判断是否命中缓存。</p>
+<p>与<code>Last-Modified</code>不一样的是，当服务器返回<code>304 Not Modified</code>的响应时，由于<code>ETag</code>重新生成过，response header中还会把这个<code>ETag</code>返回，即使这个ETag跟之前的没有变化。</p>
+<h3 id="Last-Modify-If-Modify-Since"><a href="#Last-Modify-If-Modify-Since" class="headerlink" title="Last-Modify/If-Modify-Since"></a>Last-Modify/If-Modify-Since</h3><p>浏览器第一次请求一个资源的时候，服务器返回的header中会加上<code>Last-Modify</code>，<code>Last-modify</code>是一个时间标识该资源的最后修改时间，例如<code>Last-Modify: Thu,31 Dec 2037 23:59:59 GMT</code>。</p>
+<p>当浏览器再次请求该资源时，request的请求头中会包含<code>If-Modify-Since</code>，该值为缓存之前返回的<code>Last-Modify</code>。服务器收到<code>If-Modify-Since</code>后，根据资源的最后修改时间判断是否命中缓存。</p>
+<p>如果命中缓存，则返回304，并且不会返回资源内容，并且不会返回<code>Last-Modify</code>。</p>
+<h3 id="为什么要有Etag"><a href="#为什么要有Etag" class="headerlink" title="为什么要有Etag"></a>为什么要有Etag</h3><p>你可能会觉得使用<code>Last-Modified</code>已经足以让浏览器知道本地的缓存副本是否足够新，为什么还需要<code>Etag</code>呢？HTTP1.1中<code>Etag</code>的出现主要是为了解决几个<code>Last-Modified</code>比较难解决的问题：</p>
+<ul>
+<li><p>一些文件也许会周期性的更改，但是他的内容并不改变(仅仅改变的修改时间)，这个时候我们并不希望客户端认为这个文件被修改了，而重新GET；</p>
+</li>
+<li><p>某些文件修改非常频繁，比如在秒以下的时间内进行修改，(比方说1s内修改了N次)，If-Modified-Since能检查到的粒度是s级的，这种修改无法判断(或者说UNIX记录MTIME只能精确到秒)；</p>
+</li>
+<li><p>某些服务器不能精确的得到文件的最后修改时间。</p>
+</li>
+</ul>
+<p><code>Last-Modified</code>与<code>ETag</code>是可以一起使用的，服务器会优先验证<code>ETag</code>，一致的情况下，才会继续比对<code>Last-Modified</code>，最后才决定是否返回<code>304</code>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/http/" rel="tag"># http</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/30/note/note-about-character-sets-and-encoding/" rel="prev" title="文字编码的那些事">
+      <i class="fa fa-chevron-left"></i> 文字编码的那些事
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/26/thinking/google-methodology-20171126/" rel="next" title="发刊词|智能时代的行动指南">
+      发刊词|智能时代的行动指南 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#强缓存"><span class="nav-number">1.</span> <span class="nav-text">强缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Expires"><span class="nav-number">1.1.</span> <span class="nav-text">Expires</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Control"><span class="nav-number">1.2.</span> <span class="nav-text">Cache-Control</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协商缓存"><span class="nav-number">2.</span> <span class="nav-text">协商缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Etag和If-None-Match"><span class="nav-number">2.1.</span> <span class="nav-text">Etag和If-None-Match</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Last-Modify-If-Modify-Since"><span class="nav-number">2.2.</span> <span class="nav-text">Last-Modify&#x2F;If-Modify-Since</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要有Etag"><span class="nav-number">2.3.</span> <span class="nav-text">为什么要有Etag</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

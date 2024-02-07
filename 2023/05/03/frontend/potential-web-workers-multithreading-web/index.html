@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="Multithreading is an important technique used in modern software development to enhance the performance and responsiveness of applications. However, it’s not a common practice on the web due to the si">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Exploring The Potential Of Web Workers For Multithreading On The Web">
+<meta property="og:url" content="https://zhangkefei.github.io/2023/05/03/frontend/potential-web-workers-multithreading-web/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="Multithreading is an important technique used in modern software development to enhance the performance and responsiveness of applications. However, it’s not a common practice on the web due to the si">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-03T16:05:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="WebDevelopment">
+<meta property="article:tag" content="English">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2023/05/03/frontend/potential-web-workers-multithreading-web/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Exploring The Potential Of Web Workers For Multithreading On The Web | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2023/05/03/frontend/potential-web-workers-multithreading-web/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Exploring The Potential Of Web Workers For Multithreading On The Web
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-03 16:05:00" itemprop="dateCreated datePublished" datetime="2023-05-03T16:05:00Z">2023-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebDevelopment/" itemprop="url" rel="index"><span itemprop="name">WebDevelopment</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Multithreading is an important technique used in modern software development to enhance the performance and responsiveness of applications. However, it’s not a common practice on the web due to the single-threaded nature of JavaScript. To overcome this limitation, Web Workers were introduced as a way to enable this technique in web applications. In this article, Sarah Oke Okolo explores the importance of Web Workers for multithreading on the web, including the limitations and considerations of using them and the strategies for mitigating potential issues associated with Web Workers.<br><a id="more"></a><br>Web Workers are a powerful feature of modern web development and were introduced as part of the HTML5 specification in 2009. They were designed to provide a way to execute JavaScript code in the background, separate from the main execution thread of a web page, in order to improve performance and responsiveness.</p>
+<p>The main thread is the single execution context that is responsible for rendering the UI, executing JavaScript code, and handling user interactions. In other words, JavaScript is “single-threaded”. This means that any time-consuming task, such as complex calculations or data processing that is executed, would block the main thread and cause the UI to freeze and become unresponsive.</p>
+<p>This is where Web Workers come in.</p>
+<p>Web Workers were implemented as a way to address this problem by allowing time-consuming tasks to be executed in a separate thread, called a worker thread. This enabled JavaScript code to be executed in the background without blocking the main thread and causing the page to become unresponsive.</p>
+<p>Creating a web worker in JavaScript is not much of a complicated task. The following steps provide a starting point for integrating a web worker into your application:</p>
+<ol>
+<li>Create a new JavaScript file that contains the code you want to run in the worker thread. This file should not contain any references to the DOM, as it will not have access to it.</li>
+<li>In your main JavaScript file, create a new worker object using the <code>Worker</code> constructor. This constructor takes a single argument, which is the URL of the JavaScript file you created in step 1.<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> worker = <span class="keyword">new</span> Worker(<span class="string">'worker.js'</span>);</span><br></pre></td></tr></table></figure></li>
+<li>Add event listeners to the worker object to handle messages sent between the main thread and the worker thread. The <code>onmessage</code> event handler is used to handle messages sent from the worker thread, while the <code>postMessage</code> method is used to send messages to the worker thread.<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">worker.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Worker said: '</span> + event.data);</span><br><span class="line">&#125;;</span><br><span class="line">worker.postMessage(<span class="string">'Hello, worker!'</span>);</span><br></pre></td></tr></table></figure></li>
+<li>In your worker JavaScript file, add an event listener to handle messages sent from the main thread using the <code>onmessage</code> property of the <code>self</code> object. You can access the data sent with the message using the <code>event.data</code> property.<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">self.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Main thread said: '</span> + event.data);</span><br><span class="line">  self.postMessage(<span class="string">'Hello, main thread!'</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>Now let’s run the web application and test the worker. We should see messages printed to the console indicating that messages were sent and received between the main thread and the worker thread.</p>
+<p>One key difference between Web Workers and the main thread is that Web Workers have no access to the DOM or the UI. This means that they cannot directly manipulate the HTML elements on the page or interact with the user.</p>
+<p>Another important difference is that Web Workers are designed to run in a <strong>sandboxed environment</strong>, separate from the main thread, which means that they have limited access to system resources and cannot access certain APIs, such as the <code>localStorage</code> or <code>sessionStorage</code> APIs. However, they can communicate with the main thread through a messaging system, allowing data to be exchanged between the two threads.</p>
+<h3 id="Importance-And-Benefits-Of-Web-Workers-For-Multithreading-On-The-Web"><a href="#Importance-And-Benefits-Of-Web-Workers-For-Multithreading-On-The-Web" class="headerlink" title="Importance And Benefits Of Web Workers For Multithreading On The Web"></a>Importance And Benefits Of Web Workers For Multithreading On The Web</h3><p>Web Workers provide a way for web developers to achieve multithreading on the web, which is crucial for building high-performance web applications. By enabling time-consuming tasks to be executed in the background, separate from the main thread, Web Workers improve the overall responsiveness of web pages and allow for a more seamless user experience. The following are some of the importance and benefits of Web Workers for multithreading on the Web.</p>
+<h4 id="Improved-Resource-Utilization"><a href="#Improved-Resource-Utilization" class="headerlink" title="Improved Resource Utilization"></a>Improved Resource Utilization</h4><p>By allowing time-consuming tasks to be executed in the background, Web Workers make more efficient use of system resources, enabling faster and more efficient processing of data and improving overall performance. This is especially important for web applications that involve large amounts of data processing or image manipulation, as Web Workers can perform these tasks without impacting the user interface.</p>
+<h4 id="Increased-Stability-And-Reliability"><a href="#Increased-Stability-And-Reliability" class="headerlink" title="Increased Stability And Reliability"></a>Increased Stability And Reliability</h4><p>By isolating time-consuming tasks in separate worker threads, Web Workers help to prevent crashes and errors that can occur when executing large amounts of code on the main thread. This makes it easier for developers to write stable and reliable web applications, reducing the likelihood of user frustration or loss of data.</p>
+<h4 id="Enhanced-Security"><a href="#Enhanced-Security" class="headerlink" title="Enhanced Security"></a>Enhanced Security</h4><p>Web Workers run in a sandboxed environment that is separate from the main thread, which helps to enhance the security of web applications. This isolation prevents malicious code from accessing or modifying data in the main thread or other Web Workers, reducing the risk of data breaches or other security vulnerabilities.</p>
+<h4 id="Better-Resource-Utilization"><a href="#Better-Resource-Utilization" class="headerlink" title="Better Resource Utilization"></a>Better Resource Utilization</h4><p>Web Workers can help to improve resource utilization by freeing up the main thread to handle user input and other tasks while the Web Workers handle time-consuming computations in the background. This can help to improve overall system performance and reduce the likelihood of crashes or errors. Additionally, by leveraging multiple CPU cores, Web Workers can make more efficient use of system resources, enabling faster and more efficient processing of data.</p>
+<p>Web Workers also enable better load balancing and scaling of web applications. By allowing tasks to be executed in parallel across multiple worker threads, Web Workers can help <strong>distribute the workload evenly across multiple cores or processors</strong>, enabling faster and more efficient processing of data. This is particularly important for web applications that experience high traffic or demand, as Web Workers can help to ensure that the application can handle an increased load without impacting performance.</p>
+<h3 id="Practical-Applications-Of-Web-Workers"><a href="#Practical-Applications-Of-Web-Workers" class="headerlink" title="Practical Applications Of Web Workers"></a>Practical Applications Of Web Workers</h3><p>Let us explore some of the most common and useful applications of Web Workers. Whether you’re building a complex web application or a simple website, understanding how to leverage Web Workers can help you improve performance and provide a better user experience.</p>
+<h4 id="Offloading-CPU-Intensive-Work"><a href="#Offloading-CPU-Intensive-Work" class="headerlink" title="Offloading CPU-Intensive Work"></a>Offloading CPU-Intensive Work</h4><p>Suppose we have a web application that needs to perform a large, CPU-intensive computation. If we perform this computation in the main thread, the user interface will become unresponsive, and the user experience will suffer. To avoid this, we can use a Web Worker to perform the computation in the background.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Create a new Web Worker.</span></span><br><span class="line"><span class="keyword">const</span> worker = <span class="keyword">new</span> Worker(<span class="string">'worker.js'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle messages from the worker.</span></span><br><span class="line">worker.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> result = event.data;</span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Send a message to the worker to start the computation.</span></span><br><span class="line">worker.postMessage(&#123; <span class="attr">num</span>: <span class="number">1000000</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// In worker.js:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to perform the computation.</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compute</span>(<span class="params">num</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> sum = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">    sum += i;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle messages from the main thread.</span></span><br><span class="line">onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> num = event.data.num;</span><br><span class="line">  <span class="keyword">const</span> result = compute(num);</span><br><span class="line">  postMessage(result);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>In this example, we create a new Web Worker and define a function to handle messages from the worker. We then send a message to the worker with a parameter (<code>num</code>) that specifies the number of iterations to perform in the computation. The worker receives this message and performs the computation in the background. When the computation is complete, the worker sends a message back to the main thread with the result. The main thread receives this message and logs the result to the console.</p>
+<p>This task involves adding up all the numbers from <code>0</code> to a given number. While this task is relatively simple and straightforward for small numbers, it can become computationally intensive for very large numbers.</p>
+<p>In the example code we used above, we passed the number <code>1000000</code> to the <code>compute()</code> function in the Web Worker. This means that the compute function will need to add up all the numbers from 0 to one million. This involves a large number of additional operations and can take a significant amount of time to complete, especially if the code is running on a slower computer or in a browser tab that is already busy with other tasks.</p>
+<p>By offloading this task to a Web Worker, the main thread of the application can continue to run smoothly without being blocked by the computationally intensive task. This allows the user interface to remain responsive and ensures that other tasks, such as user input or animations, can be handled without delay.</p>
+<h4 id="Handling-Network-Requests"><a href="#Handling-Network-Requests" class="headerlink" title="Handling Network Requests"></a>Handling Network Requests</h4><p>Let us consider a scenario where a web application needs to initiate a significant number of network requests. Performing these requests within the main thread could cause the user interface to become unresponsive and result in a poor user experience. In order to prevent this issue, we can utilize Web Workers to handle these requests in the background. By doing so, the main thread remains free to execute other tasks while the Web Worker handles the network requests simultaneously, resulting in improved performance and a better user experience.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Create a new Web Worker.</span></span><br><span class="line"><span class="keyword">const</span> worker = <span class="keyword">new</span> Worker(<span class="string">'worker.js'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle messages from the worker.</span></span><br><span class="line">worker.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> response = event.data;</span><br><span class="line">  <span class="built_in">console</span>.log(response);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Send a message to the worker to start the requests.</span></span><br><span class="line">worker.postMessage(&#123; <span class="attr">urls</span>: [<span class="string">'https://api.example.com/foo'</span>, <span class="string">'https://api.example.com/bar'</span>] &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// In worker.js:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle network requests.</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">request</span>(<span class="params">url</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> fetch(url).then(<span class="function"><span class="params">response</span> =&gt;</span> response.json());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle messages from the main thread.</span></span><br><span class="line">onmessage = <span class="keyword">async</span> <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> urls = event.data.urls;</span><br><span class="line">  <span class="keyword">const</span> results = <span class="keyword">await</span> <span class="built_in">Promise</span>.all(urls.map(request));</span><br><span class="line">  postMessage(results);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>In this example, we create a new Web Worker and define a function to handle messages from the worker. We then send a message to the worker with an array of URLs to request. The worker receives this message and performs the requests in the background using the <code>fetch</code> API. When all requests are complete, the worker sends a message back to the main thread with the results. The main thread receives this message and logs the results to the console.</p>
+<h4 id="Parallel-Processing"><a href="#Parallel-Processing" class="headerlink" title="Parallel Processing"></a>Parallel Processing</h4><p>Suppose we have a web application that needs to perform a large number of independent computations. If we perform these computations in sequence in the main thread, the user interface will become unresponsive, and the user experience will suffer. To avoid this, we can use a Web Worker to perform the computations in parallel.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Create a new Web Worker.</span></span><br><span class="line"><span class="keyword">const</span> worker = <span class="keyword">new</span> Worker(<span class="string">'worker.js'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle messages from the worker.</span></span><br><span class="line">worker.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> result = event.data;</span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Send a message to the worker to start the computations.</span></span><br><span class="line">worker.postMessage(&#123; <span class="attr">nums</span>: [<span class="number">1000000</span>, <span class="number">2000000</span>, <span class="number">3000000</span>] &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// In worker.js:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to perform a single computation.</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compute</span>(<span class="params">num</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> sum = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">    sum += i;</span><br><span class="line">&#125;</span><br><span class="line">  <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a function to handle messages from the main thread.</span></span><br><span class="line">onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> nums = event.data.nums;</span><br><span class="line">  <span class="keyword">const</span> results = nums.map(compute);</span><br><span class="line">  postMessage(results);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>In this example, we create a new Web Worker and define a function to handle messages from the worker. We then send a message to the worker with an array of numbers to compute. The worker receives this message and performs the computations in parallel using the map method. When all computations are complete, the worker sends a message back to the main thread with the results. The main thread receives this message and logs the results to the console.</p>
+<h3 id="Limitations-And-Considerations"><a href="#Limitations-And-Considerations" class="headerlink" title="Limitations And Considerations"></a>Limitations And Considerations</h3><p>Web workers are a powerful tool for improving the performance and responsiveness of web applications, but they also have some limitations and considerations that you should keep in mind when using them. Here are some of the most important ones:</p>
+<h4 id="Browser-Support"><a href="#Browser-Support" class="headerlink" title="Browser Support"></a>Browser Support</h4><p>Web workers are supported in all major browsers, including Chrome, Firefox, Safari, and Edge. However, there are still some other browsers that do not support web workers or may have limited support.</p>
+<p>For a more extensive look at browser support, see <code>Can I Use</code>.</p>
+<p>It is important that you check out the browser support for any feature before using them in production code and test your application thoroughly to ensure compatibility.</p>
+<h4 id="Limited-Access-To-The-DOM"><a href="#Limited-Access-To-The-DOM" class="headerlink" title="Limited Access To The DOM"></a>Limited Access To The DOM</h4><p>Web workers run in a separate thread and do not have access to the DOM or other global objects in the main thread. This means you <strong>cannot directly manipulate the DOM from a web worker or access global objects like windows or documents</strong>.</p>
+<p>To work around this limitation, you can use the <code>postMessage</code> method to communicate with the main thread and update the DOM or access global objects indirectly. For example, you can send data to the main thread using <code>postMessage</code> and then update the DOM or global objects in response to the message.</p>
+<p>Alternatively, there are some libraries that help solve this issue. For example, the WorkerDOM library enables you to run the DOM in a web worker, allowing for faster page rendering and improved performance.</p>
+<h4 id="Communication-Overhead"><a href="#Communication-Overhead" class="headerlink" title="Communication Overhead"></a>Communication Overhead</h4><p>Web workers communicate with the main thread using the <code>postMessage</code> method, and as a result, could introduce communication overhead, which refers to the amount of time and resources required to establish and maintain communication between two or more computing systems, such as between a Web Worker and the main thread in a web application. This could result in a delay in processing messages and potentially slow down the application. To minimize this overhead, you should <strong>only send essential data</strong> between threads and <strong>avoid sending large amounts of data or frequent messages</strong>.</p>
+<h4 id="Limited-Debugging-Tools"><a href="#Limited-Debugging-Tools" class="headerlink" title="Limited Debugging Tools"></a>Limited Debugging Tools</h4><p>Debugging Web Workers can be more challenging than debugging code in the main thread, as there are fewer debugging tools available. To make debugging easier, you can use the <code>console</code> API to log messages from the worker thread and use browser developer tools to inspect messages sent between threads.</p>
+<h4 id="Code-Complexity"><a href="#Code-Complexity" class="headerlink" title="Code Complexity"></a>Code Complexity</h4><p>Using Web Workers can increase the complexity of your code, as you need to manage communication between threads and ensure that data is passed correctly. This can make it more difficult to write, debug, and maintain your code, so you should carefully consider whether using web workers is necessary for your application.</p>
+<h3 id="Strategies-For-Mitigating-Potential-Issues-With-Web-Workers"><a href="#Strategies-For-Mitigating-Potential-Issues-With-Web-Workers" class="headerlink" title="Strategies For Mitigating Potential Issues With Web Workers"></a>Strategies For Mitigating Potential Issues With Web Workers</h3><p>Web Workers are a powerful tool for improving the performance and responsiveness of web applications. However, when using Web Workers, there are several potential issues that can arise. Here are some strategies for mitigating these issues:</p>
+<h4 id="Minimize-Communication-Overhead-With-Message-Batching"><a href="#Minimize-Communication-Overhead-With-Message-Batching" class="headerlink" title="Minimize Communication Overhead With Message Batching"></a>Minimize Communication Overhead With Message Batching</h4><p>Message batching involves grouping multiple messages into a single batch message, which can be more efficient than sending individual messages separately. This approach reduces the number of round-trips between the main thread and Web Workers. It can help to minimize communication overhead and improve the overall performance of your web application.</p>
+<p>To implement message batching, you can <strong>use a queue to accumulate messages and send them together as a batch</strong> when the queue reaches a certain threshold or after a set period of time. Here’s an example of how you can implement message batching in your Web Worker:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Create a message queue to accumulate messages.</span></span><br><span class="line"><span class="keyword">const</span> messageQueue = [];</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create a function to add messages to the queue.</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">addToQueue</span>(<span class="params">message</span>) </span>&#123;</span><br><span class="line">  messageQueue.push(message);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// Check if the queue has reached the threshold size.</span></span><br><span class="line">  <span class="keyword">if</span> (messageQueue.length &gt;= <span class="number">10</span>) &#123;</span><br><span class="line">    <span class="comment">// If so, send the batched messages to the main thread.</span></span><br><span class="line">    postMessage(messageQueue);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Clear the message queue.</span></span><br><span class="line">    messageQueue.length = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add a message to the queue.</span></span><br><span class="line">addToQueue(&#123;<span class="attr">type</span>: <span class="string">'log'</span>, <span class="attr">message</span>: <span class="string">'Hello, world!'</span>&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add another message to the queue.</span></span><br><span class="line">addToQueue(&#123;<span class="attr">type</span>: <span class="string">'error'</span>, <span class="attr">message</span>: <span class="string">'An error occurred.'</span>&#125;);</span><br></pre></td></tr></table></figure><br>In this example, we create a message queue to accumulate messages that need to be sent to the main thread. Whenever a message is added to the queue using the <code>addToQueue</code> function, we check if the queue has reached the threshold size (in this case, ten messages). If so, we send the batched messages to the main thread using the <code>postMessage</code> method. Finally, we clear the message queue to prepare it for the next batch.</p>
+<p>By batching messages in this way, we can reduce the overall number of messages sent between the main thread and Web Workers.</p>
+<h4 id="Avoid-Synchronous-Methods"><a href="#Avoid-Synchronous-Methods" class="headerlink" title="Avoid Synchronous Methods"></a>Avoid Synchronous Methods</h4><p>These are JavaScript functions or operations that block the execution of other code until they are complete. Synchronous methods can block the main thread and cause your application to become unresponsive. To avoid this, you should avoid using synchronous methods in your Web Worker code. Instead, use <strong>asynchronous methods</strong> such as <code>setTimeout()</code> or <code>setInterval()</code> to perform long-running computations.</p>
+<p>Here is a little demonstration:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// In the worker</span></span><br><span class="line">self.addEventListener(<span class="string">'message'</span>, (event) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (event.data.action === <span class="string">'start'</span>) &#123;</span><br><span class="line">    <span class="comment">// Use a setTimeout to perform some computation asynchronously.</span></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> result = doSomeComputation(event.data.data);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Send the result back to the main thread.</span></span><br><span class="line">      self.postMessage(&#123; <span class="attr">action</span>: <span class="string">'result'</span>, <span class="attr">data</span>: result &#125;);</span><br><span class="line">    &#125;, <span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h4 id="Be-Mindful-Of-Memory-Usage"><a href="#Be-Mindful-Of-Memory-Usage" class="headerlink" title="Be Mindful Of Memory Usage"></a>Be Mindful Of Memory Usage</h4><p>Web Workers have their own memory space, which can be limited depending on the user’s device and browser settings. To avoid memory issues, you should be mindful of the amount of memory your Web Worker code is using and avoid creating large objects unnecessarily. For example:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// In the worker</span></span><br><span class="line">self.addEventListener(<span class="string">'message'</span>, (event) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (event.data.action === <span class="string">'start'</span>) &#123;</span><br><span class="line">    <span class="comment">// Use a for loop to process an array of data.</span></span><br><span class="line">    <span class="keyword">const</span> data = event.data.data;</span><br><span class="line">    <span class="keyword">const</span> result = [];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; data.length; i++) &#123;</span><br><span class="line">      <span class="comment">// Process each item in the array and add the result to the result array.</span></span><br><span class="line">      <span class="keyword">const</span> itemResult = processItem(data[i]);</span><br><span class="line">      result.push(itemResult);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Send the result back to the main thread.</span></span><br><span class="line">    self.postMessage(&#123; <span class="attr">action</span>: <span class="string">'result'</span>, <span class="attr">data</span>: result &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><br>In this code, the Web Worker processes an array of data and returns the result to the main thread using the <code>postMessage</code> method. However, the <code>for</code> loop used to process the data may be time-consuming.</p>
+<p>The reason for this is that the code is processing an entire array of data at once, meaning that all the data must be loaded into memory at the same time. If the data set is very large, this can cause the Web Worker to consume a significant amount of memory, potentially exceeding the memory limit allocated to the Web Worker by the browser.</p>
+<p>To mitigate this issue, you can consider using built-in JavaScript methods like <code>forEach</code> or <code>reduce</code>, which can process data one item at a time and avoid the need to load the entire array into memory at once.</p>
+<h4 id="Browser-Compatibility"><a href="#Browser-Compatibility" class="headerlink" title="Browser Compatibility"></a>Browser Compatibility</h4><p>Web Workers are supported in most modern browsers, but some older browsers may not support them. To ensure compatibility with a wide range of browsers, you should test your Web Worker code in different browsers and versions. You can also use feature detection to check if Web Workers are supported before using them in your code, like this:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> Worker !== <span class="string">'undefined'</span>) &#123;</span><br><span class="line">  <span class="comment">// Web Workers are supported.</span></span><br><span class="line">  <span class="keyword">const</span> worker = <span class="keyword">new</span> Worker(<span class="string">'worker.js'</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  <span class="comment">// Web Workers are not supported.</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Web Workers are not supported in this browser.'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>This code checks if Web Workers are supported in the current browser and creates a new Web Worker if they are supported. If Web Workers are not supported, the code logs a message to the console indicating that Web Workers are not supported in the browser.</p>
+<p>By following these strategies, you can ensure that your Web Worker code is efficient, responsive, and compatible with a wide range of browsers.</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>As web applications become increasingly complex and demanding, the importance of efficient multithreading techniques — such as Web Workers — is likely to increase. Web Workers are an essential feature of modern web development that allows developers to offload CPU-intensive tasks to separate threads, improving application performance and responsiveness. However, there are significant limitations and considerations to keep in mind when working with Web Workers, such as the lack of access to the DOM and limitations on the types of data that can be passed between threads.</p>
+<p>To mitigate these potential issues, developers can follow strategies as mentioned earlier, such as using asynchronous methods and being mindful of the complexity of the task being offloaded.</p>
+<p>Multithreading with Web Workers is likely to remain an important technique for improving web application performance and responsiveness in the future. While there are other techniques for achieving multithreading in JavaScript, such as using <code>WebSockets</code> or <code>SharedArrayBuffer</code>, Web Workers have several advantages that make them a powerful tool for developers.</p>
+<p>Adopting more recent technology such as <strong>WebAssembly</strong> may open up new opportunities for using Web Workers to offload even more complex and computationally-intensive tasks. Overall, Web Workers are likely to continue to evolve and improve in the coming years, helping developers create more efficient and responsive web applications.</p>
+<p>Additionally, many libraries and tools exist to help developers work with Web Workers. For example, <em>Comlink</em> and <em>Workerize</em> provide a simplified API for communicating with Web Workers. These libraries abstract away some of the complexity of managing Web Workers, making it easier to leverage their benefits.</p>
+<p>Hopefully, this article has given you a good understanding of the potential of web workers for multithreading and how to use them in your own code.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebDevelopment/" rel="tag"># WebDevelopment</a>
+              <a href="/tags/English/" rel="tag"># English</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/17/thinking/lixiang/" rel="prev" title="我为什么买理想">
+      <i class="fa fa-chevron-left"></i> 我为什么买理想
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/04/knowledge/human-tools-history/" rel="next" title="人类工具简史">
+      人类工具简史 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Importance-And-Benefits-Of-Web-Workers-For-Multithreading-On-The-Web"><span class="nav-number">1.</span> <span class="nav-text">Importance And Benefits Of Web Workers For Multithreading On The Web</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Improved-Resource-Utilization"><span class="nav-number">1.1.</span> <span class="nav-text">Improved Resource Utilization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Increased-Stability-And-Reliability"><span class="nav-number">1.2.</span> <span class="nav-text">Increased Stability And Reliability</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Enhanced-Security"><span class="nav-number">1.3.</span> <span class="nav-text">Enhanced Security</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Better-Resource-Utilization"><span class="nav-number">1.4.</span> <span class="nav-text">Better Resource Utilization</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Practical-Applications-Of-Web-Workers"><span class="nav-number">2.</span> <span class="nav-text">Practical Applications Of Web Workers</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Offloading-CPU-Intensive-Work"><span class="nav-number">2.1.</span> <span class="nav-text">Offloading CPU-Intensive Work</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handling-Network-Requests"><span class="nav-number">2.2.</span> <span class="nav-text">Handling Network Requests</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Parallel-Processing"><span class="nav-number">2.3.</span> <span class="nav-text">Parallel Processing</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Limitations-And-Considerations"><span class="nav-number">3.</span> <span class="nav-text">Limitations And Considerations</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Browser-Support"><span class="nav-number">3.1.</span> <span class="nav-text">Browser Support</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Limited-Access-To-The-DOM"><span class="nav-number">3.2.</span> <span class="nav-text">Limited Access To The DOM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Communication-Overhead"><span class="nav-number">3.3.</span> <span class="nav-text">Communication Overhead</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Limited-Debugging-Tools"><span class="nav-number">3.4.</span> <span class="nav-text">Limited Debugging Tools</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Code-Complexity"><span class="nav-number">3.5.</span> <span class="nav-text">Code Complexity</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Strategies-For-Mitigating-Potential-Issues-With-Web-Workers"><span class="nav-number">4.</span> <span class="nav-text">Strategies For Mitigating Potential Issues With Web Workers</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Minimize-Communication-Overhead-With-Message-Batching"><span class="nav-number">4.1.</span> <span class="nav-text">Minimize Communication Overhead With Message Batching</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Avoid-Synchronous-Methods"><span class="nav-number">4.2.</span> <span class="nav-text">Avoid Synchronous Methods</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Be-Mindful-Of-Memory-Usage"><span class="nav-number">4.3.</span> <span class="nav-text">Be Mindful Of Memory Usage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Browser-Compatibility"><span class="nav-number">4.4.</span> <span class="nav-text">Browser Compatibility</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conclusion"><span class="nav-number">5.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="在上一篇文章中，我们领略了函数式编程的趣味和魅力，主要讲了函数式编程的主要技术。还记得有哪些吗？递归、Map、Reduce、Filter 等，并利用 Python 的 Decorator 和 Generator 功能，将多个函数组合成了管道。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编程范式游记（5）- 修饰器模式">
+<meta property="og:url" content="https://zhangkefei.github.io/2016/01/05/mouse/programming-paradigm-travel-5-decorator-mode/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="在上一篇文章中，我们领略了函数式编程的趣味和魅力，主要讲了函数式编程的主要技术。还记得有哪些吗？递归、Map、Reduce、Filter 等，并利用 Python 的 Decorator 和 Generator 功能，将多个函数组合成了管道。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-05T21:38:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="mouse">
+<meta property="article:tag" content="thinking">
+<meta property="article:tag" content="programming_paradigm">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2016/01/05/mouse/programming-paradigm-travel-5-decorator-mode/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>编程范式游记（5）- 修饰器模式 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2016/01/05/mouse/programming-paradigm-travel-5-decorator-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编程范式游记（5）- 修饰器模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-01-05 21:38:00" itemprop="dateCreated datePublished" datetime="2016-01-05T21:38:00Z">2016-01-05</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一篇文章中，我们领略了函数式编程的趣味和魅力，主要讲了函数式编程的主要技术。还记得有哪些吗？递归、Map、Reduce、Filter 等，并利用 Python 的 Decorator 和 Generator 功能，将多个函数组合成了管道。<br><a id="more"></a><br>此时，你心中可能会有个疑问，这个 decorator 又是怎样工作的呢？这就是本文中要讲述的内容，“Decorator 模式”，又叫“修饰器模式”，或是“装饰器模式”。</p>
+<h3 id="Python-的-Decorator"><a href="#Python-的-Decorator" class="headerlink" title="Python 的 Decorator"></a>Python 的 Decorator</h3><p>Python 的 Decorator 在使用上和 Java 的 Annotation（以及 C# 的 Attribute）很相似，就是在方法名前面加一个 @XXX 注解来为这个方法装饰一些东西。但是，Java/C# 的 Annotation 也很让人望而却步，太过于复杂了。你要玩它，需要先了解一堆 Annotation 的类库文档，感觉几乎就是在学另外一门语言。</p>
+<p>而 Python 使用了一种相对于 Decorator Pattern 和 Annotation 来说非常优雅的方法，这种方法不需要你去掌握什么复杂的 OO 模型或是 Annotation 的各种类库规定，完全就是语言层面的玩法：一种函数式编程的技巧。</p>
+<p>这是我最喜欢的一个模式了，也是一个挺好玩儿的东西，这个模式动用了函数式编程的一个技术——用一个函数来构造另一个函数。</p>
+<p>好了，我们先来点感性认识，看一个 Python 修饰器的 Hello World 代码。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def hello(fn):</span><br><span class="line">    def wrapper():</span><br><span class="line">        print &quot;hello, %s&quot; % fn.__name__</span><br><span class="line">        fn()</span><br><span class="line">        print &quot;goodbye, %s&quot; % fn.__name__</span><br><span class="line">    return wrapper</span><br><span class="line"></span><br><span class="line">@hello</span><br><span class="line">def Hao():</span><br><span class="line">    print &quot;i am Hao Chen&quot;</span><br><span class="line"></span><br><span class="line">Hao()</span><br></pre></td></tr></table></figure><br>代码的执行结果如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ python hello.py</span><br><span class="line">hello, Hao</span><br><span class="line">i am Hao Chen</span><br><span class="line">goodbye, Hao</span><br></pre></td></tr></table></figure><br>你可以看到如下的东西：</p>
+<p>函数 Hao 前面有个 @hello 的“注解”，hello 就是我们前面定义的函数 hello；</p>
+<p>在 hello 函数中，其需要一个 fn 的参数（这就是用来做回调的函数）；</p>
+<p>hello 函数中返回了一个 inner 函数 wrapper，这个 wrapper函数回调了传进来的 fn，并在回调前后加了两条语句。</p>
+<p>对于 Python 的这个 @注解语法糖（syntactic sugar）来说，当你在用某个 @decorator 来修饰某个函数 func 时，如下所示:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@decorator</span><br><span class="line">def func():</span><br><span class="line">    pass</span><br></pre></td></tr></table></figure><br>其解释器会解释成下面这样的语句：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func &#x3D; decorator(func)</span><br></pre></td></tr></table></figure><br>嘿！这不就是把一个函数当参数传到另一个函数中，然后再回调吗？是的。但是，我们需要注意，那里还有一个赋值语句，把 decorator 这个函数的返回值赋值回了原来的 func。</p>
+<p>我们再来看一个带参数的玩法：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def makeHtmlTag(tag, *args, **kwds):</span><br><span class="line">    def real_decorator(fn):</span><br><span class="line">        css_class &#x3D; &quot; class&#x3D;&#39;&#123;0&#125;&#39;&quot;.format(kwds[&quot;css_class&quot;]) \</span><br><span class="line">                                     if &quot;css_class&quot; in kwds else &quot;&quot;</span><br><span class="line">        def wrapped(*args, **kwds):</span><br><span class="line">            return &quot;&lt;&quot;+tag+css_class+&quot;&gt;&quot; + fn(*args, **kwds) + &quot;&lt;&#x2F;&quot;+tag+&quot;&gt;&quot;</span><br><span class="line">        return wrapped</span><br><span class="line">    return real_decorator</span><br><span class="line"></span><br><span class="line">@makeHtmlTag(tag&#x3D;&quot;b&quot;, css_class&#x3D;&quot;bold_css&quot;)</span><br><span class="line">@makeHtmlTag(tag&#x3D;&quot;i&quot;, css_class&#x3D;&quot;italic_css&quot;)</span><br><span class="line">def hello():</span><br><span class="line">    return &quot;hello world&quot;</span><br><span class="line"></span><br><span class="line">print hello()</span><br><span class="line"></span><br><span class="line"># 输出：</span><br><span class="line"># &lt;b class&#x3D;&#39;bold_css&#39;&gt;&lt;i class&#x3D;&#39;italic_css&#39;&gt;hello world&lt;&#x2F;i&gt;&lt;&#x2F;b&gt;</span><br></pre></td></tr></table></figure><br>在上面这个例子中，我们可以看到：makeHtmlTag有两个参数。所以，为了让 <code>hello = makeHtmlTag(arg1, arg2)(hello)</code> 成功， makeHtmlTag 必需返回一个 decorator（这就是为什么我们在 makeHtmlTag 中加入了 real_decorator()）。</p>
+<p>这样一来，我们就可以进入到 decorator 的逻辑中去了——decorator 得返回一个 wrapper，wrapper 里回调 hello。看似那个 makeHtmlTag() 写得层层叠叠，但是，已经了解了本质的我们觉得写得很自然。</p>
+<p>我们再来看一个为其它函数加缓存的示例:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from functools import wraps</span><br><span class="line">def memoization(fn):</span><br><span class="line">    cache &#x3D; &#123;&#125;</span><br><span class="line">    miss &#x3D; object()</span><br><span class="line"></span><br><span class="line">    @wraps(fn)</span><br><span class="line">    def wrapper(*args):</span><br><span class="line">        result &#x3D; cache.get(args, miss)</span><br><span class="line">        if result is miss:</span><br><span class="line">            result &#x3D; fn(*args)</span><br><span class="line">            cache[args] &#x3D; result</span><br><span class="line">        return result</span><br><span class="line"></span><br><span class="line">    return wrapper</span><br><span class="line"></span><br><span class="line">@memoization</span><br><span class="line">def fib(n):</span><br><span class="line">    if n &lt; 2:</span><br><span class="line">        return n</span><br><span class="line">    return fib(n - 1) + fib(n - 2)</span><br></pre></td></tr></table></figure><br>上面这个例子中，是一个斐波那契数例的递归算法。我们知道，这个递归是相当没有效率的，因为会重复调用。比如：我们要计算 fib(5)，于是其分解成 fib(4) + fib(3)，而 fib(4) 分解成 fib(3) + fib(2)，fib(3) 又分解成fib(2) + fib(1)……你可看到，基本上来说，fib(3), fib(2), fib(1)在整个递归过程中被调用了至少两次。</p>
+<p>而我们用 decorator，在调用函数前查询一下缓存，如果没有才调用，有了就从缓存中返回值。一下子，这个递归从二叉树式的递归成了线性的递归。wraps 的作用是保证 fib 的函数名不被 wrapper 所取代。</p>
+<p>除此之外，Python 还支持类方式的 decorator。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class myDecorator(object):</span><br><span class="line">    def __init__(self, fn):</span><br><span class="line">        print &quot;inside myDecorator.__init__()&quot;</span><br><span class="line">        self.fn &#x3D; fn</span><br><span class="line"></span><br><span class="line">    def __call__(self):</span><br><span class="line">        self.fn()</span><br><span class="line">        print &quot;inside myDecorator.__call__()&quot;</span><br><span class="line"></span><br><span class="line">@myDecorator</span><br><span class="line">def aFunction():</span><br><span class="line">    print &quot;inside aFunction()&quot;</span><br><span class="line"></span><br><span class="line">print &quot;Finished decorating aFunction()&quot;</span><br><span class="line"></span><br><span class="line">aFunction()</span><br><span class="line"></span><br><span class="line"># 输出：</span><br><span class="line"># inside myDecorator.__init__()</span><br><span class="line"># Finished decorating aFunction()</span><br><span class="line"># inside aFunction()</span><br><span class="line"># inside myDecorator.__call__()</span><br></pre></td></tr></table></figure><br>上面这个示例展示了，用类的方式声明一个 decorator。我们可以看到这个类中有两个成员：</p>
+<p>一个是_<em>init_<em>()，这个方法是在我们给某个函数 decorate 时被调用，所以，需要有一个 fn 的参数，也就是被 decorate 的函数。<br>一个是__call\</em></em>()，这个方法是在我们调用被 decorate 的函数时被调用的。<br>从上面的输出中，可以看到整个程序的执行顺序。这看上去要比“函数式”的方式更易读一些。</p>
+<p>我们来看一个实际点的例子。下面这个示例展示了通过 URL 的路由来调用相关注册的函数示例：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class MyApp():</span><br><span class="line">    def __init__(self):</span><br><span class="line">        self.func_map &#x3D; &#123;&#125;</span><br><span class="line"></span><br><span class="line">    def register(self, name):</span><br><span class="line">        def func_wrapper(func):</span><br><span class="line">            self.func_map[name] &#x3D; func</span><br><span class="line">            return func</span><br><span class="line">        return func_wrapper</span><br><span class="line"></span><br><span class="line">    def call_method(self, name&#x3D;None):</span><br><span class="line">        func &#x3D; self.func_map.get(name, None)</span><br><span class="line">        if func is None:</span><br><span class="line">            raise Exception(&quot;No function registered against - &quot; + str(name))</span><br><span class="line">        return func()</span><br><span class="line"></span><br><span class="line">app &#x3D; MyApp()</span><br><span class="line"></span><br><span class="line">@app.register(&#39;&#x2F;&#39;)</span><br><span class="line">def main_page_func():</span><br><span class="line">    return &quot;This is the main page.&quot;</span><br><span class="line"></span><br><span class="line">@app.register(&#39;&#x2F;next_page&#39;)</span><br><span class="line">def next_page_func():</span><br><span class="line">    return &quot;This is the next page.&quot;</span><br><span class="line"></span><br><span class="line">print app.call_method(&#39;&#x2F;&#39;)</span><br><span class="line">print app.call_method(&#39;&#x2F;next_page&#39;)</span><br></pre></td></tr></table></figure><br>注意：上面这个示例中 decorator 类不是真正的 decorator，其中也没有<strong>call</strong>()，并且，wrapper 返回了原函数。所以，原函数没有发生任何变化。</p>
+<h3 id="Go-语言的-Decorator"><a href="#Go-语言的-Decorator" class="headerlink" title="Go 语言的 Decorator"></a>Go 语言的 Decorator</h3><p>Python 有语法糖，所以写出来的代码比较酷。但是对于没有修饰器语法糖这类语言，写出来的代码会是怎么样的？我们来看一下 Go 语言的代码。</p>
+<p>还是从一个 Hello World 开始。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func decorator(f func(s string)) func(s string) &#123;</span><br><span class="line">    return func(s string) &#123;</span><br><span class="line">        fmt.Println(&quot;Started&quot;)</span><br><span class="line">        f(s)</span><br><span class="line">        fmt.Println(&quot;Done&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Hello(s string) &#123;</span><br><span class="line">    fmt.Println(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    decorator(Hello)(&quot;Hello, World!&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>可以看到，我们动用了一个高阶函数 decorator()，在调用的时候，先把 Hello() 函数传进去，然后其返回一个匿名函数。这个匿名函数中除了运行了自己的代码，也调用了被传入的 Hello() 函数。</p>
+<p>这个玩法和 Python 的异曲同工，只不过，Go 并不支持像 Python 那样的 @decorator 语法糖。所以，在调用上有些难看。当然，如果要想让代码容易读一些，你可以这样：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hello :&#x3D; decorator(Hello)</span><br><span class="line">hello(&quot;Hello&quot;)</span><br></pre></td></tr></table></figure>
+<p>我们再来看一个为函数 log 消耗时间的例子：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type SumFunc func(int64, int64) int64</span><br><span class="line"></span><br><span class="line">func getFunctionName(i interface&#123;&#125;) string &#123;</span><br><span class="line">    return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func timedSumFunc(f SumFunc) SumFunc &#123;</span><br><span class="line">    return func(start, end int64) int64 &#123;</span><br><span class="line">        defer func(t time.Time) &#123;</span><br><span class="line">            fmt.Printf(&quot;--- Time Elapsed (%s): %v ---\n&quot;,</span><br><span class="line">                getFunctionName(f), time.Since(t))</span><br><span class="line">        &#125;(time.Now())</span><br><span class="line">        return f(start, end)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Sum1(start, end int64) int64 &#123;</span><br><span class="line">    var sum int64</span><br><span class="line">    sum &#x3D; 0</span><br><span class="line">    if start &gt; end &#123;</span><br><span class="line">        start, end &#x3D; end, start</span><br><span class="line">    &#125;</span><br><span class="line">    for i :&#x3D; start; i &lt;&#x3D; end; i++ &#123;</span><br><span class="line">        sum +&#x3D; i</span><br><span class="line">    &#125;</span><br><span class="line">    return sum</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Sum2(start, end int64) int64 &#123;</span><br><span class="line">    if start &gt; end &#123;</span><br><span class="line">        start, end &#x3D; end, start</span><br><span class="line">    &#125;</span><br><span class="line">    return (end - start + 1) * (end + start) &#x2F; 2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line"></span><br><span class="line">    sum1 :&#x3D; timedSumFunc(Sum1)</span><br><span class="line">    sum2 :&#x3D; timedSumFunc(Sum2)</span><br><span class="line"></span><br><span class="line">    fmt.Printf(&quot;%d, %d\n&quot;, sum1(-10000, 10000000), sum2(-10000, 10000000))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>关于上面的代码：</p>
+<p>有两个 Sum 函数，Sum1() 函数就是简单地做个循环，Sum2() 函数动用了数据公式。（注意：start 和 end 有可能有负数的情况。）</p>
+<p>代码中使用了 Go 语言的反射机制来获取函数名。</p>
+<p>修饰器函数是 timedSumFunc()。</p>
+<p>再来看一个 HTTP 路由的例子：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func WithServerHeader(h http.HandlerFunc) http.HandlerFunc &#123;</span><br><span class="line">    return func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">        log.Println(&quot;---&gt;WithServerHeader()&quot;)</span><br><span class="line">        w.Header().Set(&quot;Server&quot;, &quot;HelloServer v0.0.1&quot;)</span><br><span class="line">        h(w, r)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func WithAuthCookie(h http.HandlerFunc) http.HandlerFunc &#123;</span><br><span class="line">    return func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">        log.Println(&quot;---&gt;WithAuthCookie()&quot;)</span><br><span class="line">        cookie :&#x3D; &amp;http.Cookie&#123;Name: &quot;Auth&quot;, Value: &quot;Pass&quot;, Path: &quot;&#x2F;&quot;&#125;</span><br><span class="line">        http.SetCookie(w, cookie)</span><br><span class="line">        h(w, r)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func WithBasicAuth(h http.HandlerFunc) http.HandlerFunc &#123;</span><br><span class="line">    return func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">        log.Println(&quot;---&gt;WithBasicAuth()&quot;)</span><br><span class="line">        cookie, err :&#x3D; r.Cookie(&quot;Auth&quot;)</span><br><span class="line">        if err !&#x3D; nil || cookie.Value !&#x3D; &quot;Pass&quot; &#123;</span><br><span class="line">            w.WriteHeader(http.StatusForbidden)</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        h(w, r)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func WithDebugLog(h http.HandlerFunc) http.HandlerFunc &#123;</span><br><span class="line">    return func(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">        log.Println(&quot;---&gt;WithDebugLog&quot;)</span><br><span class="line">        r.ParseForm()</span><br><span class="line">        log.Println(r.Form)</span><br><span class="line">        log.Println(&quot;path&quot;, r.URL.Path)</span><br><span class="line">        log.Println(&quot;scheme&quot;, r.URL.Scheme)</span><br><span class="line">        log.Println(r.Form[&quot;url_long&quot;])</span><br><span class="line">        for k, v :&#x3D; range r.Form &#123;</span><br><span class="line">            log.Println(&quot;key:&quot;, k)</span><br><span class="line">            log.Println(&quot;val:&quot;, strings.Join(v, &quot;&quot;))</span><br><span class="line">        &#125;</span><br><span class="line">        h(w, r)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">func hello(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">    log.Printf(&quot;Received Request %s from %s\n&quot;, r.URL.Path, r.RemoteAddr)</span><br><span class="line">    fmt.Fprintf(w, &quot;Hello, World! &quot;+r.URL.Path)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>上面的代码中，我们写了多个函数。有写 HTTP 响应头的，有写认证 Cookie 的，有检查认证 Cookie 的，有打日志的……在使用过程中，我们可以把其嵌套起来使用，在修饰过的函数上继续修饰，这样就可以拼装出更复杂的功能。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">    http.HandleFunc(&quot;&#x2F;v1&#x2F;hello&quot;, WithServerHeader(WithAuthCookie(hello)))</span><br><span class="line">    http.HandleFunc(&quot;&#x2F;v2&#x2F;hello&quot;, WithServerHeader(WithBasicAuth(hello)))</span><br><span class="line">    http.HandleFunc(&quot;&#x2F;v3&#x2F;hello&quot;, WithServerHeader(WithBasicAuth(WithDebugLog(hello))))</span><br><span class="line">    err :&#x3D; http.ListenAndServe(&quot;:8080&quot;, nil)</span><br><span class="line">    if err !&#x3D; nil &#123;</span><br><span class="line">        log.Fatal(&quot;ListenAndServe: &quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>当然，如果一层套一层不好看的话，我们可以使用 pipeline 的玩法——我们需要先写一个工具函数——用来遍历并调用各个 decorator：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type HttpHandlerDecorator func(http.HandlerFunc) http.HandlerFunc</span><br><span class="line"></span><br><span class="line">func Handler(h http.HandlerFunc, decors ...HttpHandlerDecorator) http.HandlerFunc &#123;</span><br><span class="line">    for i :&#x3D; range decors &#123;</span><br><span class="line">        d :&#x3D; decors[len(decors)-1-i] &#x2F;&#x2F; iterate in reverse</span><br><span class="line">        h &#x3D; d(h)</span><br><span class="line">    &#125;</span><br><span class="line">    return h</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>然后，我们就可以像下面这样使用了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http.HandleFunc(&quot;&#x2F;v4&#x2F;hello&quot;, Handler(hello,</span><br><span class="line">                WithServerHeader, WithBasicAuth, WithDebugLog))</span><br></pre></td></tr></table></figure>
+<p>这样的代码是不是更易读了一些？pipeline 的功能也就出来了。</p>
+<p>不过，对于 Go 的修饰器模式，还有一个小问题——好像无法做到泛型，就像上面那个计算时间的函数一样，其代码耦合了需要被修饰的函数的接口类型，无法做到非常通用。如果这个事解决不了，那么，这个修饰器模式还是有点不好用的。</p>
+<p>因为 Go 语言不像 Python 和 Java，Python 是动态语言，而 Java 有语言虚拟机，所以它们可以干好些比较变态的事，然而 Go 语言是一个静态的语言，这意味着其类型需要在编译时就要搞定，否则无法编译。不过，Go 语言支持的最大的泛型是 interface{}，还有比较简单的 reflection 机制，在上面做做文章，应该还是可以搞定的。</p>
+<p>废话不说，下面是我用 reflection 机制写的一个比较通用的修饰器（为了便于阅读，我删除了出错判断代码）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func Decorator(decoPtr, fn interface&#123;&#125;) (err error) &#123;</span><br><span class="line">    var decoratedFunc, targetFunc reflect.Value</span><br><span class="line"></span><br><span class="line">    decoratedFunc &#x3D; reflect.ValueOf(decoPtr).Elem()</span><br><span class="line">    targetFunc &#x3D; reflect.ValueOf(fn)</span><br><span class="line"></span><br><span class="line">    v :&#x3D; reflect.MakeFunc(targetFunc.Type(),</span><br><span class="line">        func(in []reflect.Value) (out []reflect.Value) &#123;</span><br><span class="line">            fmt.Println(&quot;before&quot;)</span><br><span class="line">            out &#x3D; targetFunc.Call(in)</span><br><span class="line">            fmt.Println(&quot;after&quot;)</span><br><span class="line">            return</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">    decoratedFunc.Set(v)</span><br><span class="line">    return</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>上面的代码动用了 reflect.MakeFunc() 函数制作出了一个新的函数。其中的 targetFunc.Call(in) 调用了被修饰的函数。关于 Go 语言的反射机制，推荐官方文章——《The Laws of Reflection》，在这里我不多说了。</p>
+<p>上面这个 Decorator() 需要两个参数：</p>
+<p>第一个是出参 decoPtr ，就是完成修饰后的函数。<br>第二个是入参 fn ，就是需要修饰的函数。<br>这样写是不是有些二？的确是的。不过，这是我个人在 Go 语言里所能写出来的最好的代码了。如果你知道更优雅的写法，请你一定告诉我！</p>
+<p>好的，让我们来看一下使用效果。首先，假设我们有两个需要修饰的函数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func foo(a, b, c int) int &#123;</span><br><span class="line">    fmt.Printf(&quot;%d, %d, %d \n&quot;, a, b, c)</span><br><span class="line">    return a + b + c</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func bar(a, b string) string &#123;</span><br><span class="line">    fmt.Printf(&quot;%s, %s \n&quot;, a, b)</span><br><span class="line">    return a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>然后，我们可以这样做：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type MyFoo func(int, int, int) int</span><br><span class="line">var myfoo MyFoo</span><br><span class="line">Decorator(&amp;myfoo, foo)</span><br><span class="line">myfoo(1, 2, 3)</span><br></pre></td></tr></table></figure><br>你会发现，使用 Decorator() 时，还需要先声明一个函数签名，感觉好傻啊。一点都不泛型，不是吗？谁叫这是有类型的静态编译的语言呢？</p>
+<p>嗯。如果你不想声明函数签名，那么也可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mybar :&#x3D; bar</span><br><span class="line">Decorator(&amp;mybar, bar)</span><br><span class="line">mybar(&quot;hello,&quot;, &quot;world!&quot;)</span><br></pre></td></tr></table></figure><br>好吧，看上去不是那么的漂亮，但是 it works。看样子 Go 语言目前本身的特性无法做成像 Java 或 Python 那样，对此，我们只能多求 Go 语言多放糖了！</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>好了，讲了那么多的例子，看了那么多的代码，我估计你可能有点晕，让我们来做个小结吧。</p>
+<p>通过上面 Python 和 Go 修饰器的例子，我们可以看到，所谓的修饰器模式其实是在做下面的几件事。</p>
+<p>表面上看，修饰器模式就是扩展现有的一个函数的功能，让它可以干一些其他的事，或是在现有的函数功能上再附加上一些别的功能。</p>
+<p>除了我们可以感受到函数式编程下的代码扩展能力，我们还能感受到函数的互相和随意拼装带来的好处。</p>
+<p>但是深入一下，我们不难发现，Decorator 这个函数其实是可以修饰几乎所有的函数的。于是，这种可以通用于其它函数的编程方式，可以很容易地将一些非业务功能的、属于控制类型的代码给抽象出来（所谓的控制类型的代码就是像 for-loop，或是打日志，或是函数路由，或是求函数运行时间之类的非业务功能性的代码）。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mouse/" rel="tag"># mouse</a>
+              <a href="/tags/thinking/" rel="tag"># thinking</a>
+              <a href="/tags/programming-paradigm/" rel="tag"># programming_paradigm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/01/04/mouse/programming-paradigm-travel-4-functional-programming/" rel="prev" title="编程范式游记（4）- 函数式编程">
+      <i class="fa fa-chevron-left"></i> 编程范式游记（4）- 函数式编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/01/06/mouse/programming-paradigm-travel-6-object-oriented-programming/" rel="next" title="编程范式游记（6）- 面向对象编程">
+      编程范式游记（6）- 面向对象编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Python-的-Decorator"><span class="nav-number">1.</span> <span class="nav-text">Python 的 Decorator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go-语言的-Decorator"><span class="nav-number">2.</span> <span class="nav-text">Go 语言的 Decorator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

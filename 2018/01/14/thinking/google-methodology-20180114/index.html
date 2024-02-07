@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="发明是一个艰难的过程，常常是经过一代人或几代人的不懈努力才能达成。因此，我们不能只记住最后发明飞机的人，还应纪念那些默默无闻的先驱。从这个故事中认识到：模仿无罪，找准方向，勇于认错，等待时机。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="发明背后的逻辑——飞行">
+<meta property="og:url" content="https://zhangkefei.github.io/2018/01/14/thinking/google-methodology-20180114/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="发明是一个艰难的过程，常常是经过一代人或几代人的不懈努力才能达成。因此，我们不能只记住最后发明飞机的人，还应纪念那些默默无闻的先驱。从这个故事中认识到：模仿无罪，找准方向，勇于认错，等待时机。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-14T10:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.448Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="thinking">
+<meta property="article:tag" content="谷歌方法论">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2018/01/14/thinking/google-methodology-20180114/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>发明背后的逻辑——飞行 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2018/01/14/thinking/google-methodology-20180114/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          发明背后的逻辑——飞行
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-01-14 10:09:00" itemprop="dateCreated datePublished" datetime="2018-01-14T10:09:00Z">2018-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/thinking/" itemprop="url" rel="index"><span itemprop="name">thinking</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>发明是一个艰难的过程，常常是经过一代人或几代人的不懈努力才能达成。因此，我们不能只记住最后发明飞机的人，还应纪念那些默默无闻的先驱。从这个故事中认识到：模仿无罪，找准方向，勇于认错，等待时机。<br><a id="more"></a></p>
+<p>这周我和你讲发明背后的逻辑第一讲，有关飞行和潜海的发明。透过众多改变人类生活重要的发明，我们可以学习到很多做事情的方法。</p>
+<p>在我们祖先的眼里，世界上的动物应该有三类，天上飞的、地上跑的和水中游的，当然他们并不知道蝙蝠和海豚，和地上跑的野兽其实都是同一类，关于分类我以后会在讲基因时讲到。</p>
+<p>地上跑的动物和我们祖先的交往最多，我们的祖先要么驯化它们，要么猎食它们，总归有办法对付。但是对于天上飞的和水里游的，只有向往的份儿了。因此，飞行和潜海是人类长期的梦想，今天先讲讲飞行。</p>
+<p>人类实现飞行的梦想其实一直在平行地尝试两条道路，一条路是把一个东西送上天，或者说发射上天，另一条路是像鸟一样自己飞行。今天我先来讲人类在第二条道路上的探索历程，并总结五个知识点。</p>
+<p>在东西方的野史中，都有关于飞人、鸟人和机械鸟的记载。虽然彼此远隔万里，但是描述都差不多，就是给人安上翅膀这么简单。而在这方面真正拿出图纸的发明家是达∙芬奇，他发明了一种机械鸟。</p>
+<p>今天我们都知道这种模仿鸟飞的想法不靠谱，但是 人类在认知新事物时，常常会走这样一条道路：<strong>首先就是对周围事物进行观测，然后模仿。</strong></p>
+<p>有些时候模仿能导致重大发明，比如雷达，比如鲨鱼皮游泳衣，但大部分时候模仿毫无意义，飞行这件事情便是如此。后来对于这一派的发明家，有一个专门的称呼——鸟飞派，意思是说，你要想飞，就学学鸟的做法。</p>
+<p>模仿鸟是人类几千年飞行梦过程中走的一条大弯路，但是研究鸟飞行的原理，对后来造出飞机还是有帮助的。到了文艺复兴时期，人们才开始理性研究飞行。达·芬奇在科学地研究了鸟类的飞行之后写了《论鸟的飞行》一书，它在后来被看成是航空科学的开山之作。</p>
+<p>到了17世纪，意大利的科学家博雷利（Giovanni Alfonso Borelli）从生物力学的角度研究了动物肌肉、骨骼和飞行的关系，他指出人类没有鸟类那样轻质的骨架、发达的胸肌和光滑的流线型身体，因此人类肌肉的力量不足以像鸟类那样振动翅膀飞行。</p>
+<p>根据博雷利的计算，一个体重60公斤的人，至少得具备1.8米宽的胸腔才能支持扇动翅膀所需要的肌肉。博雷利将他的这个研究成果写成了《鸟类的飞行》一书。博雷利的结论宣告了人类各种模仿鸟类的飞行努力都不可能成功。</p>
+<p><strong>在人类的认识过程中常常有这样一个现象，即便从理论上证明了一件事情不可能，但是在此之后依然有人试图改变一些条件，作否定理论极限的尝试。</strong> 比如我们知道在能量守恒定律和热力学第二定律已经被提出一个半世纪的今天，依然有人相信水变油，相信永动机。</p>
+<p>我在前面讲了从数学出发，可以证明今天的人工智能不能产生所谓的超智能，但是我敢肯定接下来的20年，依然会有人往这个方向努力。为什么会这样呢？因为我们人对自己的直觉，或者说对自己从很窄小的认知中得到的常识是如此地喜爱，以至于过分相信它们的功效。</p>
+<p>在飞行的问题上也是如此，不过有趣的是，最后一个试图发明像鸟一样的飞行工具的人并非没有知识的门外汉，恰恰是后来开创了空气动力学的乔治·凯利（Sir George Cayley）爵士，这多少有点讽刺意味。</p>
+<p>但是凯利爵士的过人之处在于 <strong>当他意识到错误之后，不会为了维护自己的颜面而坚持错误</strong> ，这是很多人做不到的， 这也是凯利爵士成为了航空学之父，而迷信水变油的人被称为民间科学家的原因。</p>
+<p>凯利爵士在试图模仿鸟类设计振翼的飞机失败了之后，仔细研究了鸟类翅膀的形状结构，提出了一个开创性的理论——鸟的翅膀不只是提供动力，还提供升力，而这个升力来自于空气在不同形状的翼面流过时产生的压力不同。搞清楚这件事情之后，凯利提出了通过固定机翼（而非振翼）提供飞行升力的想法，从此之后人类在飞机发展上都是沿着这个思路往前走的。</p>
+<p>有了理论之后，凯利在他接下来的时间里将全部精力和财富都用于实现他的理论了，这时凯利已经70多岁了。1849年，凯利制造了一架三翼滑翔机，让一名10岁的小孩坐着它从山顶滑下（动力来自于人用绳子牵引），实现了人类历史上第一次载人滑翔飞行。</p>
+<p>四年后，即1853年，凯利又制造了可以操控的滑翔机，这次他成功地让一位成年人（他的马车夫）实现了飞行。这次飞行的具体时长和距离没有明确记载，但是可能过程有点凶险，以至于这位马车夫随后辞职不干了。</p>
+<p>关于这架滑翔机的设计和当时的一些飞行纪录，凯利写成了论文《改良型1853年有舵滑翔机》，并且送到了当时世界上唯一的航空学会——法国航空学会。</p>
+<p>1971年，英国飞行员史泼劳中校，按照凯利留下的笔记仿制了当年的滑翔机，并获得成功，证明了118年前凯利的记载是真实的。</p>
+<p>要让飞机自行飞行而不是滑翔，除了解决升力的问题，还要解决动力和可操纵性这两个难题，凯利认识到了第二个问题，但是没有认识到第三个问题。</p>
+<p>由于当时没有轻质量的发动机，因此1857年，已经82岁高龄的凯利不得不自己研制轻质量的发动机。但是当时只有蒸汽机，没有内燃机，因此，虽然凯利在自己所剩无多的时日里夜以继日地工作，但终无所成。</p>
+<p>所幸的是，凯利对自己的研究工作都有详细的记述，特别是留下了《论空中航行》的论文，成为了航空学的经典。在这篇论文中，凯利明确指出升力的机理与推力机理应该分开，人类飞行器不应该单纯模仿鸟类的飞行动作进行飞行，而应该用不同装置分别实现升力和动力。</p>
+<p>这为飞机的发明指出了正确的道路。后来莱特兄弟讲，没有凯利的理论，就没有他们的成功。明天我就讲莱特兄弟的工作。</p>
+<p>讲了人类在早期飞行上的努力之后，我把它精炼为这样五个知识点：</p>
+<ol>
+<li><strong>人总是觉得越得不到的越值钱。</strong> 因此越是重大的、轰动性的发明，越是承载了人类长时间的梦想，比如飞行、登月，以及今天还没有实现的治愈癌症和长生不老。因此，从这个角度讲，如果一个人有条件，他可以在考虑做点什么有益的事情时，不妨把目标定得高远一些。</li>
+<li><strong>很多人质疑中国走模仿的道路，但其实模仿是人类学习的第一步， 这本身没有什么可耻的，真正可耻的是走不出模仿，永远模仿 。</strong> 这就如同把老师讲的例题抄一遍不可耻，但总是抄同学的作业就可耻了一样。从模仿到发明的飞跃，关键的转折点在于认识清楚鸟类飞行现象背后的原理。<br>为什么我们说科技在创新中很重要，因为没有技术就搞不清楚原理，就走不出模仿。这个道理对人也是适用的。我每次给国内各种团体讲《硅谷之谜》时说，千万不要模仿硅谷，搞清楚它内部运营的机制就可以了。</li>
+<li><strong>很多违背理论的行为，源于我们感性的想法和做法， 有些时候会引导人们前赴后继，一代代地尝试着失败。</strong> 比如说在股市上试图通过各种赌徒式的行为长期挣钱的想法，就是被不断地从理论和实践上证明错误，却有一代代的人不断尝试，不断失败。这里面根本的原因是我们直觉的理解力其实受限于我们生活的小圈子。</li>
+<li><strong>要勇于承认错误，这样才不至于在错误的道路上滑得太远。</strong></li>
+<li><strong>成功的发明要等到风云汇聚，各种条件都成熟，</strong> 这一点我明天还会讲。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/thinking/" rel="tag"># thinking</a>
+              <a href="/tags/%E8%B0%B7%E6%AD%8C%E6%96%B9%E6%B3%95%E8%AE%BA/" rel="tag"># 谷歌方法论</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/01/07/thinking/google-methodology-20180107/" rel="prev" title="粗调和精调：从一道Google面试题谈起">
+      <i class="fa fa-chevron-left"></i> 粗调和精调：从一道Google面试题谈起
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/15/thinking/google-methodology-20180115/" rel="next" title="莱特兄弟成功的关键——不打无准备之仗">
+      莱特兄弟成功的关键——不打无准备之仗 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

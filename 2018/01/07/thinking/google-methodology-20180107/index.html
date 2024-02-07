@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="做事情需要工程思维：很多时候我们先用低成本解决主要问题，然后再想办法把最后5%、10%做好。粗调提高效率，细调提高精度。在开发工作中也是一样，如果不是涉及架构层面的问题，可以先放在一边，集中精力把主要功能做全做好，然后再精雕细琢。工作中常常会忽略这样的做事规律，需要项目负责人从大局上把握。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="粗调和精调：从一道Google面试题谈起">
+<meta property="og:url" content="https://zhangkefei.github.io/2018/01/07/thinking/google-methodology-20180107/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="做事情需要工程思维：很多时候我们先用低成本解决主要问题，然后再想办法把最后5%、10%做好。粗调提高效率，细调提高精度。在开发工作中也是一样，如果不是涉及架构层面的问题，可以先放在一边，集中精力把主要功能做全做好，然后再精雕细琢。工作中常常会忽略这样的做事规律，需要项目负责人从大局上把握。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-07T10:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.448Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="thinking">
+<meta property="article:tag" content="谷歌方法论">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2018/01/07/thinking/google-methodology-20180107/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>粗调和精调：从一道Google面试题谈起 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2018/01/07/thinking/google-methodology-20180107/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          粗调和精调：从一道Google面试题谈起
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-01-07 10:09:00" itemprop="dateCreated datePublished" datetime="2018-01-07T10:09:00Z">2018-01-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/thinking/" itemprop="url" rel="index"><span itemprop="name">thinking</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>做事情需要<strong>工程思维</strong>：很多时候我们先用低成本解决主要问题，然后再想办法把最后5%、10%做好。粗调提高效率，细调提高精度。在开发工作中也是一样，如果不是涉及架构层面的问题，可以先放在一边，集中精力把主要功能做全做好，然后再精雕细琢。工作中常常会忽略这样的做事规律，需要项目负责人从大局上把握。<br><a id="more"></a></p>
+<p>这一周我们从几个顶级公司的面试题入手，谈谈Google、微软和高盛是如何遴选毕业生的，并且回顾一下在硅谷吸纳人才最成功的肖克利半导体的一些做法，从雇主的角度看我们所需要具有的的能力。</p>
+<p>回答这些问题并不需要计算机或者金融专业的知识，因此即使你是学文科的，也不用被这些题目吓着。</p>
+<p>今天先讲Google的一道面试题，它其实是考察候选人的工程思维，题目是这么说的：</p>
+<p>给你两个一模一样的玻璃球。这两个球如果从一定高度掉到地上就会摔碎，当然，如果在这个高度以下往下扔，怎么都不会碎，超过这个高度肯定就一次摔碎了。</p>
+<p>现在已知这个恰巧摔碎的高度范围在1层楼到100层楼之间。如何用最少的试验次数，用这两个玻璃球测试出玻璃球恰好摔碎的楼高。</p>
+<p>为了便于你理解这道题，我不妨讲两个具体的策略。</p>
+<p>第一个策略是从第一层楼开始，一层一层往上试验。 你拿着球跑到第一层，一摔，没有碎，接下来你又跑到第二层去试，也没有摔碎。你一层层试下去，比如说到了第59层摔碎了，那么你就知道它摔碎的高度是59层。这个策略能保证你获得成功，但显然不是很有效。</p>
+<p>第二个策略是预测一下，试一试， 你跑到30层楼一试，没有碎，再跑到80层楼一试，碎了。虽然你把摔碎高度的范围从1-100减小到30-80，但接下来你就犯难了，因为你就剩一个球了，再这样凭感觉做试验，可能两个球都摔碎了，也测不出想知道的高度。</p>
+<p>这道题好的方法是什么呢？两个球，一个用来做粗调，一个用来做精调，具体做法是以下这样的。</p>
+<p>首先拿第一个球到10层楼去试，如果没有摔碎，就去20层楼，每次增加10层楼。如果在某个十层摔碎了，比如60层，就知道摔碎的高度在51-60层之间，接下来从51层开始一层层地试验，这样可以保证不出二十次，一定能试出恰巧摔碎玻璃球的高度。</p>
+<p>数学好的读者朋友可以去证明一下这是从统计的角度讲最优的策略，为了照顾所有的读者，我就不占用时间证明了。</p>
+<p>这道题和计算机技术完全无关，和产品设计或者市场推广似乎也无关，那么为什么Google要考这道题？<strong>其实有两个目的， 一是为了找到聪明人，二是为了判断这个候选人的工程素养。</strong></p>
+<p>世界上顶级的公司在招人时都要强调一个人未来的可塑性，其中的一条就是要足够聪明便于培养，因此都会考一些看似智力题的问题。这个传统在IT行业，特别是在硅谷，源于诺贝尔奖获得者夏克利挑选人的思维方式。</p>
+<p>为什么可塑性比过去的经历重要呢？因为大部分公司招人是做未来的事情，而不是重复过去的事情，尤其是对于大学刚毕业的年轻人，过去在大学几年学的东西，和后来一辈子要不断学习的东西相比，实在少得可怜。</p>
+<p>因此， <strong>如果一个资质平庸、学习能力不强的学生在大学时多学了一点专业知识，比那些聪明好学，少学一两门专业课的人相比，后劲是不足的</strong>。</p>
+<p>不过，如果你今天再应聘这些顶级跨国公司，倒不必太担心被考这样的智力题，这要感谢美国的政治正确。一些左派人士讲，那些智力题有歧视倾向，因为它们让一些族裔的人显得不聪明，而政治正确要强调的是必须承认所有的族裔同等聪明。当然这是题外话。</p>
+<p>那么这道题考的是什么样的工程素养呢？就是今天标题所说的粗调和精调。如果我要问，有一个数字是40.365，比如说天文望远镜的焦距，你怎样达到它？</p>
+<p>一般人按照生活直觉，直奔这个数字去就可以了。但是在工程上，这样简单的一个数字并非抽象的，而是非常具体的。</p>
+<p>如果是天文望远镜的焦距，你是否会用手把握着望远镜的那个圆筒，前后移动，估摸着镜片之间的距离来调整呢？如果这是导弹发射的角度，你自己是否会用个量角器估算导弹和水平线的角度呢？</p>
+<p>显然我们不能这么做，我们必须有一个可以准确达到这个数字的办法，这就是<strong>工程的思维—— 不仅仅要知道目标在哪里，还必须设计一个能够达到目标的道路。</strong></p>
+<p>对于天文望远镜，设计它们的工程师必须设计一个能够转动的旋钮，让它的长度接近40.365这个数字。</p>
+<p>但是接下来的问题来了，如果这个旋钮每转动一圈，调整的幅度太大，要调到小数点后面三位几乎不可能。如果每转动一圈调整的幅度太小，比如每次调整0.001，那么可能要花很长时间才能调到40.365这个数。类似地，调整导弹的角度也是如此。</p>
+<p>那么工程师们是怎么做的呢？就是要设计各种<strong>粗调和精调</strong>的方法。</p>
+<p>在中国学习生物时用过光学显微镜的朋友，可能还会记得在显微镜上有两个旋钮， 第一个是粗调，让你大致看到图像，第二个是精调，能让你看清楚图像。</p>
+<p>如果不用粗调，只用精调，不仅做事的效率会很低，而且可能会因为一开始的范围找得不对，在花了半天时间后没有找到后，最后干脆放弃了尝试。</p>
+<p>我在《硅谷来信》中介绍过今天最先进的手术机器人的精度可以做到0.001毫米，这样精密的仪器里面的电机一开始速度相对比较快，否则一个手术做的时间会长得不得了。</p>
+<p>但是手术刀接近目标距离时，会变得非常慢，但精度会非常高。这样，手术机器人才能同时保证效率和准确性。</p>
+<p>类似地，任何一个机器学习的过程，其实都是不断地调整数学模型参数的过程，直到参数收敛到最佳点。</p>
+<p>每一次调整被称为是一次迭代，调整的幅度被称为迭代的步长。一开始的时候，迭代的步长要比较大，这样能够很快地确定大致范围，效率比较高。</p>
+<p>这就如同测试玻璃球的那个问题中，一开始一次测试10层是一样。但是，如果总是把步长设计得很大，那么最后可能会找不到最佳的参数，因为要么走过头了，要么没有走到。因此，机器学习到最后需要缩小步长，进行精调，以保证最后收敛到最佳点。</p>
+<p>世界上每年有很多机器学习方面的论文，都是围绕提高学习效率展开的，而其中的核心其实就是怎样用最少次迭代，完成模型的训练。当然，任何好的机器学习算法都不是事先人为设定步长，而是在学习的过程中，自动找到合适的步长。</p>
+<p>这种粗调和精调结合的工程设计方式，并不限于“调节”这个范围，而且用于了很多工程产品的设计。</p>
+<p>比如本田最新的超级跑车NSX有四个发动机。一个传统的汽油发动机提供主要动力，这相当于是粗调。一个电动发动机提供在起跑一瞬间快速的加速，这相当于精调。</p>
+<p>一辆汽车如果发动机功率太小，加速会比较慢，如果功率太大，在平时巡航的时候会太费油。因此混合动力的汽车就通过粗调和精调解决了这个矛盾，这也是为什么它比较省油的原因。</p>
+<p>至于NSX为什么还有第三、第四个发动机，那是分别安装在两个前轮上的，主要是给它转向时提供动力，这两个很小的发动机甚至可以让轮子一个加速，一个减速，以减小拐弯半径，做大家在电影里看到的特技转弯的动作。当然这个功能用得更少了，属于进一步的精调。</p>
+<p>能否通过一个发动机达到同样的目的呢？不是不可以，有一些极致的超级跑车就是这么做的，比如后轮可以拐弯，但是这样的工程极为复杂，成本比四个发动机要高得多。</p>
+<p>粗调和精调的思维方式其实在生活中也有应用。很多时候我们先用低成本解决主要问题，然后再想办法把最后5%、10%做好。关于这一点是留给大家的思考题。另外，关于这道题我还留了一个尾巴，我们明天讨论。</p>
+<p>从Google面试的这道看似和计算机技术无关的智力题，你是否体会到它对好的工程师的要求了呢？</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/thinking/" rel="tag"># thinking</a>
+              <a href="/tags/%E8%B0%B7%E6%AD%8C%E6%96%B9%E6%B3%95%E8%AE%BA/" rel="tag"># 谷歌方法论</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/19/thinking/google-methodology-20171219/" rel="prev" title="超越免费（下）">
+      <i class="fa fa-chevron-left"></i> 超越免费（下）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/14/thinking/google-methodology-20180114/" rel="next" title="发明背后的逻辑——飞行">
+      发明背后的逻辑——飞行 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

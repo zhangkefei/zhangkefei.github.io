@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="基于原型（prototype）的编程其实也是面向对象编程的一种方式。没有 class 化的，直接使用对象。又叫，基于实例的编程。其主流的语言就是 JavaScript。与传统的面对象编程的比较如下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编程范式游记（7）- 基于原型的编程范式">
+<meta property="og:url" content="https://zhangkefei.github.io/2016/01/07/mouse/programming-paradigm-travel-7-prototype-based/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="基于原型（prototype）的编程其实也是面向对象编程的一种方式。没有 class 化的，直接使用对象。又叫，基于实例的编程。其主流的语言就是 JavaScript。与传统的面对象编程的比较如下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-07T21:38:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="mouse">
+<meta property="article:tag" content="thinking">
+<meta property="article:tag" content="programming_paradigm">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2016/01/07/mouse/programming-paradigm-travel-7-prototype-based/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>编程范式游记（7）- 基于原型的编程范式 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2016/01/07/mouse/programming-paradigm-travel-7-prototype-based/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编程范式游记（7）- 基于原型的编程范式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-01-07 21:38:00" itemprop="dateCreated datePublished" datetime="2016-01-07T21:38:00Z">2016-01-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>基于原型（prototype）的编程其实也是面向对象编程的一种方式。没有 class 化的，直接使用对象。又叫，基于实例的编程。其主流的语言就是 JavaScript。与传统的面对象编程的比较如下。<br><a id="more"></a><br>在基于类的编程当中，对象总共有两种类型。类定义了对象的基本布局和函数特性，而接口是“可以使用的”对象，它基于特定类的样式。在此模型中，类表现为行为和结构的集合，对所有接口来说这些类的行为和结构都是相同的。因而，区分规则首先是基于行为和结构，而后才是状态。</p>
+<p>原型编程的主张者经常争论说，基于类的语言提倡使用一个关注分类和类之间关系的开发模型。与此相对，原型编程看起来提倡程序员关注一系列对象实例的行为，而之后才关心如何将这些对象划分到最近的使用方式相似的原型对象，而不是分成类。</p>
+<p>因为如此，很多基于原型的系统提倡运行时原型的修改，而只有极少数基于类的面向对象系统（比如第一个动态面向对象的系统 Smalltalk）允许类在程序运行时被修改。</p>
+<p>在基于类的语言中，一个新的实例通过类构造器和构造器可选的参数来构造，结果实例由类选定的行为和布局创建模型。</p>
+<p>在基于原型的系统中构造对象有两种方法，通过复制已有的对象或者通过扩展空对象创建。很多基于原型的系统提倡运行时原型的修改，而基于类的面向对象系统只有动态语言允许类在运行时被修改（Common Lisp、Dylan、Objective-C、Perl、Python、Ruby 和 Smalltalk）。</p>
+<h3 id="JavaScript-的原型概念"><a href="#JavaScript-的原型概念" class="headerlink" title="JavaScript 的原型概念"></a>JavaScript 的原型概念</h3><p>这里，我们主要以 JavaScript 举例，面向对象里面要有个 Class。但是 JavaScript 觉得不是这样的，它就是要基于原型编程，就不要 Class，就直接在对象上改就行了。基于编程的修改，直接对类型进行修改。</p>
+<p>我们先来看一个示例。</p>
+<p>var foo = {name: &quot;foo&quot;, one: 1, two: 2};</p>
+<p>var bar = {three: 3};<br>每个对象都有一个 _<em>proto_<em> 的属性，这个就是“原型”。对于上面的两个对象，如果我们把 foo 赋值给 bar.__proto\</em></em>，那就意味着，bar 的原型就成了 foo的。</p>
+<p>bar._<em>proto_</em> = foo; // foo is now the prototype of bar.<br>于是，我们就可以在 bar 里面访问 foo 的属性了。</p>
+<p>// If we try to access foo&#39;s properties from bar<br>// from now on, we&#39;ll succeed.<br>bar.one // Resolves to 1.</p>
+<p>// The child object&#39;s properties are also accessible.<br>bar.three // Resolves to 3.</p>
+<p>// Own properties shadow prototype properties<br>bar.name = &quot;bar&quot;;<br>foo.name; // unaffected, resolves to &quot;foo&quot;<br>bar.name; // Resolves to &quot;bar&quot;<br>需要解释一下 JavaScript 的两个东西，一个是 _<em>proto_</em>，另一个是 prototype，这两个东西很容易混淆。这里说明一下：</p>
+<p>_<em>proto_</em> 主要是安放在一个实际的对象中，用它来产生一个链接，一个原型链连，用于寻找方法名或属性，等等。</p>
+<p>prototype 是用 new 来创建一个对象时构造 _<em>proto_</em> 用的。它是构造函数的一个属性。</p>
+<p>在 JavaScript 中，对象有两种表现形式， 一种是 Object (ES5 关于 Object 的文档)，一种是 Function （ES5 关于 Function 的文档）。</p>
+<p>我们可以简单地认为，_<em>proto_<em> 是所有对象用于链接原型的一个指针，而 prototype 则是 Function 对象的属性，其主要是用来当需要 new 一个对象时让 _<em>proto_</em> 指针所指向的地方。 对于超级对象 Function 而言， Function.__proto\</em></em> 就是 Function.prototype。</p>
+<p>比如我们有如下的代码：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var a &#x3D; &#123;</span><br><span class="line">  x: 10,</span><br><span class="line">  calculate: function (z) &#123;</span><br><span class="line">    return this.x + this.y + z;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var b &#x3D; &#123;</span><br><span class="line">  y: 20,</span><br><span class="line">  __proto__: a</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var c &#x3D; &#123;</span><br><span class="line">  y: 30,</span><br><span class="line">  __proto__: a</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; call the inherited method</span><br><span class="line">b.calculate(30); &#x2F;&#x2F; 60</span><br><span class="line">c.calculate(40); &#x2F;&#x2F; 80</span><br></pre></td></tr></table></figure><br>其中的“原型链”如下所示：</p>
+<p>注意：ES5 中，规定原型继承需要使用 Object.create() 函数。如下所示：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var b &#x3D; Object.create(a, &#123;y: &#123;value: 20&#125;&#125;);</span><br><span class="line">var c &#x3D; Object.create(a, &#123;y: &#123;value: 30&#125;&#125;);</span><br><span class="line">好了，我们再来看一段代码：</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 一种构造函数写法</span><br><span class="line">function Foo(y) &#123;</span><br><span class="line">  this.y &#x3D; y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 修改 Foo 的 prototype，加入一个成员变量 x</span><br><span class="line">Foo.prototype.x &#x3D; 10;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 修改 Foo 的 prototype，加入一个成员函数 calculate</span><br><span class="line">Foo.prototype.calculate &#x3D; function (z) &#123;</span><br><span class="line">  return this.x + this.y + z;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 现在，我们用 Foo 这个原型来创建 b 和 c</span><br><span class="line">var b &#x3D; new Foo(20);</span><br><span class="line">var c &#x3D; new Foo(30);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 调用原型中的方法，可以得到正确的值</span><br><span class="line">b.calculate(30); &#x2F;&#x2F; 60</span><br><span class="line">c.calculate(40); &#x2F;&#x2F; 80</span><br></pre></td></tr></table></figure><br>那么，在内存中的布局是怎么样的呢？大概是下面这个样子。</p>
+<p>这个图应该可以让你很好地看明白 _<em>proto_</em> 和 prototype 的差别了。</p>
+<p>我们可以测试一下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">b.__proto__ &#x3D;&#x3D;&#x3D; Foo.prototype, &#x2F;&#x2F; true</span><br><span class="line">c.__proto__ &#x3D;&#x3D;&#x3D; Foo.prototype, &#x2F;&#x2F; true</span><br><span class="line"></span><br><span class="line">b.constructor &#x3D;&#x3D;&#x3D; Foo, &#x2F;&#x2F; true</span><br><span class="line">c.constructor &#x3D;&#x3D;&#x3D; Foo, &#x2F;&#x2F; true</span><br><span class="line">Foo.prototype.constructor &#x3D;&#x3D;&#x3D; Foo, &#x2F;&#x2F; true</span><br><span class="line"></span><br><span class="line">b.calculate &#x3D;&#x3D;&#x3D; b.__proto__.calculate, &#x2F;&#x2F; true</span><br><span class="line">b.__proto__.calculate &#x3D;&#x3D;&#x3D; Foo.prototype.calculate &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure><br>这里需要说明的是——Foo.prototype 自动创建了一个属性 constructor，这是一个指向函数自己的一个 reference。这样一来，对于实例 b 或 c 来说，就能访问到这个继承的 constructor 了。</p>
+<p>有了这些基本概念，我们就可以讲一下 JavaScript 的面向对象编程了。</p>
+<p>注： 上面示例和图示来源于 JavaScript, The Core 一文。</p>
+<h3 id="JavaScript-原型编程的面向对象"><a href="#JavaScript-原型编程的面向对象" class="headerlink" title="JavaScript 原型编程的面向对象"></a>JavaScript 原型编程的面向对象</h3><p>我们再来重温一下上面讲述的内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">function Person()&#123;&#125;</span><br><span class="line">var p &#x3D; new Person();</span><br><span class="line"></span><br><span class="line">Person.prototype.name &#x3D; &quot;Hao Chen&quot;;</span><br><span class="line">Person.prototype.sayHello &#x3D; function()&#123;</span><br><span class="line">    console.log(&quot;Hi, I am &quot; + this.name);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(p.name); &#x2F;&#x2F; &quot;Hao Chen&quot;</span><br><span class="line">p.sayHello(); &#x2F;&#x2F; &quot;Hi, I am Hao Chen&quot;</span><br></pre></td></tr></table></figure><br>在上面这个例子中：</p>
+<p>我们先生成了一个空的函数对象 Person()；<br>然后将这个空的函数对象 new 出另一个对象，存在 p 中；<br>这时再改变 Person.prototype，让其有一个 name 的属性和一个 sayHello() 的方法；<br>我们发现，另外那个 p 的对象也跟着一起改变了。<br>注意一下，当创建 function Person(){} 时，Person._<em>proto_<em> 指向 Function.prototype;<br>当创建 var p = new Person() 时，p._<em>proto_</em> 指向 Person.prototype;<br>当修改了 Person.prototype 的内容后，p.__proto\</em></em> 的内容也就被改变了。<br>好了，我们再来看一下“原型编程”中面向对象的编程玩法。</p>
+<p>首先，我们定义一个 Person 类。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Define human class</span><br><span class="line">var Person &#x3D; function (fullName, email) &#123;</span><br><span class="line">  this.fullName &#x3D; fullName;</span><br><span class="line">  this.email &#x3D; email;</span><br><span class="line"></span><br><span class="line">  this.speak &#x3D; function()&#123;</span><br><span class="line">    console.log(&quot;I speak English!&quot;);</span><br><span class="line">  &#125;;</span><br><span class="line">  this.introduction &#x3D; function()&#123;</span><br><span class="line">    console.log(&quot;Hi, I am &quot; + this.fullName);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>上面这个对象中，包含了：</p>
+<p>属性： fullName 和 email；<br>方法： speak() 和 introduction()。<br>其实，所谓的方法也是属性。</p>
+<p>然后，我们可以定义一个 Student 对象。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Define Student class</span><br><span class="line">var Student &#x3D; function(fullName, email, school, courses) &#123;</span><br><span class="line"></span><br><span class="line">  Person.call(this, fullName, email);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Initialize our Student properties</span><br><span class="line">  this.school &#x3D; school;</span><br><span class="line">  this.courses &#x3D; courses;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; override the &quot;introduction&quot; method</span><br><span class="line">  this.introduction&#x3D; function()&#123;</span><br><span class="line">    console.log(&quot;Hi, I am &quot; + this.fullName +</span><br><span class="line">                &quot;. I am a student of &quot; + this.school +</span><br><span class="line">                &quot;, I study &quot;+ this.courses +&quot;.&quot;);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Add a &quot;exams&quot; method</span><br><span class="line">  this.takeExams &#x3D; function()&#123;</span><br><span class="line">    console.log(&quot;This is my exams time!&quot;);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><br>在上面的代码中：</p>
+<p>使用了 Person.call(this, fullName, email)，call() 或 apply() 都是为了动态改变 this 所指向的对象的内容而出现的。这里的 this 就是 Student。</p>
+<p>上面的例子中，我们重载了 introduction() 方法，并新增加了一个 takeExams()的方法。</p>
+<p>虽然，我们这样定义了 Student，但是它还没有和 Person 发生继承关系。为了要让它们发生关系，我们就需要修改 Student 的原型。</p>
+<p>我们可以简单粗暴地做赋值：Student._<em>proto_</em> = Person.prototype ，但是，这太粗暴了。</p>
+<p>我们还是使用比较规范的方式：</p>
+<p>先用 Object.create() 来将Person.prototype 和 Student.prototype 关联上。</p>
+<p>然后，修改一下构造函数 Student.prototype.constructor = Student;。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Create a Student.prototype object that inherits</span><br><span class="line">&#x2F;&#x2F; from Person.prototype.</span><br><span class="line">Student.prototype &#x3D; Object.create(Person.prototype);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Set the &quot;constructor&quot; property to refer to Student</span><br><span class="line">Student.prototype.constructor &#x3D; Student;</span><br></pre></td></tr></table></figure><br>这样，我们就可以这样使用了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var student &#x3D; new Student(&quot;Hao Chen&quot;,</span><br><span class="line">                          &quot;haoel@hotmail.com&quot;,</span><br><span class="line">                          &quot;XYZ University&quot;,</span><br><span class="line">                          &quot;Computer Science&quot;);</span><br><span class="line">student.introduction();   </span><br><span class="line">student.speak();       </span><br><span class="line">student.takeExams();</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Check that instanceof works correctly</span><br><span class="line">console.log(student instanceof Person);  &#x2F;&#x2F; true</span><br><span class="line">console.log(student instanceof Student); &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure><br>上述就是基于原型的面向对象编程的玩法了。</p>
+<p>注：在 ECMAScript 标准的第四版开始寻求使 JavaScript 提供基于类的构造，且 ECMAScript 第六版有提供 &quot;class&quot;(类) 作为原有的原型架构之上的语法糖，提供构建对象与处理继承时的另一种语法。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>我们可以看到，这种玩法就是一种委托的方式。在使用委托的基于原型的语言中，运行时语言可以仅仅通过循着一个序列的指针直到找到匹配这样的方式来定位属性或者寻找正确的数据。所有这些创建行为共享的行为需要的是委托指针。</p>
+<p>不像是基于类的面向对象语言中类和接口的关系，原型和它的分支之间的关系并不要求子对象有相似的内存结构，因为如此，子对象可以继续修改而无需像基于类的系统那样整理结构。还有一个要提到的地方是，不仅仅是数据，方法也能被修改。因为这个原因，大多数基于原型的语言把数据和方法提作“slots”。</p>
+<p>这种在对象里面直接修改的玩法，虽然这个特性可以带来运行时的灵活性，我们可以在运行时修改一个 prototype，给它增加甚至删除属性和方法。但是其带来了执行的不确定性，也有安全性的问题，而代码还变得不可预测，这有点黑科技的味道了。因为这些不像静态类型系统，没有一个不可变的契约对代码的确定性有保证，所以，需要使用者来自己保证。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mouse/" rel="tag"># mouse</a>
+              <a href="/tags/thinking/" rel="tag"># thinking</a>
+              <a href="/tags/programming-paradigm/" rel="tag"># programming_paradigm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/01/06/mouse/programming-paradigm-travel-6-object-oriented-programming/" rel="prev" title="编程范式游记（6）- 面向对象编程">
+      <i class="fa fa-chevron-left"></i> 编程范式游记（6）- 面向对象编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/01/08/mouse/programming-paradigm-travel-8-the-entrustment-pattern-of-go-language/" rel="next" title="编程范式游记（8）- Go 语言的委托模式">
+      编程范式游记（8）- Go 语言的委托模式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript-的原型概念"><span class="nav-number">1.</span> <span class="nav-text">JavaScript 的原型概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript-原型编程的面向对象"><span class="nav-number">2.</span> <span class="nav-text">JavaScript 原型编程的面向对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

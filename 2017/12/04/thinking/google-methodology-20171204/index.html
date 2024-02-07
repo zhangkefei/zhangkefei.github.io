@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="上周我们谈到了图灵对计算机所能够计算问题的边界的思考，并且提到了他所设计的虚拟的计算机模型——图灵机。 图灵提出的图灵机可以讲是今天计算机世界的一个理论上的边界。到今天为止的整个 IT 行业，都没有越过这个边界。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在边界里面做事情">
+<meta property="og:url" content="https://zhangkefei.github.io/2017/12/04/thinking/google-methodology-20171204/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="上周我们谈到了图灵对计算机所能够计算问题的边界的思考，并且提到了他所设计的虚拟的计算机模型——图灵机。 图灵提出的图灵机可以讲是今天计算机世界的一个理论上的边界。到今天为止的整个 IT 行业，都没有越过这个边界。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-04T22:08:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.448Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="thinking">
+<meta property="article:tag" content="谷歌方法论">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2017/12/04/thinking/google-methodology-20171204/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在边界里面做事情 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2017/12/04/thinking/google-methodology-20171204/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在边界里面做事情
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-12-04 22:08:00" itemprop="dateCreated datePublished" datetime="2017-12-04T22:08:00Z">2017-12-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/thinking/" itemprop="url" rel="index"><span itemprop="name">thinking</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上周我们谈到了图灵对计算机所能够计算问题的边界的思考，并且提到了他所设计的虚拟的计算机模型——图灵机。</p>
+<p>图灵提出的图灵机可以讲是今天计算机世界的一个理论上的边界。到今天为止的整个 IT 行业，都没有越过这个边界。<br><a id="more"></a><br>当然你可能会问，将来是否会超越这个边界？我也不知道答案。但是可以告诉你的是，目前从学术界到工业界，没有人试图去改变这个现状。要知道，任何今天开始的努力，可能十年后会有突破性的成果出现，再过20年后，才会有产品，这个周期至少是30年。</p>
+<p>因此，在我有生之年我不担心图灵机的边界问题。当然你还可能会问，为什么大家不试图改变它，突破它，原因很简单，突破它几乎不可能，而改变它并不能比原来更好。</p>
+<p>图灵给出的方法是一条捷径，任何严肃的科学家都没有必要舍近求远，当然经常有民间科学家自认为突破了理论上的极限，或者说他们和主流学界有所不同。</p>
+<p>大部分时候，我们单纯谈差异化是一件极其没有意义的事情，因为改变有好的改变和坏的改变，只有傻子才会为了标榜自己与众不同，找一个更差的差异化道路走。</p>
+<p>事实上，对待各种科学上边界的态度，是衡量职业科学家和民间科学家的试金石。</p>
+<p>在边界里做事情，不仅在计算机行业如此，也适用于所有的工程领域，很多时候在经济学上也都是如此。这是一种工程思维，也是让我们做事情事半功倍的方法。</p>
+<p>今天，我就对边界这个话题谈几点感受：</p>
+<p>先谈第一点：<strong>技术可以提高，但理论的极限无法突破，不要做徒劳的事情。</strong></p>
+<p>我们经常听到 IT 产业里的标准一说，比如媒体上经常谈论移动通信 2G、3G、4G 和接下来 5G 的标准，激光盘的 CD 标准、DVD 标准和蓝光 DVD 标准等等。</p>
+<p><strong>标准的本质是什么？就是在边界内尽可能地做好事情。</strong>在任何时候，技术在不成熟之前，是可以提高的，但是到了趋于成熟之后，理论上的极限是无法突破的。</p>
+<p>有水平的工程师都懂得这一点，因此他们不会在错误的方向上努力。</p>
+<p>我们先看看激光盘的例子。早期的激光盘是为音频（音乐）准备的，容量不是很高，只有700兆，如果用来存今天的高清照片，不过能存十张而已。</p>
+<p>在这个时期，技术是不成熟的，因此工程师们才会在激光盘本身的技术上改进，在激光播放机的精度上改进，这样就可能把容量做上去，于是就诞生了容量大了好几倍的 DVD。</p>
+<p>但是，无论如何改进精度，DVD 的容量都有一个理论上的极限，它受限于红色激光的波长。这时再想改进，其实是瞎费工夫，最终往这个方向投钱的东芝和微软完全失败了。</p>
+<p>后来是怎样获得突破的呢？</p>
+<p>这靠日本科学家发明了波长很短的蓝色激光，用蓝光做光盘，理论极限要比红光高很多，于是才有了今天的蓝光 DVD，也就是 BD（Blu-Ray DVD）。</p>
+<p>从这个例子可以看出，试图突破理论上的极限没有意义。</p>
+<p>当然，从红光 DVD 到蓝光 DVD 换了一种东西，极限也就变了。但是有一些事情的极限谁都无法改变，比如无线通信的带宽。</p>
+<p>在一个空间中，采用无线传输，整个空间里的带宽是有限的，从 AM 收音机用的几十千赫，到我们 WiFi 用的5千兆赫，带宽就这么一点宽。</p>
+<p>根据信息论，带宽是通信总量的上限，超过了这个上限，信号就会互相打架，什么信息都传不出去了，彼此说话都听不清。</p>
+<p>你在大型活动中可能有这样的体会，明明看着 WiFi 信号很强就是连不上，明明有 4G 信号，照片就是发不出去。原因很简单，同一个空间内用的人多了，通信总量超过极限了。</p>
+<p>第二点感受是： <strong>我们所能做的事情，不过是在边界内找到相对好的答案。</strong></p>
+<p>理解了边界所在，就知道了方向。还是以制定移动通信标准的科学家和工程师所能做的事情为例，我们不过是在极限内制定一个好一点的标准，那个标准要兼顾一下总传输率、上网人数，以及联网成功率（不掉线）等很多指标。</p>
+<p>此外还要考虑很多成本因素，发射功率、基站成本、手机设计的复杂程度等等。但是，你不能指望制定出一个总的传输率高，同时上网人数多，又不掉线，成本还低的标准。</p>
+<p>由于有边界的限制，好办法的数量常常也有限。</p>
+<p>以 3G 移动通信为例，高通公司不过是找到了一个相对好一点的标准 CDMA，并且尽可能地把相应技术都用专利保护起来。这样一来，其他国家如果不购买高通的专利，就会错过 3G 时代，各国只好向高通交钱，以至于让高通赚了个盆满钵满。</p>
+<p>到了 4G 时代，中国吃一堑长一智，和高通站在了同一个起跑线上，在制定标准上自然也有份了。</p>
+<p>第三点感受：<strong>写清楚的边界不让外行过去。</strong></p>
+<p>很多时候，理论的边界，行业里的人是懂的，但行业外的人未必能明白，因此后者时不时想做点，或者不小心做了一点越界的傻事。任何一个好的工程师（或者产品经理）都懂得在做事情的时候，很多边界是不能让外行过去的。</p>
+<p>比如说微软或者苹果等大公司做的软件，会引起误操作或者导致死机的功能都被屏蔽掉了，这样一般用户根本无法使用，当然一些专业人士为了调制程序还是可以打开的。</p>
+<p>再比如说，小孩子不小心吃错了药会很麻烦。因此，在美国，处方药的药瓶子一定要做成小孩子打不开的。但是，常人做事情时，常常不会在边界附近设防，以至于时不时闯祸。</p>
+<p>第四点感受：<strong>很多厂家常常利用大众对边界的不了解来赚钱。</strong></p>
+<p>今天很多低端的数码相机（包括很多卡片机和手机）动不动就宣称自己有两千多万像素的分辨率，而尼康最专业的相机 D5 也不过2000万像素。前者真能达到那么高的清晰度么？</p>
+<p>显然不能，因为镜头的分辨率有极限，这个极限来自于自然光的波长，简单地讲靠得很近的两束光会相互干涉，因此，如果镜头太小，成像是不可能清楚的，相机的像素再多，也不过是很多像素堆在一起而已。</p>
+<p>当然，相机的另一个极限是感光的半导体元件的尺寸，一个非常小的手机感光元件，是不足以产生上千万像素的清晰图像的。因此，不要指望手机1000万像素的照片真有那么高的分辨率（这么大的图片打印成17寸的照片，每一个像素应该都是清晰的）。</p>
+<p>今天大众对边界不了解的另一个表现是吃一大堆其实并不需要的维生素。人缺乏了维生素当然不行，但是吃多了也没有用，因为人每天需要的维生素有个上限，这就是边界，超过了这个上限的摄入量，全部被排出了体外，不会产生任何效果。今天商店里的维生素片，动不动就是所需剂量的几倍到几十倍，但是依然有很多人买单。</p>
+<p>面对同样的边界，有的人在边界内玩出精彩，但是也有的人总幻想边界很容易突破，最后处处碰壁。<strong>孔子讲随心所欲不逾矩，只有不逾矩，才能随心所欲。</strong></p>
+<p>愿你能随心所欲！</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/thinking/" rel="tag"># thinking</a>
+              <a href="/tags/%E8%B0%B7%E6%AD%8C%E6%96%B9%E6%B3%95%E8%AE%BA/" rel="tag"># 谷歌方法论</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/29/thinking/google-methodology-20171129-why-computer-is-not-omnipotent/" rel="prev" title="为什么计算机不是万能的">
+      <i class="fa fa-chevron-left"></i> 为什么计算机不是万能的
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/05/thinking/google-methodology-20171205/" rel="next" title="苹果成功的奥秘：从科学和技术的区别说起">
+      苹果成功的奥秘：从科学和技术的区别说起 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

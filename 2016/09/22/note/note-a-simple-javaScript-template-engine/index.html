@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="前言能够访问到这篇文章的同学，初衷是想知道如何编写JavaScript的模板引擎。为了照顾一些没有使用过模板引擎的同学，先来稍微介绍一下什么叫模板引擎。如果没有使用过模板引擎，但是又尝试过在页面渲染一个列表的时候，那么一般的做法是通过拼接字符串实现的，如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编写一个简单的JavaScript模板引擎">
+<meta property="og:url" content="https://zhangkefei.github.io/2016/09/22/note/note-a-simple-javaScript-template-engine/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="前言能够访问到这篇文章的同学，初衷是想知道如何编写JavaScript的模板引擎。为了照顾一些没有使用过模板引擎的同学，先来稍微介绍一下什么叫模板引擎。如果没有使用过模板引擎，但是又尝试过在页面渲染一个列表的时候，那么一般的做法是通过拼接字符串实现的，如下：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-09-22T19:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2016/09/22/note/note-a-simple-javaScript-template-engine/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>编写一个简单的JavaScript模板引擎 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2016/09/22/note/note-a-simple-javaScript-template-engine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          编写一个简单的JavaScript模板引擎
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-09-22 19:09:00" itemprop="dateCreated datePublished" datetime="2016-09-22T19:09:00Z">2016-09-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>能够访问到这篇文章的同学，初衷是想知道如何编写JavaScript的模板引擎。为了照顾一些没有使用过模板引擎的同学，先来稍微介绍一下什么叫模板引擎。如果没有使用过模板引擎，但是又尝试过在页面渲染一个列表的时候，那么一般的做法是通过拼接字符串实现的，如下：<br><a id="more"></a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const arr &#x3D; [&#123;</span><br><span class="line">	&quot;name&quot;: &quot;google&quot;,</span><br><span class="line">	&quot;url&quot;: &quot;https:&#x2F;&#x2F;www.google.com&quot;</span><br><span class="line">&#125;, &#123;</span><br><span class="line">	&quot;name&quot;: &quot;baidu&quot;,</span><br><span class="line">	&quot;url&quot;: &quot;https:&#x2F;&#x2F;www.baidu.com&#x2F;&quot;</span><br><span class="line">&#125;]</span><br><span class="line"></span><br><span class="line">let html &#x3D; &#39;&#39;</span><br><span class="line">html +&#x3D; &#39;&lt;ul&gt;&#39;</span><br><span class="line">for (var i &#x3D; 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">	html +&#x3D; &#96;&lt;li&gt;&lt;a href&#x3D;&quot;$&#123;arr[i].url&#125;&quot;&gt;$&#123;arr[i].name&#125;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;&#96;</span><br><span class="line">&#125;</span><br><span class="line">html +&#x3D; &#39;&lt;&#x2F;ul&gt;&#39;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，我使用了ES6的反引号(``)语法动态生成了一个ul列表，看上去貌似不会复杂（如果使用字符串拼接，会繁琐很多），但是这里有一点糟糕的是：数据和结构强耦合。这导致的问题是如果数据或者结构发生变化时，都需要改变上面的代码，这在当下前端开发中是不能忍受的，我们需要的是数据和结构松耦合。如果要实现松耦合，那么就应该结构归结构，数据从服务器获取并整理好之后，再通过模板渲染数据，这样我们就可以将精力放在JavaScript上了。而使用模板引擎的话是这样实现的。如下：<br>HTML列表<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">&lt;% for (var i &#x3D; 0; i &lt; obj.users.length; i++) &#123; %&gt;</span><br><span class="line">	&lt;li&gt;</span><br><span class="line">		&lt;a href&#x3D;&quot;&lt;%&#x3D; obj.users[i].url %&gt;&quot;&gt;</span><br><span class="line">			&lt;%&#x3D; obj.users[i].name %&gt;</span><br><span class="line">		&lt;&#x2F;a&gt;</span><br><span class="line">	&lt;&#x2F;li&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br><span class="line">&lt;&#x2F;ul&gt;</span><br></pre></td></tr></table></figure><br>JS数据<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const arr &#x3D; [&#123;</span><br><span class="line">	&quot;name&quot;: &quot;google&quot;,</span><br><span class="line">	&quot;url&quot;: &quot;https:&#x2F;&#x2F;www.google.com&quot;</span><br><span class="line">&#125;, &#123;</span><br><span class="line">	&quot;name&quot;: &quot;baidu&quot;,</span><br><span class="line">	&quot;url&quot;: &quot;https:&#x2F;&#x2F;www.baidu.com&#x2F;&quot;</span><br><span class="line">&#125;]</span><br><span class="line"></span><br><span class="line">const html &#x3D; tmpl(&#39;list&#39;, arr)</span><br><span class="line">console.log(html)</span><br></pre></td></tr></table></figure><br>打印出的结果为<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">    &lt;li&gt;&lt;a href&#x3D;&quot;https:&#x2F;&#x2F;www.google.com&quot;&gt;google&lt;&#x2F;a&gt;</span><br><span class="line">    &lt;&#x2F;li&gt;</span><br><span class="line">    &lt;li&gt;&lt;a href&#x3D;&quot;https:&#x2F;&#x2F;www.baidu.com&#x2F;&quot;&gt;baidu&lt;&#x2F;a&gt;</span><br><span class="line">    &lt;&#x2F;li&gt;</span><br><span class="line">&lt;&#x2F;ul&gt;</span><br></pre></td></tr></table></figure><br>从以上的代码可以看出，将结构和数据传入tmpl函数中，就能实现拼接。而tmpl正是我们所说的模板引擎（函数）。</p>
+<p>接下来我们就来实现一下这个函数。</p>
+<p>模板引擎的实现通过函数将数据塞到模板里面，函数内部的具体实现还是通过拼接字符串来实现。而通过模板的方式，可以降低拼接字符串出错而造成时间成本的增加。而模板引擎函数实现的本质，就是将模板中HTML结构与JavaScript语句、变量分离，通过Function构造函数 + apply(call)动态生成具有数据性的HTML代码。而如果要考虑性能的话，可以将模板进行缓存处理。请记住上面所说的本质，甚至背诵下来。实现一个模板引擎函数，大致有以下步骤：</p>
+<p>模板获取模板中HTML结构与JavaScript语句、变量分离Function + apply(call)动态生成JavaScript代码模板缓存OK，接下来看看如何实现吧: )模板获取一般情况下，我们会把模板写在script标签中，赋予id属性，标识模板的唯一性；赋予type=&#39;text/html&#39;属性，标识其MIME类型为HTML，如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;script type&#x3D;&quot;text&#x2F;html&quot; id&#x3D;&quot;template&quot;&gt;</span><br><span class="line">	&lt;ul&gt;</span><br><span class="line">		&lt;% if (obj.show) &#123; %&gt;</span><br><span class="line">			&lt;% for (var i &#x3D; 0; i &lt; obj.users.length; i++) &#123; %&gt;</span><br><span class="line">				&lt;li&gt;</span><br><span class="line">					&lt;a href&#x3D;&quot;&lt;%&#x3D; obj.users[i].url %&gt;&quot;&gt;</span><br><span class="line">						&lt;%&#x3D; obj.users[i].name %&gt;</span><br><span class="line">					&lt;&#x2F;a&gt;</span><br><span class="line">				&lt;&#x2F;li&gt;</span><br><span class="line">			&lt;% &#125; %&gt;</span><br><span class="line">		&lt;% &#125; else &#123; %&gt;</span><br><span class="line">			&lt;p&gt;不展示列表&lt;&#x2F;p&gt;</span><br><span class="line">		&lt;% &#125; %&gt;</span><br><span class="line">	&lt;&#x2F;ul&gt;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>在模板引擎中，选用&lt;% xxx %&gt;标识JavaScript语句，主要用于流程控制，无输出；&lt;%= xxx %&gt;标识JavaScript变量，用于将数据输出到模板；其余部分都为HTML代码。（与EJS类似）。当然，你也可以用&lt;@ xxx @&gt;, &lt;=@ @&gt;、&lt;* xxx *&gt;, &lt;*= xxx *&gt;等。传入模板引擎函数中的第一个参数，可以是一个id，也可以是模板字符串。此时，需要通过正则去判断是模板字符串还是id。如下<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let tpl &#x3D; &#39;&#39;</span><br><span class="line">const tmpl &#x3D; (str, data) &#x3D;&gt; &#123;</span><br><span class="line">    &#x2F;&#x2F; 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取</span><br><span class="line">    if (!&#x2F;[\s\W]&#x2F;g.test(str)) &#123;</span><br><span class="line">        tpl &#x3D; document.getElementById(str).innerHTML</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        tpl &#x3D; str</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>HTML结构与JavaScript语句、变量分离这一步骤是引擎中最最最重要的步骤，如果实现了，那就是实现了一大步了。所以我们使用两种方法来实现。假如获取到的模板字符串如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;ul&gt;</span><br><span class="line">	&lt;% if (obj.show) &#123; %&gt;</span><br><span class="line">		&lt;% for (var i &#x3D; 0; i &lt; obj.users.length; i++) &#123; %&gt;</span><br><span class="line">			&lt;li&gt;</span><br><span class="line">				&lt;a href&#x3D;&quot;&lt;%&#x3D; obj.users[i].url %&gt;&quot;&gt;</span><br><span class="line">					&lt;%&#x3D; obj.users[i].name %&gt;</span><br><span class="line">				&lt;&#x2F;a&gt;</span><br><span class="line">			&lt;&#x2F;li&gt;</span><br><span class="line">		&lt;% &#125; %&gt;</span><br><span class="line">	&lt;% &#125; else &#123; %&gt;</span><br><span class="line">		&lt;p&gt;不展示列表&lt;&#x2F;p&gt;</span><br><span class="line">	&lt;% &#125; %&gt;</span><br><span class="line">&lt;&#x2F;ul&gt;</span><br></pre></td></tr></table></figure><br>先来看看第一种方法吧，主要是通过replace函数替换实现的。说明一下主要流程：创建数组arr，再拼接字符串arr.push(&#39;遇到换行回车，替换为空字符串遇到&lt;%时，替换为&#39;);遇到&gt;%时，替换为arr.push(&#39;遇到&lt;%= xxx %&gt;，结合第3、4步，替换为&#39;); arr.push(xxx); arr.push(&#39;最后拼接字符串&#39;); return p.join(&#39;&#39;);在代码中，需要将第5步写在2、3步骤前面，因为有更高的优先级，否则会匹配出错。如下<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let tpl &#x3D; &#39;&#39;</span><br><span class="line">const tmpl &#x3D; (str, data) &#x3D;&gt; &#123;</span><br><span class="line">  &#x2F;&#x2F; 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取</span><br><span class="line">  if (!&#x2F;[\s\W]&#x2F;g.test(str)) &#123;</span><br><span class="line">      tpl &#x3D; document.getElementById(str).innerHTML</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">      tpl &#x3D; str</span><br><span class="line">  &#125;</span><br><span class="line">  let result &#x3D; &#96;let p &#x3D; []; p.push(&#39;&#96;</span><br><span class="line">  result +&#x3D; &#96;$&#123;</span><br><span class="line">	tpl.replace(&#x2F;[\r\n\t]&#x2F;g, &#39;&#39;)</span><br><span class="line">	   .replace(&#x2F;&lt;%&#x3D;\s*([^%&gt;]+?)\s*%&gt;&#x2F;g, &quot;&#39;); p.push($1); p.push(&#39;&quot;)</span><br><span class="line">	   .replace(&#x2F;&lt;%&#x2F;g, &quot;&#39;);&quot;)</span><br><span class="line">	   .replace(&#x2F;%&gt;&#x2F;g, &quot;p.push(&#39;&quot;)</span><br><span class="line">  &#125;&#96;</span><br><span class="line">  result +&#x3D; &quot;&#39;); return p.join(&#39;&#39;);&quot;      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>细细品味上面的每一个步骤，就能够将HTML结构和JavaScript语句、变量拼接起来了。拼接之后的代码如下（格式化代码了，否则没有换行的）<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let p &#x3D; [];</span><br><span class="line">p.push(&#39;&lt;ul&gt;&#39;);</span><br><span class="line">if (obj.show) &#123;</span><br><span class="line">    p.push(&#39;&#39;);</span><br><span class="line">    for (var i &#x3D; 0; i &lt; obj.users.length; i++) &#123;</span><br><span class="line">        p.push(&#39;&lt;li&gt;&lt;a href&#x3D;&quot;&#39;);</span><br><span class="line">        p.push(obj.users[i].url);</span><br><span class="line">        p.push(&#39;&quot;&gt;&#39;);</span><br><span class="line">        p.push(obj.users[i].name);</span><br><span class="line">        p.push(&#39;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">    p.push(&#39;&#39;);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    p.push(&#39;&lt;p&gt;不展示列表&lt;&#x2F;p&gt;&#39;);</span><br><span class="line">&#125;</span><br><span class="line">p.push(&#39;&lt;&#x2F;ul&gt;&#39;);</span><br><span class="line">return p.join(&#39;&#39;);</span><br></pre></td></tr></table></figure><br>这里要注意的是，我们不能将JavaScript语句push到数组里面，而是单独存在。因为如果以JS语句的形式push进去，会报错；如果以字符串的形式push进去，那么就不会有作用了，比如for循环、if判断都会无效。当然JavaScript变量push到数组内的时候，要注意也不能以字符串的形式，否则会无效。如<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p.push(&#39;for(var i &#x3D;0; i &lt; obj.users.length; i++)&#123;&#39;)  &#x2F;&#x2F; 无效</span><br><span class="line">p.push(&#39;obj.users[i].name&#39;) &#x2F;&#x2F; 无效</span><br><span class="line">p.push(for(var i &#x3D;0; i &lt; obj.users.length; i++)&#123;)  &#x2F;&#x2F; 报错</span><br></pre></td></tr></table></figure><br>从模板引擎函数可以看出，我们是通过单引号来拼接HTML结构的，这里如果稍微思考一下，如果模板中出现了单引号，那会影响整个函数的执行的。还有一点，如果出现了 \ 反引号，会将单引号转义了。所以需要对单引号和反引号做一下优化处理。模板中遇到 \ 反引号，需要转义遇到 &#39; 单引号，需要将其转义转换为代码，即为<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">str.replace(&#x2F;\\&#x2F;g, &#39;\\\\&#39;)</span><br><span class="line">    .replace(&#x2F;&#39;&#x2F;g, &quot;\\&#39;&quot;)</span><br><span class="line">&#96;&#96;&#96;   </span><br><span class="line">结合上面的部分，即</span><br></pre></td></tr></table></figure><br>let tpl = &#39;&#39;<br>const tmpl = (str, data) =&gt; {<br>  // 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取<br>  if (!/[\s\W]/g.test(str)) {<br>      tpl = document.getElementById(str).innerHTML<br>  } else {<br>      tpl = str<br>  }<br>  let result = <code>let p = []; p.push(&#39;</code><br>  result += <code>${
+    tpl.replace(/[\r\n\t]/g, &#39;&#39;)
+           .replace(/\\/g, &#39;\\\\&#39;)
+           .replace(/&#39;/g, &quot;\\&#39;&quot;)
+       .replace(/&lt;%=\s*([^%&gt;]+?)\s*%&gt;/g, &quot;&#39;); p.push($1); p.push(&#39;&quot;)
+       .replace(/&lt;%/g, &quot;&#39;);&quot;)
+       .replace(/%&gt;/g, &quot;p.push(&#39;&quot;)
+  }</code><br>  result += &quot;&#39;); return p.join(&#39;&#39;);&quot;<br>}<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">这里的模板引擎函数用了ES6的语法和正则表达式，如果对正则表达式懵逼的同学，可以先去学习正则先，懂了之后再回头看这篇文章，会恍然大悟的。OK，来看看第二种方法实现模板引擎函数。跟第一种方法不同的是，不只是使用replace函数进行简单的替换。简单说一下思路：需要一个正则表达式&#x2F;&lt;%&#x3D;?\s*([^%&gt;]+?)\s*%&gt;&#x2F;g， 可以匹配&lt;% xxx %&gt;, &lt;%&#x3D; xxx %&gt;需要一个辅助变量cursor，记录HTML结构匹配的开始位置需要使用exec函数，匹配过程中内部的index值会根据每一次匹配成功后动态的改变其余一些逻辑与第一种方法类似OK，我们来看看具体的代码</span><br></pre></td></tr></table></figure><br>let tpl = &#39;&#39;<br>let match = &#39;&#39;  // 记录exec函数匹配到的值<br>// 匹配模板id<br>const idReg = /[\s\W]/g<br>// 匹配JavaScript语句或变量<br>const tplReg = /&lt;%=?\s<em>(<sup><a href="#fn_%>" id="reffn_%>">%></a></sup>+?)\s</em>%&gt;/g</p>
+<p>const add = (str, result) =&gt; {<br>    str = str.replace(/[\r\n\t]/g, &#39;&#39;)<br>        .replace(/\/g, &#39;\\&#39;)<br>        .replace(/&#39;/g, &quot;\&#39;&quot;)<br>    result += <code>result.push(&#39;${string}&#39;);</code><br>    return result<br>}</p>
+<p>const tmpl = (str, data) =&gt; {<br>    // 记录HTML结构匹配的开始位置<br>    let cursor = 0<br>    let result = &#39;let result = [];&#39;<br>    // 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取<br>    if (!idReg.test(str)) {<br>        tpl = document.getElementById(str).innerHTML<br>    } else {<br>        tpl = str<br>    }<br>        // 使用exec函数，每次匹配成功会动态改变index的值<br>    while (match = tplReg.exec(tpl)) {<br>        result = add(tpl.slice(cursor, match.index), result) // 匹配HTML结构<br>        result = add(match[1], result)                     // 匹配JavaScript语句、变量<br>        cursor = match.index + match[0].length                 // 改变HTML结果匹配的开始位置<br>    }<br>    result = add(tpl.slice(cursor), result)                                 // 匹配剩余的HTML结构<br>    result += &#39;return result.join(&quot;&quot;)&#39;<br>}<br>console.log(tmpl(&#39;template&#39;))<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">上面使用了辅助函数add，每次传入str的时候，都需要对传入的模板字符串做优化处理，防止模板字符串中出现非法字符（换行，回车，单引号&#39;，反引号\ 等）。执行后代码格式化后如下（实际上没有换行，因为替换成空字符串了，为了好看..）。</span><br></pre></td></tr></table></figure><br>let result =[];<br>result.push(&#39;<ul>');
+result.push('if (obj.show) {');
+result.push('');
+result.push('for (var i = 0; i < obj.users.length; i++) {');
+result.push('<li><a href="');
+result.push('obj.users[i].url');
+result.push('">');
+result.push('obj.users[i].name');
+result.push('</a></li>');
+result.push('}');
+result.push('');
+result.push('} else {');
+result.push('<p>什么鬼什么鬼</p>');
+result.push('}');
+result.push('</ul>&#39;);<br>return result.join(&quot;&quot;)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">从以上代码中，可以看出HTML结构作为字符串push到result数组了。但是JavaScript语句也push进去了，变量作为字符串push进去了.. 原因跟第一种方法一样，要把语句单独拎出来，变量以自身push进数组。改造一下代码</span><br></pre></td></tr></table></figure><br>let tpl = &#39;&#39;<br>let match = &#39;&#39;  // 记录exec函数匹配到的值<br>// 匹配模板id<br>const idReg = /[\s\W]/g<br>// 匹配JavaScript语句或变量<br>const tplReg = /&lt;%=?\s<em>(<sup><a href="#fn_%>" id="reffn_%>">%></a></sup>+?)\s</em>%&gt;/g<br>const keyReg = /(for|if|else|switch|case|break|{|})/g   // <em>**</em> 增加正则匹配语句</p>
+<p>const add = (str, result, js) =&gt; {<br>    str = str.replace(/[\r\n\t]/g, &#39;&#39;)<br>        .replace(/\/g, &#39;\\&#39;)<br>        .replace(/&#39;/g, &quot;\&#39;&quot;)<br>        // <em>**</em> 增加三元表达式的判断，三种情况：JavaScript语句、JavaScript变量、HTML结构。<br>    result += js ? str.match(keyReg) ? <code>${str}</code> : <code>result.push(${str});</code> : <code>result.push(&#39;${str}&#39;);</code><br>    return result<br>}</p>
+<p>const tmpl = (str, data) =&gt; {<br>    // 记录HTML结构匹配的开始位置<br>    let cursor = 0<br>    let result = &#39;let result = [];&#39;<br>    // 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取<br>    if (!idReg.test(str)) {<br>        tpl = document.getElementById(str).innerHTML<br>    } else {<br>        tpl = str<br>    }<br>        // 使用exec函数，每次匹配成功会动态改变index的值<br>    while (match = tplReg.exec(tpl)) {<br>        result = add(tpl.slice(cursor, match.index), result) // 匹配HTML结构<br>        result = add(match[1], result, true)             // <em>**</em> 匹配JavaScript语句、变量<br>        cursor = match.index + match[0].length                 // 改变HTML结果匹配的开始位置<br>    }<br>    result = add(tpl.slice(cursor), result)                     // 匹配剩余的HTML结构<br>    result += &#39;return result.join(&quot;&quot;)&#39;<br>}<br>console.log(tmpl(&#39;template&#39;))<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">执行后的代码格式化后如下</span><br></pre></td></tr></table></figure><br>let result = [];<br>result.push(&#39;<ul>');
+if (obj.show) {
+    result.push('');
+    for (var i = 0; i < obj.users.length; i++) {
+        result.push('<li><a href="');
+        result.push(obj.users[i].url);
+        result.push('">');
+        result.push(obj.users[i].name);
+        result.push('</a></li>');
+    }
+    result.push('');
+} else {
+    result.push('<p>什么鬼什么鬼</p>');
+}
+result.push('</ul>&#39;);<br>return result.join(&quot;&quot;)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">至此，已经达到了我们的要求。两种模板引擎函数的实现已经介绍完了，这里稍微总结一下两种方法都使用了数组，拼接完成后再join一下第一种方法纯属使用replace函数，匹配成功后进行替换第二种方法使用exec函数，利用其动态改变的index值捕获到HTML结构、JavaScript语句和变量当然，两种方法都可以使用字符串拼接，但是我在Chrome浏览器中对比了一下，数组还是快很多的呀，所以这也算是一个优化方案吧：用数组拼接比字符串拼接要快50%左右！</span><br><span class="line"></span><br><span class="line">以下是字符串和数组拼接的验证</span><br></pre></td></tr></table></figure><br>console.log(&#39;开始计算字符串拼接&#39;)<br>const start2 = Date.now()<br>let str = &#39;&#39;<br>for (var i = 0; i &lt; 9999999; i++) {<br>  str += &#39;1&#39;<br>}<br>const end2 = Date.now()<br>console.log(<code>字符串拼接运行时间: ${end2 - start2}</code>ms)</p>
+<p>console.log(&#39;----------------&#39;)</p>
+<p>console.log(&#39;开始计算数组拼接&#39;)<br>const start1 = Date.now()<br>const arr = []<br>for (var i = 0; i &lt; 9999999; i++) {<br>  arr.push(&#39;1&#39;)<br>}<br>arr.join(&#39;&#39;)<br>const end1 = Date.now()<br>console.log(<code>数组拼接运行时间: ${end1 - start1}</code>ms)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">结果如下：  </span><br><span class="line">开始计算字符串拼接  </span><br><span class="line">字符串拼接运行时间: 2548ms</span><br><span class="line"></span><br><span class="line">开始计算数组拼接  </span><br><span class="line">数组拼接运行时间: 1359ms  </span><br><span class="line"></span><br><span class="line">Function + apply(call)动态生成HTML代码上面两种方法中，result是字符串，怎么将其变成可执行的JavaScript代码呢？这里使用了Function构造函数来创建一个函数（当然也可以使用eval函数，但是不推荐）大多数情况下，创建一个函数会直接使用函数声明或函数表达式的方式</span><br></pre></td></tr></table></figure><br>function test () {}<br>const test = function test () {}<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">以这种方式生成的函数会成为Function构造函数的实例对象test instanceof Function   &#x2F;&#x2F; true</span><br><span class="line">当然也可以直接使用Function构造函数直接创建一个函数，这样做的性能会稍微差了一些（双重解析，JavaScript解析JavaScript代码，代码包含在字符串中，也就是说在 JavaScript 代码运行的同时必须新启动一个解析器来解析新的代码。实例化一个新的解析器有不容忽视的开销，所以这种代码要比直接解析慢得多。）</span><br></pre></td></tr></table></figure><br>const test = new Function(&#39;arg1&#39;, &#39;arg2&#39;, ... , &#39;console.log(arg1 + arg2)&#39;)<br>test(1 + 2) // 3<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">鱼和熊掌不可得兼，渲染便利的同时带来了部分的性能损失Function构造函数可以传入多个参数，最后一个参数代表执行的语句。因此我们可以这样const fn &#x3D; new Funcion(result)</span><br><span class="line">如果需要传入参数，可以使用call或者apply改变函数执行时所在的作用域即可。fn.apply(data)</span><br><span class="line"></span><br><span class="line">模板缓存使用模板的原因不仅在于避免手动拼接字符串而带来不必要的错误，而且在某些场景下可以复用模板代码。为了避免同一个模板多次重复拼接字符串，可以将模板缓存起来。我们这里缓存当传入的是id时可以缓存下来。实现的逻辑不复杂，在接下来的代码可以看到。好了， 结合上面讲到的所有内容，给出两种方式实现的模板引擎的最终代码第一种方法：</span><br></pre></td></tr></table></figure><br>let tpl = &#39;&#39;<br>// 匹配模板的id<br>let idReg = /[\s\W]/g<br>const cache = {}</p>
+<p>const add = tpl =&gt; {<br>    // 匹配成功的值做替换操作<br>    return tpl.replace(/[\r\n\t]/g, &#39;&#39;)<br>        .replace(/\/g, &#39;\\&#39;)<br>        .replace(/&#39;/g, &quot;\&#39;&quot;)<br>        .replace(/&lt;%=\s<em>(<sup><a href="#fn_%>" id="reffn_%>">%></a></sup>+?)\s</em>%&gt;/g, &quot;&#39;); p.push($1); p.push(&#39;&quot;)<br>        .replace(/&lt;%/g, &quot;&#39;);&quot;)<br>        .replace(/%&gt;/g, &quot;p.push(&#39;&quot;)<br>}</p>
+<p>const tmpl = (str, data) =&gt; {<br>    let result = <code>let p = []; p.push(&#39;</code><br>        // 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取<br>    if (!idReg.test(str)) {<br>        tpl = document.getElementById(&#39;template&#39;).innerHTML<br>        if (cache[str]) {<br>            return cache[str].apply(data)<br>        }<br>    } else {<br>        tpl = str<br>    }<br>    result += add(tpl)<br>    result += &quot;&#39;); return p.join(&#39;&#39;);&quot;<br>    let fn = new Function(result)        // 转成可执行的JS代码<br>    if (!cache[str] &amp;&amp; !idReg.test(str)) {    // 只用传入的是id的情况下才缓存模板<br>        cache[str] = fn<br>    }<br>    return fn.apply(data)                                        // apply改变函数执行的作用域<br>}<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">第二种方法：</span><br></pre></td></tr></table></figure><br>let tpl = &#39;&#39;<br>let match = &#39;&#39;<br>const cache = {}<br>// 匹配模板id<br>const idReg = /[\s\W]/g<br>// 匹配JavaScript语句或变量<br>const tplReg = /&lt;%=?\s<em>(<sup><a href="#fn_%>" id="reffn_%>">%></a></sup>+?)\s</em>%&gt;/g<br>// 匹配各种关键字<br>const keyReg = /(for|if|else|switch|case|break|{|})/g</p>
+<p>const add = (str, result, js) =&gt; {<br>    str = str.replace(/[\r\n\t]/g, &#39;&#39;)<br>        .replace(/\/g, &#39;\\&#39;)<br>        .replace(/&#39;/g, &quot;\&#39;&quot;)<br>    result += js ? str.match(keyReg) ? <code>${str}</code> : <code>result.push(${str});</code> : <code>result.push(&#39;${str}&#39;);</code><br>    return result<br>}</p>
+<p>const tmpl = (str, data) =&gt; {<br>    let cursor = 0<br>    let result = &#39;let result = [];&#39;<br>        // 如果是模板字符串，会包含非单词部分（&lt;, &gt;, %,  等）；如果是id，则需要通过getElementById获取<br>    if (!idReg.test(str)) {<br>        tpl = document.getElementById(str).innerHTML<br>        // 缓存处理<br>        if (cache[str]) {<br>            return cache[str].apply(data)<br>        }<br>    } else {<br>        tpl = str<br>    }<br>    // 使用exec函数，动态改变index的值<br>    while (match = tplReg.exec(tpl)) {<br>        result = add(tpl.slice(cursor, match.index), result) // 匹配HTML结构<br>        result = add(match[1], result, true)             // 匹配JavaScript语句、变量<br>        cursor = match.index + match[0].length             // 改变HTML结果匹配的开始位置<br>    }<br>    result = add(tpl.slice(cursor), result)                     // 匹配剩余的HTML结构<br>    result += &#39;return result.join(&quot;&quot;)&#39;<br>    let fn = new Function(result)                             // 转成可执行的JS代码<br>    if (!cache[str] &amp;&amp; !idReg.test(str)) {                       // 只有传入的是id的情况下才缓存模板<br>        cache[str] = fn<br>    }<br>    return fn.apply(data)                                      // apply改变函数执行的作用域<br>}<br>```</p>
+<p>最后呼，基本上说完了，最后还是想稍微总结一下假如！假如面试的时候面试官问你，请大致描述一下JavaScript模板引擎的原理，那么以下的总结可能会给予你一些帮助。噢.. 模板引擎实现的原理大致是将模板中的HTML结构和JavaScript语句、变量分离，将HTML结构以字符串的形式push到数组中，将JavaScript语句独立抽取出来，将JavaScript变量以其自身push到数组中，通过replace函数的替换或者exec函数的遍历，构建出带有数据的HTML代码，最后通过Function构造函数 + apply(call)函数生成可执行的JavaScript代码。如果回答出来了，面试官心里顿时发现千里马：欸，好像很叼也？</p>
+<p>接着试探一下：<br>为什么要用数组？<br>可以用字符串吗？<br>两者有什么区别？<br>简单的一下replace和exec函数的使用？<br>exec 和match函数有什么不同？<br>/&lt;%=?\s<em>(<sup><a href="#fn_%>" id="reffn_%>">%></a></sup>+?)\s</em>%&gt;/g 这段正则是什么意思？<br>简单说明apply、call、bind函数的区别？<br>Function构造函数的使用，有什么弊端？<br>函数声明和函数表达式的区别？<br>....<br>这一段总结还可以扯出好多知识点... 翻滚吧，千里马！OK，至此，关于实现一个简单的JavaScript模板引擎就介绍到这里了，如果读者耐心、细心的看完了这篇文章，我相信你的收获会是满满的。如果看完了仍然觉得懵逼，如果不介意的话，可以再多品味几次。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/09/08/softwareengineering/software-architecture/" rel="prev" title="软件架构入门">
+      <i class="fa fa-chevron-left"></i> 软件架构入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/09/30/note/note-about-character-sets-and-encoding/" rel="next" title="文字编码的那些事">
+      文字编码的那些事 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

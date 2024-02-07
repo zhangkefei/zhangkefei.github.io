@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="越来越多的人开始意识到，网站即软件，而且是一种新型的软件。这种&quot;互联网软件&quot;采用客户端&#x2F;服务器模式，建立在分布式体系上，通过互联网通信，具有高延时（high latency）、高并发等特点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解RESTful架构">
+<meta property="og:url" content="https://zhangkefei.github.io/2011/09/12/softwareengineering/restful/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="越来越多的人开始意识到，网站即软件，而且是一种新型的软件。这种&quot;互联网软件&quot;采用客户端&#x2F;服务器模式，建立在分布式体系上，通过互联网通信，具有高延时（high latency）、高并发等特点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201109/bg2011091202.jpg">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201109/bg2011091201.jpg">
+<meta property="article:published_time" content="2011-09-12T10:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.448Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="SoftwareEngineering">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/201109/bg2011091202.jpg">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2011/09/12/softwareengineering/restful/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>理解RESTful架构 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2011/09/12/softwareengineering/restful/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          理解RESTful架构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2011-09-12 10:09:00" itemprop="dateCreated datePublished" datetime="2011-09-12T10:09:00Z">2011-09-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SoftwareEngineering/" itemprop="url" rel="index"><span itemprop="name">SoftwareEngineering</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>越来越多的人开始意识到，网站即软件，而且是一种新型的软件。这种&quot;互联网软件&quot;采用客户端/服务器模式，建立在分布式体系上，通过互联网通信，具有高延时（high latency）、高并发等特点。<br><a id="more"></a><br>网站开发，完全可以采用软件开发的模式。但是传统上，软件和网络是两个不同的领域，很少有交集；软件开发主要针对单机环境，网络则主要研究系统之间的通信。互联网的兴起，使得这两个领域开始融合，现在我们必须考虑，如何开发在互联网环境中使用的软件。</p>
+<p><img data-src="http://www.ruanyifeng.com/blogimg/asset/201109/bg2011091202.jpg" alt=""></p>
+<p>RESTful架构，就是目前最流行的一种互联网软件架构。它结构清晰、符合标准、易于理解、扩展方便，所以正得到越来越多网站的采用。</p>
+<p>但是，到底什么是RESTful架构，并不是一个容易说清楚的问题。下面，我就谈谈我理解的RESTful架构。</p>
+<h2 id="一、起源"><a href="#一、起源" class="headerlink" title="一、起源"></a>一、起源</h2><p>REST这个词，是Roy Thomas Fielding在他2000年的博士论文中提出的。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/201109/bg2011091201.jpg" alt=""></p>
+<p>Fielding是一个非常重要的人，他是HTTP协议（1.0版和1.1版）的主要设计者、Apache服务器软件的作者之一、Apache基金会的第一任主席。所以，他的这篇论文一经发表，就引起了关注，并且立即对互联网开发产生了深远的影响。</p>
+<p>他这样介绍论文的写作目的：</p>
+<blockquote>
+<p>&quot;本文研究计算机科学两大前沿----软件和网络----的交叉点。长期以来，软件研究主要关注软件设计的分类、设计方法的演化，很少客观地评估不同的设计选择对系统行为的影响。而相反地，网络研究主要关注系统之间通信行为的细节、如何改进特定通信机制的表现，常常忽视了一个事实，那就是改变应用程序的互动风格比改变互动协议，对整体表现有更大的影响。我这篇文章的写作目的，就是想在符合架构原理的前提下，理解和评估以网络为基础的应用软件的架构设计，得到一个功能强、性能好、适宜通信的架构。&quot;</p>
+<p>(This dissertation explores a junction on the frontiers of two research disciplines in computer science: software and networking. Software research has long been concerned with the categorization of software designs and the development of design methodologies, but has rarely been able to objectively evaluate the impact of various design choices on system behavior. Networking research, in contrast, is focused on the details of generic communication behavior between systems and improving the performance of particular communication techniques, often ignoring the fact that changing the interaction style of an application can have more impact on performance than the communication protocols used for that interaction. My work is motivated by the desire to understand and evaluate the architectural design of network-based application software through principled use of architectural constraints, thereby obtaining the functional, performance, and social properties desired of an architecture. )</p>
+</blockquote>
+<h2 id="二、名称"><a href="#二、名称" class="headerlink" title="二、名称"></a>二、名称</h2><p>Fielding将他对互联网软件的架构原则，定名为REST，即 <strong>Representational State Transfer</strong> 的缩写。我对这个词组的翻译是&quot;<strong>表现层状态转化</strong>&quot;。</p>
+<p>如果一个架构符合REST原则，就称它为RESTful架构。</p>
+<p>要理解RESTful架构，最好的方法就是去理解Representational State Transfer这个词组到底是什么意思，它的每一个词代表了什么涵义。如果你把这个名称搞懂了，也就不难体会REST是一种什么样的设计。</p>
+<h2 id="三、资源（Resources）"><a href="#三、资源（Resources）" class="headerlink" title="三、资源（Resources）"></a>三、资源（Resources）</h2><p>REST的名称 <strong>&quot;表现层状态转化&quot;</strong> 中，省略了主语。&quot;表现层&quot;其实指的是&quot;资源&quot;（Resources）的&quot;表现层&quot;。</p>
+<p>所谓 <strong>&quot;资源&quot;</strong> ，就是网络上的一个实体，或者说是网络上的一个具体信息。它可以是一段文本、一张图片、一首歌曲、一种服务，总之就是一个具体的实在。你可以用一个URI（统一资源定位符）指向它，每种资源对应一个特定的URI。要获取这个资源，访问它的URI就可以，因此URI就成了每一个资源的地址或独一无二的识别符。</p>
+<p>所谓 <strong>&quot;上网&quot;</strong> ，就是与互联网上一系列的&quot;资源&quot;互动，调用它的URI。</p>
+<h2 id="四、表现层（Representation）"><a href="#四、表现层（Representation）" class="headerlink" title="四、表现层（Representation）"></a>四、表现层（Representation）</h2><p>&quot;资源&quot;是一种信息实体，它可以有多种外在表现形式。我们把&quot;资源&quot;具体呈现出来的形式，叫做它的&quot;表现层&quot;（Representation）。</p>
+<p>比如，文本可以用txt格式表现，也可以用HTML格式、XML格式、JSON格式表现，甚至可以采用二进制格式；图片可以用JPG格式表现，也可以用PNG格式表现。</p>
+<p>URI只代表资源的实体，不代表它的形式。严格地说，有些网址最后的&quot;.html&quot;后缀名是不必要的，因为这个后缀名表示格式，属于&quot;表现层&quot;范畴，而URI应该只代表&quot;资源&quot;的位置。它的具体表现形式，应该在HTTP请求的头信息中用Accept和Content-Type字段指定，这两个字段才是对&quot;表现层&quot;的描述。</p>
+<h2 id="五、状态转化（State-Transfer）"><a href="#五、状态转化（State-Transfer）" class="headerlink" title="五、状态转化（State Transfer）"></a>五、状态转化（State Transfer）</h2><p>访问一个网站，就代表了客户端和服务器的一个互动过程。在这个过程中，势必涉及到数据和状态的变化。</p>
+<p>互联网通信协议HTTP协议，是一个无状态协议。这意味着，所有的状态都保存在服务器端。因此，如果客户端想要操作服务器，必须通过某种手段，让服务器端发生&quot;状态转化&quot;（State Transfer）。而这种转化是建立在表现层之上的，所以就是&quot;表现层状态转化&quot;。</p>
+<p>客户端用到的手段，只能是HTTP协议。<strong>具体来说，就是HTTP协议里面，四个表示操作方式的动词：GET、POST、PUT、DELETE。它们分别对应四种基本操作：GET用来获取资源，POST用来新建资源（也可以用于更新资源），PUT用来更新资源，DELETE用来删除资源。</strong></p>
+<h2 id="六、综述"><a href="#六、综述" class="headerlink" title="六、综述"></a>六、综述</h2><p>综合上面的解释，我们总结一下什么是RESTful架构：</p>
+<ol>
+<li>每一个URI代表一种资源；</li>
+<li>客户端和服务器之间，传递这种资源的某种表现层；</li>
+<li>客户端通过四个HTTP动词，对服务器端资源进行操作，实现&quot;表现层状态转化&quot;。</li>
+</ol>
+<h2 id="七、误区"><a href="#七、误区" class="headerlink" title="七、误区"></a>七、误区</h2><p>RESTful架构有一些典型的设计误区。</p>
+<p><strong>最常见的一种设计错误，就是URI包含动词。</strong> 因为&quot;资源&quot;表示一种实体，所以应该是名词，URI不应该有动词，动词应该放在HTTP协议中。</p>
+<p>举例来说，某个URI是/posts/show/1，其中show是动词，这个URI就设计错了，正确的写法应该是/posts/1，然后用GET方法表示show。</p>
+<p>如果某些动作是HTTP动词表示不了的，你就应该把动作做成一种资源。比如网上汇款，从账户1向账户2汇款500元，错误的URI是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST &#x2F;accounts&#x2F;1&#x2F;transfer&#x2F;500&#x2F;to&#x2F;2</span><br></pre></td></tr></table></figure><br>正确的写法是把动词transfer改成名词transaction，资源不能是动词，但是可以是一种服务：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST &#x2F;transaction HTTP&#x2F;1.1</span><br><span class="line">Host: 127.0.0.1</span><br><span class="line">　　</span><br><span class="line">from&#x3D;1&amp;to&#x3D;2&amp;amount&#x3D;500.00</span><br></pre></td></tr></table></figure></p>
+<p><strong>另一个设计误区，就是在URI中加入版本号</strong>：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;app&#x2F;1.0&#x2F;foo</span><br><span class="line"></span><br><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;app&#x2F;1.1&#x2F;foo</span><br><span class="line"></span><br><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;app&#x2F;2.0&#x2F;foo</span><br></pre></td></tr></table></figure><br>因为不同的版本，可以理解成同一种资源的不同表现形式，所以应该采用同一个URI。版本号可以在HTTP请求头信息的Accept字段中进行区分<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Accept: vnd.example-com.foo+json; version&#x3D;1.0</span><br><span class="line"></span><br><span class="line">Accept: vnd.example-com.foo+json; version&#x3D;1.1</span><br><span class="line"></span><br><span class="line">Accept: vnd.example-com.foo+json; version&#x3D;2.0</span><br></pre></td></tr></table></figure></p>
+<h2 id="（完）"><a href="#（完）" class="headerlink" title="（完）"></a>（完）</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SoftwareEngineering/" rel="tag"># SoftwareEngineering</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2011/08/18/thinking/note-separated-not-only-by-time/" rel="prev" title="我们相隔的不仅是时间，还有渐行渐远的价值观（转）">
+      <i class="fa fa-chevron-left"></i> 我们相隔的不仅是时间，还有渐行渐远的价值观（转）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2012/08/18/thinking/note-money-making-logic/" rel="next" title="弄不懂真正的“赚钱逻辑”，你永远都是社会最底层！">
+      弄不懂真正的“赚钱逻辑”，你永远都是社会最底层！ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、起源"><span class="nav-number">1.</span> <span class="nav-text">一、起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、名称"><span class="nav-number">2.</span> <span class="nav-text">二、名称</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、资源（Resources）"><span class="nav-number">3.</span> <span class="nav-text">三、资源（Resources）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、表现层（Representation）"><span class="nav-number">4.</span> <span class="nav-text">四、表现层（Representation）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、状态转化（State-Transfer）"><span class="nav-number">5.</span> <span class="nav-text">五、状态转化（State Transfer）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、综述"><span class="nav-number">6.</span> <span class="nav-text">六、综述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、误区"><span class="nav-number">7.</span> <span class="nav-text">七、误区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（完）"><span class="nav-number">8.</span> <span class="nav-text">（完）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

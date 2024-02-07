@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="linux命令中;，&amp;&amp;和&amp;，|和||是很有用的命令符号，用它们可以在一行中执行多条命令或者有条件的执行下一条命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux中的分号&amp;&amp;和&amp;，|和||说明与用法">
+<meta property="og:url" content="https://zhangkefei.github.io/2020/08/04/linux/explanation-and-usage-of-semicolons-in-linux/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="linux命令中;，&amp;&amp;和&amp;，|和||是很有用的命令符号，用它们可以在一行中执行多条命令或者有条件的执行下一条命令">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-04T15:08:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="Shell">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2020/08/04/linux/explanation-and-usage-of-semicolons-in-linux/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>linux中的分号&&和&，|和||说明与用法 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2020/08/04/linux/explanation-and-usage-of-semicolons-in-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux中的分号&&和&，|和||说明与用法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-04 15:08:00" itemprop="dateCreated datePublished" datetime="2020-08-04T15:08:00Z">2020-08-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/Shell/" itemprop="url" rel="index"><span itemprop="name">Shell</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>linux命令中<code>;</code>，<code>&amp;&amp;</code>和<code>&amp;</code>，<code>|</code>和<code>||</code>是很有用的命令符号，用它们可以在一行中执行多条命令或者有条件的执行下一条命令<br><a id="more"></a></p>
+<h2 id="“-”分号用法"><a href="#“-”分号用法" class="headerlink" title="“;”分号用法"></a>“;”分号用法</h2><p>方式：<code>command1 ; command2</code></p>
+<p>用;号隔开每个命令, 每个命令按照从左到右的顺序,顺序执行，彼此之间不关心是否失败，所有命令都会执行。</p>
+<h2 id="“-”管道符用法"><a href="#“-”管道符用法" class="headerlink" title="“|”管道符用法"></a>“|”管道符用法</h2><p>上一条命令的输出，作为下一条命令参数</p>
+<p>方式：<code>command1 | command2</code></p>
+<p>Linux所提供的管道符“|”将两个命令隔开，管道符左边命令的输出就会作为管道符右边命令的输入。连续使用管道意味着第一个命令的输出会作为 第二个命令的输入，第二个命令的输出又会作为第三个命令的输入，依此类推</p>
+<h3 id="利用一个管道"><a href="#利用一个管道" class="headerlink" title="利用一个管道"></a>利用一个管道</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -qa|grep licq</span><br></pre></td></tr></table></figure>
+<p>这条命令使用一个管道符“|”建立了一个管道。管道将rpm -qa命令的输出（包括系统中所有安装的RPM包）作为grep命令的输入，从而列出带有licq字符的RPM包来。</p>
+<h3 id="利用多个管道"><a href="#利用多个管道" class="headerlink" title="利用多个管道"></a>利用多个管道</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &#x2F;etc&#x2F;passwd | grep &#x2F;bin&#x2F;bash | wc -l</span><br></pre></td></tr></table></figure>
+<p>这条命令使用了两个管道，利用第一个管道将cat命令（显示passwd文件的内容）的输出送给grep命令，grep命令找出含有“/bin /bash”的所有行；第二个管道将grep的输出送给wc命令，wc命令统计出输入中的行数。这个命令的功能在于找出系统中有多少个用户使用bash</p>
+<h2 id="“-amp-”符号用法"><a href="#“-amp-”符号用法" class="headerlink" title="“&amp;”符号用法"></a>“&amp;”符号用法</h2><p><code>&amp;</code>放在启动参数后面表示设置此进程为后台进程</p>
+<p>方式：<code>command1 &amp;</code></p>
+<p>默认情况下，进程是前台进程，这时就把Shell给占据了，我们无法进行其他操作，对于那些没有交互的进程，很多时候，我们希望将其在后台启动，可以在启动参数的时候加一个<code>&amp;</code>实现这个目的。</p>
+<h2 id="“-amp-amp-”符号用法"><a href="#“-amp-amp-”符号用法" class="headerlink" title="“&amp;&amp;”符号用法"></a>“&amp;&amp;”符号用法</h2><p>shell在执行某个命令的时候，会返回一个返回值，该返回值保存在shell变量 <code>$?</code> 中。当 <code>$? == 0</code> 时，表示执行成功；当 <code>$? == 1</code> 时（我认为是非0的数，返回值在0-255间），表示执行失败。</p>
+<p>有时候，下一条命令依赖前一条命令是否执行成功。如：在成功地执行一条命令之后再执行另一条命令，或者在一条命令执行失败后再执行另一条命令等。shell提供了 <code>&amp;&amp;</code> 和 <code>||</code> 来实现命令执行控制的功能，shell 将根据 <code>&amp;&amp;</code> 或 <code>||</code> 前面命令的返回值来控制其后面命令的执行。</p>
+<p>语法格式如下：</p>
+<p>command1 &amp;&amp; command2 [&amp;&amp; command3 ...]</p>
+<p>命令之间使用 <code>&amp;&amp;</code> 连接，实现逻辑与的功能。<br>只有在 <code>&amp;&amp;</code> 左边的命令返回真（命令返回值 <code>$? == 0</code>），<code>&amp;&amp;</code> 右边的命令才会被执行。<br>只要有一个命令返回假（命令返回值 <code>$? == 1</code>），后面的命令就不会被执行。</p>
+<h2 id="“-”符号用法"><a href="#“-”符号用法" class="headerlink" title="“||”符号用法"></a>“||”符号用法</h2><p>逻辑或的功能</p>
+<p>语法格式如下：</p>
+<p>command1 || command2 [|| command3 ...]</p>
+<p>命令之间使用 <code>||</code> 连接，实现逻辑或的功能。<br>只有在 || 左边的命令返回假（命令返回值 <code>$? == 1</code>），<code>||</code> 右边的命令才会被执行。这和 c 语言中的逻辑或语法功能相同，即实现短路逻辑或操作。<br>只要有一个命令返回真（命令返回值 <code>$? == 0</code>），后面的命令就不会被执行。直到返回真的地方停止执行。</p>
+<p>举例，ping命令判断存活主机<br><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ping -c 1 -w 1 192.168.1.1 &amp;&gt; /dev/null &amp;&amp; result=0 ||result=1</span><br><span class="line">if [ "$result" == 0 ];then</span><br><span class="line">    echo "192.168.1.1 is UP!"    </span><br><span class="line">else</span><br><span class="line">    echo "192.168.2.1 is DOWN!"</span><br><span class="line">fi</span><br></pre></td></tr></table></figure><br>注意<code>&amp;&gt;</code>要连起来写。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Shell/" rel="tag"># Shell</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/07/knowledge/important-mathematical-formulas-for-the-past-500-years/" rel="prev" title="高考了，给你份过去500年重要的数学公式压压惊">
+      <i class="fa fa-chevron-left"></i> 高考了，给你份过去500年重要的数学公式压压惊
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/05/softwareengineering/design-patterns-in-myself-word/" rel="next" title="设计模式大白话">
+      设计模式大白话 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#“-”分号用法"><span class="nav-number">1.</span> <span class="nav-text">“;”分号用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“-”管道符用法"><span class="nav-number">2.</span> <span class="nav-text">“|”管道符用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#利用一个管道"><span class="nav-number">2.1.</span> <span class="nav-text">利用一个管道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用多个管道"><span class="nav-number">2.2.</span> <span class="nav-text">利用多个管道</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“-amp-”符号用法"><span class="nav-number">3.</span> <span class="nav-text">“&amp;”符号用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“-amp-amp-”符号用法"><span class="nav-number">4.</span> <span class="nav-text">“&amp;&amp;”符号用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“-”符号用法"><span class="nav-number">5.</span> <span class="nav-text">“||”符号用法</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

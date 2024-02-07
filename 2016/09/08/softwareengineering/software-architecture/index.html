@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="软件架构（software architecture）就是软件的基本结构。合适的架构是软件成功的最重要因素之一。大型软件公司通常有专门的架构师职位（architect），只有资深程序员才可以担任。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件架构入门">
+<meta property="og:url" content="https://zhangkefei.github.io/2016/09/08/softwareengineering/software-architecture/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="软件架构（software architecture）就是软件的基本结构。合适的架构是软件成功的最重要因素之一。大型软件公司通常有专门的架构师职位（architect），只有资深程序员才可以担任。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090301.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090302.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090303.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090304.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090305.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090306.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090307.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090311.png">
+<meta property="article:published_time" content="2016-09-08T19:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.448Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="SoftwareEngineering">
+<meta property="article:tag" content="Architecture">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090301.png">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2016/09/08/softwareengineering/software-architecture/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>软件架构入门 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2016/09/08/softwareengineering/software-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件架构入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-09-08 19:09:00" itemprop="dateCreated datePublished" datetime="2016-09-08T19:09:00Z">2016-09-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SoftwareEngineering/" itemprop="url" rel="index"><span itemprop="name">SoftwareEngineering</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>软件架构（software architecture）就是软件的基本结构。合适的架构是软件成功的最重要因素之一。大型软件公司通常有专门的架构师职位（architect），只有资深程序员才可以担任。<br><a id="more"></a></p>
+<p>O&#39;Reilly 出版过一本免费的小册子<span class="exturl" data-url="aHR0cHM6Ly93d3cub3JlaWxseS5jb20vbGlicmFyeS92aWV3L3NvZnR3YXJlLWFyY2hpdGVjdHVyZS1wYXR0ZXJucy85NzgxNDkxOTcxNDM3L3ByZWZhY2UwMS5odG1s">《Software Architecture Patterns》<i class="fa fa-external-link-alt"></i></span>， 介绍了五种最常见的软件架构，是非常好的入门读物。我读后受益匪浅，下面就是我的笔记。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090301.png" alt=""></p>
+<h2 id="一、分层架构"><a href="#一、分层架构" class="headerlink" title="一、分层架构"></a>一、分层架构</h2><p>分层架构（layered architecture）是最常见的软件架构，也是事实上的标准架构。如果你不知道要用什么架构，那就用它。</p>
+<p>这种架构将软件分成若干个水平层，每一层都有清晰的角色和分工，不需要知道其他层的细节。层与层之间通过接口通信。</p>
+<p>虽然没有明确约定，软件一定要分成多少层，但是四层的结构最常见。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090302.png" alt=""></p>
+<ul>
+<li>表现层（presentation）：用户界面，负责视觉和用户互动</li>
+<li>业务层（business）：实现业务逻辑</li>
+<li>持久层（persistence）：提供数据，SQL 语句就放在这一层</li>
+<li>数据库（database） ：保存数据</li>
+</ul>
+<p>有的软件在逻辑层和持久层之间，加了一个服务层（service），提供不同业务逻辑需要的一些通用接口。</p>
+<p>用户的请求将依次通过这四层的处理，不能跳过其中任何一层。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090303.png" alt=""></p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>结构简单，容易理解和开发</li>
+<li>不同技能的程序员可以分工，负责不同的层，天然适合大多数软件公司的组织架构</li>
+<li>每一层都可以独立测试，其他层的接口通过模拟解决</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>一旦环境变化，需要代码调整或增加功能时，通常比较麻烦和费时</li>
+<li>部署比较麻烦，即使只修改一个小地方，往往需要整个软件重新部署，不容易做持续发布</li>
+<li>软件升级时，可能需要整个服务暂停</li>
+<li>扩展性差。用户请求大量增加时，必须依次扩展每一层，由于每一层内部是耦合的，扩展会很困难</li>
+</ul>
+<h2 id="二、事件驱动架构"><a href="#二、事件驱动架构" class="headerlink" title="二、事件驱动架构"></a>二、事件驱动架构</h2><p>事件（event）是状态发生变化时，软件发出的通知。</p>
+<p>事件驱动架构（event-driven architecture）就是通过事件进行通信的软件架构。它分成四个部分。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090304.png" alt=""></p>
+<ul>
+<li>事件队列（event queue）：接收事件的入口</li>
+<li>分发器（event mediator）：将不同的事件分发到不同的业务逻辑单元</li>
+<li>事件通道（event channel）：分发器与处理器之间的联系渠道</li>
+<li>事件处理器（event processor）：实现业务逻辑，处理完成后会发出事件，触发下一步操作</li>
+</ul>
+<p>对于简单的项目，事件队列、分发器和事件通道，可以合为一体，整个软件就分成事件代理和事件处理器两部分。</p>
+<p><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090305.png" alt=""></p>
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>分布式的异步架构，事件处理器之间高度解耦，软件的扩展性好</li>
+<li>适用性广，各种类型的项目都可以用</li>
+<li>性能较好，因为事件的异步本质，软件不易产生堵塞</li>
+<li>事件处理器可以独立地加载和卸载，容易部署</li>
+</ul>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>涉及异步编程（要考虑远程通信、失去响应等情况），开发相对复杂</li>
+<li>难以支持原子性操作，因为事件通过会涉及多个处理器，很难回滚</li>
+<li>分布式和异步特性导致这个架构较难测试</li>
+</ul>
+<h2 id="三、微核架构"><a href="#三、微核架构" class="headerlink" title="三、微核架构"></a>三、微核架构</h2><p>微核架构（microkernel architecture）又称为&quot;插件架构&quot;（plug-in architecture），指的是软件的内核相对较小，主要功能和业务逻辑都通过插件实现。</p>
+<p>内核（core）通常只包含系统运行的最小功能。插件则是互相独立的，插件之间的通信，应该减少到最低，避免出现互相依赖的问题。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090306.png" alt=""></p>
+<h3 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>良好的功能延伸性（extensibility），需要什么功能，开发一个插件即可</li>
+<li>功能之间是隔离的，插件可以独立的加载和卸载，使得它比较容易部署，</li>
+<li>可定制性高，适应不同的开发需要</li>
+<li>可以渐进式地开发，逐步增加功能</li>
+</ul>
+<h3 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>扩展性（scalability）差，内核通常是一个独立单元，不容易做成分布式</li>
+<li>开发难度相对较高，因为涉及到插件与内核的通信，以及内部的插件登记机制</li>
+</ul>
+<h2 id="四、微服务架构"><a href="#四、微服务架构" class="headerlink" title="四、微服务架构"></a>四、微服务架构</h2><p>微服务架构（microservices architecture）是服务导向架构（service-oriented architecture，缩写 SOA）的升级。</p>
+<p>每一个服务就是一个独立的部署单元（separately deployed unit）。这些单元都是分布式的，互相解耦，通过远程通信协议（比如REST、SOAP）联系。<br><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090307.png" alt=""></p>
+<p>微服务架构分成三种实现模式。</p>
+<ul>
+<li>RESTful API 模式：服务通过 API 提供，云服务就属于这一类</li>
+<li>RESTful 应用模式：服务通过传统的网络协议或者应用协议提供，背后通常是一个多功能的应用程序，常见于企业内部</li>
+<li>集中消息模式：采用消息代理（message broker），可以实现消息队列、负载均衡、统一日志和异常处理，缺点是会出现单点失败，消息代理可能要做成集群</li>
+</ul>
+<h3 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>扩展性好，各个服务之间低耦合</li>
+<li>容易部署，软件从单一可部署单元，被拆成了多个服务，每个服务都是可部署单元</li>
+<li>容易开发，每个组件都可以进行持续集成式的开发，可以做到实时部署，不间断地升级</li>
+</ul>
+<h3 id="缺点-3"><a href="#缺点-3" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>由于强调互相独立和低耦合，服务可能会拆分得很细。这导致系统依赖大量的微服务，变得很凌乱和笨重，性能也会不佳。</li>
+<li>一旦服务之间需要通信（即一个服务要用到另一个服务），整个架构就会变得复杂。典型的例子就是一些通用的 Utility 类，一种解决方案是把它们拷贝到每一个服务中去，用冗余换取架构的简单性。</li>
+<li>分布式的本质使得这种架构很难实现原子性操作，交易回滚会比较困难。</li>
+</ul>
+<h2 id="五、云架构"><a href="#五、云架构" class="headerlink" title="五、云架构"></a>五、云架构</h2><p>云架构（cloud architecture）主要解决扩展性和并发的问题，是最容易扩展的架构。</p>
+<p>它的高扩展性，主要原因是没使用中央数据库，而是把数据都复制到内存中，变成可复制的内存数据单元。然后，业务处理能力封装成一个个处理单元（prcessing unit）。访问量增加，就新建处理单元；访问量减少，就关闭处理单元。由于没有中央数据库，所以扩展性的最大瓶颈消失了。由于每个处理单元的数据都在内存里，最好要进行数据持久化。</p>
+<p>这个模式主要分成两部分：处理单元（processing unit）和虚拟中间件（virtualized middleware）。</p>
+<ul>
+<li>处理单元：实现业务逻辑</li>
+<li>虚拟中间件：负责通信、保持sessions、数据复制、分布式处理、处理单元的部署。</li>
+</ul>
+<p><img data-src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016090311.png" alt=""></p>
+<p>虚拟中间件又包含四个组件。</p>
+<ul>
+<li>消息中间件（Messaging Grid）：管理用户请求和session，当一个请求进来以后，决定分配给哪一个处理单元。</li>
+<li>数据中间件（Data Grid）：将数据复制到每一个处理单元，即数据同步。保证某个处理单元都得到同样的数据。</li>
+<li>处理中间件（Processing Grid）：可选，如果一个请求涉及不同类型的处理单元，该中间件负责协调处理单元</li>
+<li>部署中间件（Deployment Manager）：负责处理单元的启动和关闭，监控负载和响应时间，当负载增加，就新启动处理单元，负载减少，就关闭处理单元。</li>
+</ul>
+<h3 id="优点-4"><a href="#优点-4" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>高负载，高扩展性</li>
+<li>动态部署</li>
+</ul>
+<h3 id="缺点-4"><a href="#缺点-4" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>实现复杂，成本较高</li>
+<li>主要适合网站类应用，不合适大量数据吞吐的大型数据库应用</li>
+<li>较难测试</li>
+</ul>
+<h2 id="（完）"><a href="#（完）" class="headerlink" title="（完）"></a>（完）</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SoftwareEngineering/" rel="tag"># SoftwareEngineering</a>
+              <a href="/tags/Architecture/" rel="tag"># Architecture</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/05/12/frontend/html-meta-usage/" rel="prev" title="html的meta用法总结">
+      <i class="fa fa-chevron-left"></i> html的meta用法总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/09/22/note/note-a-simple-javaScript-template-engine/" rel="next" title="编写一个简单的JavaScript模板引擎">
+      编写一个简单的JavaScript模板引擎 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、分层架构"><span class="nav-number">1.</span> <span class="nav-text">一、分层架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点"><span class="nav-number">1.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、事件驱动架构"><span class="nav-number">2.</span> <span class="nav-text">二、事件驱动架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点-1"><span class="nav-number">2.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点-1"><span class="nav-number">2.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、微核架构"><span class="nav-number">3.</span> <span class="nav-text">三、微核架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点-2"><span class="nav-number">3.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点-2"><span class="nav-number">3.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、微服务架构"><span class="nav-number">4.</span> <span class="nav-text">四、微服务架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点-3"><span class="nav-number">4.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点-3"><span class="nav-number">4.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、云架构"><span class="nav-number">5.</span> <span class="nav-text">五、云架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优点-4"><span class="nav-number">5.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点-4"><span class="nav-number">5.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#（完）"><span class="nav-number">6.</span> <span class="nav-text">（完）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

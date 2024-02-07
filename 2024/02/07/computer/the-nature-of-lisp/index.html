@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="That very second I became a member of the Lisp cult. I felt something a ninjitsu master must feel: I had to spread my newfound knowledge to at least ten lost souls in the course of my lifetime. I took">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Nature of Lisp">
+<meta property="og:url" content="https://zhangkefei.github.io/2024/02/07/computer/the-nature-of-lisp/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="That very second I became a member of the Lisp cult. I felt something a ninjitsu master must feel: I had to spread my newfound knowledge to at least ten lost souls in the course of my lifetime. I took">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-02-07T15:02:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.440Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="lisp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2024/02/07/computer/the-nature-of-lisp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>The Nature of Lisp | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2024/02/07/computer/the-nature-of-lisp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          The Nature of Lisp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-02-07 15:02:00" itemprop="dateCreated datePublished" datetime="2024-02-07T15:02:00Z">2024-02-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>That very second I became a member of the Lisp cult. I felt something a ninjitsu master must feel: I had to spread my newfound knowledge to at least ten lost souls in the course of my lifetime. I took the usual path. I was rehashing the same arguments that were given to me for years (only now they actually made sense!), hoping to convert unsuspecting bystanders. It didn&#39;t work. My persistence sparked a few people&#39;s interest but their curiosity dwindled at the mere sight of sample Lisp code. Perhaps years of advocacy would forge a few new Lispers, but I wasn&#39;t satisfied. There had to be a better way.<br><a id="more"></a></p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>When I first stumbled into Lisp advocacy on various corners of the web I was already an experienced programmer. At that point I had grokked what seemed at the time a wide range of programming languages. I was proud to have the usual suspects (C++, Java, C#, etc.) on my service record and was under impression that I knew everything there is to know about programming languages. I couldn&#39;t have possibly been more wrong.</p>
+<p>My initial attempt to learn Lisp came to a crashing halt as soon as I saw some sample code. I suppose the same thought ran through my mind that ran through thousands of other minds who were ever in my shoes: &quot;Why on Earth would anyone want to use a language with such horrific syntax?!&quot; I couldn&#39;t be bothered to learn a language if its creators couldn&#39;t be bothered to give it a pleasant syntax. After all, I was almost blinded by the infamous Lisp parentheses!</p>
+<p>The moment I regained my sight I communicated my frustrations to some members of the Lisp sect. Almost immediately I was bombarded by a standard set of responses: Lisp&#39;s parentheses are only a superficial matter, Lisp has a huge benefit of code and data being expressed in the same manner (which, obviously, is a huge improvement over XML), Lisp has tremendously powerful metaprogramming facilities that allow programs to write code and modify themselves, Lisp allows for creation of mini-languages specific to the problem at hand, Lisp blurs the distinction between run time and compile time, Lisp, Lisp, Lisp... The list was very impressive. Needless to say none of it made sense. Nobody could illustrate the usefulness of these features with specific examples because these techniques are supposedly only useful in large software systems. After many hours of debating that conventional programming languages do the job just fine, I gave up. I wasn&#39;t about to invest months into learning a language with a terrible syntax in order to understand obscure features that had no useful examples. My time has not yet come.</p>
+<p>For many months the Lisp advocates pressed on. I was baffled. Many extremely intelligent people I knew and had much respect for were praising Lisp with almost religious dedication. There had to be something there, something I couldn&#39;t afford not to get my hands on! Eventually my thirst for knowledge won me over. I took the plunge, bit the bullet, got my hands dirty, and began months of mind bending exercises. It was a journey on an endless lake of frustration. I turned my mind inside out, rinsed it, and put it back in place. I went through seven rings of hell and came back. And then I got it.</p>
+<p>The enlightenment came instantaneously. One moment I understood nothing, and the next moment everything clicked into place. I&#39;ve achieved nirvana. Dozens of times I heard Eric Raymond&#39;s statement quoted by different people: &quot;Lisp is worth learning for the profound enlightenment experience you will have when you finally get it; that experience will make you a better programmer for the rest of your days, even if you never actually use Lisp itself a lot.&quot; I never understood this statement. I never believed it could be true. And finally, after all the pain, it made sense! There was more truth to it than I ever could have imagined. I&#39;ve achieved an almost divine state of mind, an instantaneous enlightenment experience that turned my view of computer science on its head in less than a single second.</p>
+<p>That very second I became a member of the Lisp cult. I felt something a ninjitsu master must feel: I had to spread my newfound knowledge to at least ten lost souls in the course of my lifetime. I took the usual path. I was rehashing the same arguments that were given to me for years (only now they actually made sense!), hoping to convert unsuspecting bystanders. It didn&#39;t work. My persistence sparked a few people&#39;s interest but their curiosity dwindled at the mere sight of sample Lisp code. Perhaps years of advocacy would forge a few new Lispers, but I wasn&#39;t satisfied. There had to be a better way.</p>
+<p>I gave the matter careful thought. Is there something inherently hard about Lisp that prevents very intelligent, experienced programmers from understanding it? No, there isn&#39;t. After all, I got it, and if I can do it, anybody can. Then what is it that makes Lisp so hard to understand? The answer, as such things usually do, came unexpectedly. Of course! Teaching anybody anything involves building advanced concepts on top of concepts they already understand! If the process is made interesting and the matter is explained properly the new concepts become as intuitive as the original building blocks that aided their understanding. That was the problem! Metaprogramming, code and data in one representation, self-modifying programs, domain specific mini-languages, none of the explanations for these concepts referenced familiar territory. How could I expect anyone to understand them! No wonder people wanted specific examples. I could as well have been speaking in Martian!</p>
+<p>I shared my ideas with fellow Lispers. &quot;Well, of course these concepts aren&#39;t explained in terms of familiar territory&quot;, they said. &quot;They are so different, they&#39;re unlike anything these people have learned before.&quot; This was a poor excuse. &quot;I do not believe this to be true&quot;, I said. The response was unanimous: &quot;Why don&#39;t you give it a try?&quot; So I did. This article is a product of my efforts. It is my attempt to explain Lisp in familiar, intuitive concepts. I urge brave souls to read on. Grab your favorite drink. Take a deep breath. Prepare to be blown away. Oh, and may the Force be with you.</p>
+<h2 id="XML-Reloaded"><a href="#XML-Reloaded" class="headerlink" title="XML Reloaded"></a>XML Reloaded</h2><p>A thousand mile journey starts with a single step. A journey to enlightenment is no exception and our first step just happens to be XML. What more could possibly be said about XML that hasn&#39;t already been said? It turns out, quite a bit. While there&#39;s nothing particularly interesting about XML itself, its relationship to Lisp is fascinating. XML is the all too familiar concept that Lisp advocates need so much. It is our bridge to conveying understanding to regular programmers. So let&#39;s revive the dead horse, take out the stick, and venture into XML wilderness that no one dared venture into before us. It&#39;s time to see the all too familiar moon from the other side.</p>
+<p>Superficially XML is nothing more than a standardized syntax used to express arbitrary hierarchical data in human readable form. To-do lists, web pages, medical records, auto insurance claims, configuration files are all examples of potential XML use. Let&#39;s use a simple to-do list as an example (in a couple of sections you&#39;ll see it in a whole new light):<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">todo</span> <span class="attr">name</span>=<span class="string">"housework"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">priority</span>=<span class="string">"high"</span>&gt;</span>Clean the house.<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">priority</span>=<span class="string">"medium"</span>&gt;</span>Wash the dishes.<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">priority</span>=<span class="string">"medium"</span>&gt;</span>Buy more soap.<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">todo</span>&gt;</span></span><br></pre></td></tr></table></figure><br>What happens if we unleash our favorite XML parser on this to-do list? Once the data is parsed, how is it represented in memory? The most natural representation is, of course, a tree - a perfect data structure for hierarchical data. After all is said and done, XML is really just a tree serialized to a human readable form. Anything that can be represented in a tree can be represented in XML and vice versa. I hope you understand this idea. It&#39;s very important for what&#39;s coming next.</p>
+<p>Let&#39;s take this a little further. What other type of data is often represented as a tree? At this point the list is as good as infinite so I&#39;ll give you a hint at what I&#39;m getting at - try to remember your old compiler course. If you have a vague recollection that source code is stored in a tree after it&#39;s parsed, you&#39;re on the right track. Any compiler inevitably parses the source code into an abstract syntax tree. This isn&#39;t surprising since source code is hierarchical: functions contain arguments and blocks of code. Blocks of code contain expressions and statements. Expressions contain variables and operators. And so it goes.</p>
+<p>Let&#39;s apply our corollary that any tree can easily be serialized into XML to this idea. If all source code is eventually represented as a tree, and any tree can be serialized into XML, then all source code can be converted to XML, right? Let&#39;s illustrate this interesting property by a simple example. Consider the function below:</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> arg1, <span class="keyword">int</span> arg2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> arg1 + arg2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Can you convert this function definition to its XML equivalent? Turns out, it&#39;s reasonably simple. Naturally there are many ways to do this. Here is one way the resulting XML can look like:<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">define-function</span> <span class="attr">return-type</span>=<span class="string">"int"</span> <span class="attr">name</span>=<span class="string">"add"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arguments</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">argument</span> <span class="attr">type</span>=<span class="string">"int"</span>&gt;</span>arg1<span class="tag">&lt;/<span class="name">argument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">argument</span> <span class="attr">type</span>=<span class="string">"int"</span>&gt;</span>arg2<span class="tag">&lt;/<span class="name">argument</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">arguments</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">return</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">add</span> <span class="attr">value1</span>=<span class="string">"arg1"</span> <span class="attr">value2</span>=<span class="string">"arg2"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">return</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">define</span>&gt;</span></span><br></pre></td></tr></table></figure><br>We can go through this relatively simple exercise with any language. We can turn any source code into XML, and we can transform the resulting XML back to original source code. We can write a converter that turns Java into XML and a converter that turns XML back to Java. We could do the same for C++. (In case you&#39;re wondering if anyone is crazy enough to do it, take a look at GCC-XML). Furthermore, for languages that share common features but use different syntax (which to some extent is true about most mainstream languages) we could convert source code from one language to another using XML as an intermediary representation. We could use our Java2XML converter to convert a Java program to XML. We could then run an XML2CPP converter on the resulting XML and turn it into C++ code. With any luck (if we avoid using features of Java that don&#39;t exist in C++) we&#39;ll get a working C++ program. Neat, eh?</p>
+<p>All this effectively means that we can use XML for generic storage of source code. We&#39;d be able to create a whole class of programming languages that use uniform syntax, as well as write transformers that convert existing source code to XML. If we were to actually adopt this idea, compilers for different languages wouldn&#39;t need to implement parsers for their specific grammars - they&#39;d simply use an XML parser to turn XML directly into an abstract syntax tree.</p>
+<p>By now you&#39;re probably wondering why I&#39;ve embarked on the XML crusade and what it has to do with Lisp (after all, Lisp was created about thirty years before XML). I promise that everything will become clear soon enough. But before we take our second step, let&#39;s go through a small philosophical exercise. Take a good look at the XML version of our &quot;add&quot; function above. How would you classify it? Is it data or code? If you think about it for a moment you&#39;ll realize that there are good reasons to put this XML snippet into both categories. It&#39;s XML and it&#39;s just information encoded in a standardized format. We&#39;ve already determined that it can be generated from a tree data structure in memory (that&#39;s effectively what GCC-XML does). It&#39;s lying around in a file with no apparent way to execute it. We can parse it into a tree of XML nodes and do various transformations on it. It&#39;s data. But wait a moment! When all is said and done it&#39;s the same &quot;add&quot; function written with a different syntax, right? Once parsed, its tree could be fed into a compiler and we could execute it. We could easily write a small interpreter for this XML code and we could execute it directly. Alternatively, we could transform it into Java or C++ code, compile it, and run it. It&#39;s code.</p>
+<p>So, where are we? Looks like we&#39;ve just arrived to an interesting point. A concept that has traditionally been so hard to understand is now amazingly simple and intuitive. Code is also always data! Does it mean that data is also always code? As crazy as this sounds this very well might be the case. Remember how I promised that you&#39;ll see our to-do list in a whole new light? Let me reiterate on that promise. But we aren&#39;t ready to discuss this just yet. For now let&#39;s continue walking down our path.</p>
+<p>A little earlier I mentioned that we could easily write an interpreter to execute our XML snippet of the add function. Of course this sounds like a purely theoretical exercise. Who in their right mind would want to do that for practical purposes? Well, it turns out quite a few people would disagree. You&#39;ve likely encountered and used their work at least once in your career, too. Do I have you out on the edge of your seat? If so, let&#39;s move on!</p>
+<h2 id="Ant-Reloaded"><a href="#Ant-Reloaded" class="headerlink" title="Ant Reloaded"></a>Ant Reloaded</h2><p>Now that we&#39;ve made the trip to the dark side of the moon, let&#39;s not leave quite yet. We may still learn something by exploring it a little more, so let&#39;s take another step. We begin by closing our eyes and remembering a cold rainy night in the winter of 2000. A prominent developer by the name of James Duncan Davidson was hacking his way through Tomcat servlet container. As the time came to build the changes he carefully saved all his files and ran make. Errors. Lots of errors. Something was wrong. After careful examination James exclaimed: &quot;Is my command not executing because I have a space in front of my tab?!&quot; Indeed, this was the problem. Again. James has had enough. He could sense the full moon through the clouds and it made him adventurous. He created a fresh Java project and quickly hacked together a simple but surprisingly useful utility. This spark of genius used Java property files for information on how to build the project. James could now write the equivalent of the makefile in a nice format without worrying about the damned spaces ever again. His utility did all the hard work by interpreting the property file and taking appropriate actions to build the project. It was neat. Another Neat Tool. Ant.</p>
+<p>After using Ant to build Tomcat for a few months it became clear that Java property files are not sufficient to express complicated build instructions. Files needed to be checked out, copied, compiled, sent to another machine, and unit tested. In case of failure e-mails needed to be sent out to appropriate people. In case of success &quot;Bad to the Bone&quot; needed to be played at the highest possible volume. At the end of the track volume had to be restored to its original level. Yes, Java property files didn&#39;t cut it anymore. James needed a more flexible solution. He didn&#39;t feel like writing his own parser (especially since he wanted an industry standard solution). XML seemed like a reasonable alternative. In a couple of days Ant was ported to XML. It was the best thing since sliced bread.</p>
+<p>So how does Ant work? It&#39;s pretty simple. It takes an XML file with specific build instructions (you decide if they&#39;re data or code) and interprets them by running specialized Java code for each XML element. It&#39;s actually much simpler than it sounds. A simple XML instruction like the one below causes a Java class with an equivalent name to be loaded and its code to be executed.<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">copy</span> <span class="attr">todir</span>=<span class="string">"../new/dir"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fileset</span> <span class="attr">dir</span>=<span class="string">"src_dir"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">copy</span>&gt;</span></span><br></pre></td></tr></table></figure><br>The snippet above copies a source directory to a destination directory. Ant locates a &quot;copy&quot; task (a Java class, really), sets appropriate parameters (todir and fileset) by calling appropriate Java methods and then executes the task. Ant comes with a set of core tasks and anyone can extend it with tasks of their own simply by writing Java classes that follow certain conventions. Ant finds these classes and executes them whenever XML elements with appropriate names are encountered. Pretty simple. Effectively Ant accomplishes what we were talking about in the previous section: it acts as an interpreter for a language that uses XML as its syntax by translating XML elements to appropriate Java instructions. We could write an &quot;add&quot; task and have Ant execute it when it encounters the XML snippet for addition presented in the previous section! Considering that Ant is an extremely popular project, the ideas presented in the previous section start looking more sane. After all, they&#39;re being used every day in what probably amounts to thousands of companies!</p>
+<p>So far I&#39;ve said nothing about why Ant actually goes through all the trouble of interpreting XML. Don&#39;t try to look for the answer on its website either - you&#39;ll find nothing of value. Nothing relevant to our discussion, anyway. Let&#39;s take another step. It&#39;s time to find out why.</p>
+<h2 id="Why-XML"><a href="#Why-XML" class="headerlink" title="Why XML?"></a>Why XML?</h2><p>Sometimes right decisions are made without full conscious understanding of all the issues involved. I&#39;m not sure if James knew why he chose XML - it was likely a subconscious decision. At the very least, the reasons I saw on Ant&#39;s website for using XML are all the wrong reasons. It appears that the main concerns revolved around portability and extensibility. I fail to see how XML helps advance these goals in Ant&#39;s case. What is the advantage of using interpreted XML over simple Java source code? Why not create a set of classes with a nice API for commonly used tasks (copying directories, compiling, etc.) and using those directly from Java source code? This would run on every platform that runs Java (which Ant requires anyway), it&#39;s infinitely extensible, and it has the benefit of having a more pleasant, familiar syntax. So why XML? Can we find a good reason for using it?</p>
+<p>It turns out that we can (although as I mentioned earlier I&#39;m not sure if James was consciously aware of it). XML has the property of being far more flexible in terms of introduction of semantic constructs than Java could ever hope to be. Don&#39;t worry, I&#39;m not falling into the trap of using big words to describe incomprehensible concepts. This is actually a relatively simple idea, though it may take some effort to explain. Buckle your seat-belt. We&#39;re about to make a giant leap towards achieving nirvana.</p>
+<p>How can we represent &#39;copy&#39; example above in Java code? Here&#39;s one way to do it:<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">CopyTask copy = <span class="keyword">new</span> CopyTask();</span><br><span class="line">Fileset fileset = <span class="keyword">new</span> Fileset();</span><br><span class="line"></span><br><span class="line">fileset.setDir(<span class="string">"src_dir"</span>);</span><br><span class="line">copy.setToDir(<span class="string">"../new/dir"</span>);</span><br><span class="line">copy.setFileset(fileset);</span><br><span class="line"></span><br><span class="line">copy.execute();</span><br></pre></td></tr></table></figure><br>The code is almost the same, albeit a little longer than the original XML. So what&#39;s different? The answer is that the XML snippet introduces a special semantic construct for copying. If we could do it in Java it would look like this:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line">copy(<span class="string">"../new/dir"</span>)</span><br><span class="line">&#123;</span><br><span class="line">    fileset(<span class="string">"src_dir"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>Can you see the difference? The code above (if it were possible in Java) is a special operator for copying files - similar to a for loop or a new foreach construct introduced in Java 5. If we had an automatic converter from XML to Java it would likely produce the above gibberish. The reason for this is that Java&#39;s accepted syntax tree grammar is fixed by the language specification - we have no way of modifying it. We can add packages, classes, methods, but we cannot extend Java to make addition of new operators possible. Yet we can do it to our heart&#39;s content in XML - its syntax tree isn&#39;t restricted by anything except our interpreter! If the idea is still unclear, consider introducing a special operator &#39;unless&#39; to Java:<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line">unless(someObject.canFly())</span><br><span class="line">&#123;</span><br><span class="line">    someObject.transportByGround();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>In the previous two examples we extend the Java language to introduce an operator for copying files and a conditional operator unless. We would do this by modifying the abstract syntax tree grammar that Java compiler accepts. Naturally we cannot do it with standard Java facilities, but we can easily do it in XML. Because our XML interpreter parses the abstract syntax tree that results from it, we can extend it to include any operator we like.</p>
+<p>For complex operators this ability provides tremendous benefits. Can you imagine writing special operators for checking out source code, compiling files, running unit testing, sending email? Try to come up with some. If you&#39;re dealing with a specialized problem (in our case it&#39;s building projects) these operators can do wonders to decrease the amount of code you have to type and to increase clarity and code reuse. Interpreted XML makes this extremely easy to accomplish because it&#39;s a simple data file that stores hierarchical data. We do not have this option in Java because it&#39;s hierarchical structure is fixed (as you will soon find out, we do have this option in Lisp). Perhaps this is one of the reasons why Ant is so successful?</p>
+<p>I urge you to take a look at recent evolution of Java and C# (especially the recently released specification for C# 3.0). The languages are being evolved by abstracting away commonly used functionality and adding it in the form of operators. New C# operators for built-in queries is one example. This is accomplished by relatively traditional means: language creators modify the accepted abstract syntax tree and add implementations of certain features. Imagine the possibilities if the programmer could modify the abstract syntax tree himself! Whole new sub-languages could be built for specialized domains (for example a language for building projects, like Ant). Can you come up with other examples? Think about these concepts for a bit, but don&#39;t worry about them too much. We&#39;ll come back to these issues after introducing a few more ideas. By then things will be a little more clear.</p>
+<h2 id="Almost-Lisp"><a href="#Almost-Lisp" class="headerlink" title="Almost Lisp"></a>Almost Lisp</h2><p>Let&#39;s forget about the operator business for the moment and try to expand our horizons beyond the constraints of Ant&#39;s design. I mentioned earlier that Ant can be extended by writing conventional Java classes. Ant interpreter then attempts to match XML elements to appropriately named Java classes and if the match is found the task is executed. An interesting question begs to be asked. Why not extend Ant in Ant itself? After all, core tasks contain a lot of conventional programming language constructs (&#39;if&#39; being a perfect example). If Ant provided constructs to develop tasks in Ant itself we&#39;d reach a higher degree of portability. We&#39;d be dependent on a core set of tasks (a standard library, if you will) and we wouldn&#39;t care if Java runtime is present: the core set could be implemented in anything. The rest of the tasks would be built on top of the core using Ant-XML itself. Ant would then become a generic, extensible, XML-based programming language. Consider the possibilities:<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">task</span> <span class="attr">name</span>=<span class="string">"Test"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span> <span class="attr">message</span>=<span class="string">"Hello World!"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">task</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Test</span> /&gt;</span></span><br></pre></td></tr></table></figure><br>If ant supported the &quot;task&quot; construct, the example above would print &quot;Hello World!&quot;. In fact, we could write a &quot;task&quot; task in Java and make Ant able to extend itself using Ant-XML! Ant would then be able to build more complicated primitives on top of simple ones, just like any other programming language! This is an example of &quot;XML&quot; based programming language we were talking about in the beginning of this tutorial. Not very useful (can you tell why?) but pretty damn cool.</p>
+<p>By the way, take a look at our &#39;Test&#39; task once again. Congratulations. You&#39;re looking at Lisp code. What on Earth am I talking about? It doesn&#39;t look anything like Lisp? Don&#39;t worry, we&#39;ll fix that in a bit. Confused? Good. Let&#39;s clear it all up!</p>
+<h2 id="A-Better-XML"><a href="#A-Better-XML" class="headerlink" title="A Better XML"></a>A Better XML</h2><p>I mentioned in the previous section that self-extending Ant wouldn&#39;t be very useful. The reason for that is XML&#39;s verbosity. It&#39;s not too bad for data files but the moment you try writing reasonably complex code the amount of typing you have to do quickly starts to get in the way and progresses to becoming unusable for any real project. Have you ever tried writing Ant build scripts? I have, and once they get complex enough having to do it in XML becomes really annoying. Imagine having to type almost everything in Java twice because you have to close every element. Wouldn&#39;t that drive you nuts?</p>
+<p>The solution to this problem involves using a less verbose alternative to XML. Remember, XML is just a format for representing hierarchical data. We don&#39;t have to use XML&#39;s angle brackets to serialize trees. We could come up with many other formats. One such format (incidentally, the one Lisp uses) is called an s-expression. S-expressions accomplish the same goals as XML. They&#39;re just a lot less verbose, which makes them much better suited for typing code. I will explain s-expressions in a little while, but before I do I have to clear up a few things about XML. Let&#39;s consider our XML example for copying files:<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">copy</span> <span class="attr">todir</span>=<span class="string">"../new/dir"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fileset</span> <span class="attr">dir</span>=<span class="string">"src_dir"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">copy</span>&gt;</span></span><br></pre></td></tr></table></figure><br>Think of what the parse tree of this snippet would look like in memory. We&#39;d have a &#39;copy&#39; node that contains a fileset node. But what about attributes? How do they fit into our picture? If you&#39;ve ever used XML to describe data and wondered whether you should use an element or an attribute, you&#39;re not alone. Nobody can really figure this out and doing it right tends to be black magic rather than science. The reason for that is that attributes are really subsets of elements. Anything attributes can do, elements can do as well. The reason attributes were introduced is to curb XML&#39;s verbosity. Take a look at another version of our &#39;copy&#39; snippet:<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">copy</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">todir</span>&gt;</span>../new/dir<span class="tag">&lt;/<span class="name">todir</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fileset</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dir</span>&gt;</span>src_dir<span class="tag">&lt;/<span class="name">dir</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">fileset</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">copy</span>&gt;</span></span><br></pre></td></tr></table></figure><br>The two snippets hold exactly the same information. However, we use attributes to avoid typing the same thing more than once. Imagine if attributes weren&#39;t part of XML specification. Writing anything in XML would drive us nuts!</p>
+<p>Now that we got attributes out of the way, let&#39;s look at s-expressions. The reason we took this detour is that s-expressions do not have attributes. Because they&#39;re a lot less verbose, attributes are simply unnecessary. This is one thing we need to keep in mind when transforming XML to s-expressions. Let&#39;s take a look at an example. We could translate above snippet to s-expressions like this:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">copy</span></span><br><span class="line">    (<span class="name">todir</span> <span class="string">"../new/dir"</span>)</span><br><span class="line">    (<span class="name">fileset</span> (<span class="name">dir</span> <span class="string">"src_dir"</span>)))</span><br></pre></td></tr></table></figure><br>Take a good look at this representation. What&#39;s different? Angle brackets seem to be replaced by parentheses. Instead of enclosing each element into a pair of parentheses and then closing each element with a &quot;(/element)&quot; we simply skip the second parenthesis in &quot;(element&quot; and proceed. The element is then closed like this: &quot;)&quot;. That&#39;s it! The translation is natural and very simple. It&#39;s also a lot easier to type. Do parentheses blind first time users? Maybe, but now that we&#39;re understand the reasoning behind them they&#39;re a lot easier to handle. At the very least they&#39;re better than arthritis inducing verbosity of XML. After you get used to s-expressions writing code in them is not only doable but very pleasant. And they provide all the benefits of writing code in XML (many of which we&#39;re yet to explore). Let&#39;s take a look at our &#39;task&#39; code in something that looks a lot more like lisp:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">task</span> (<span class="name">name</span> <span class="string">"Test"</span>)</span><br><span class="line">    (<span class="name">echo</span> (<span class="name">message</span> <span class="string">"Hello World!"</span>)))</span><br><span class="line"></span><br><span class="line">(<span class="name">Test</span>)</span><br></pre></td></tr></table></figure><br>S-expressions are called lists in Lisp lingo. Consider our &#39;task&#39; element above. If we rewrite it without a line break and with comas instead of spaces it&#39;s starting to look surprisingly like a list of elements and other lists (the formatting is added to make it easier to see nested lists):<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">task</span>, (<span class="name">name</span>, <span class="string">"test"</span>), (<span class="name">echo</span>, (<span class="name">message</span>, <span class="string">"Hello World!"</span>)))</span><br></pre></td></tr></table></figure><br>We could do the same with XML. Of course the line above isn&#39;t really a list, it&#39;s a tree, just like its XML-alternative. Don&#39;t let references to lists confuse you, it&#39;s just that lists that contain other lists and trees are effectively the same thing. Lisp may stand for List Processing, but it&#39;s really tree processing - no different than processing XML nodes.</p>
+<p>Whew. After much rambling we finally got to something that looks like Lisp (and is Lisp, really). By now the mysterious Lisp parentheses as well as some claims made by Lisp advocates should become more clear. But we still have a lot of ground to cover. Ready? Let&#39;s move on!</p>
+<h2 id="C-Macros-Reloaded"><a href="#C-Macros-Reloaded" class="headerlink" title="C Macros Reloaded"></a>C Macros Reloaded</h2><p>By now you must be tired of all the XML talk. I&#39;m tired of it as well. It&#39;s time to take a break from all the trees, s-expressions, and Ant business. Instead, let&#39;s go back to every programmer&#39;s roots. It&#39;s time to talk about C preprocessor. What&#39;s C got to do with anything, I hear you ask? Well, we now know enough to get into metaprogramming and discuss code that writes other code. Understanding this tends to be hard since all tutorials discuss it in terms of languages that you don&#39;t know. But there is nothing hard about the concept. I believe that a metaprogramming discussion based on C will make the whole thing much easier to understand. So, let&#39;s see (pun intended).</p>
+<p>Why would anyone want to write a program that writes programs? How can we use something like this in the real world? What on Earth is metaprogramming, anyway? You already know all the answers, you just don&#39;t know it yet. In order to unlock the hidden vault of divine knowledge let&#39;s consider a rather mundane task of simple database access from code. We&#39;ve all been there. Writing SQL queries all over the code to modify data within tables turns into repetitive hell soon enough. Even with the new C# 3.0 LINQ stuff this is a huge pain. Writing a full SQL query (albeit with a nice built in syntax) to get someone&#39;s name or to modify someone&#39;s address isn&#39;t exactly a programmer&#39;s idea of comfort. What do we do to solve these problems? Enter data access layers.</p>
+<p>The idea is simple enough. You abstract database access (at least trivial queries, anyway) by creating a set of classes that mirror the tables in the database and use accessor methods to execute actual queries. This simplifies development tremendously - instead of writing SQL queries we make simple method calls (or property assignments, depending on your language of choice). Anyone who has ever used even the simplest of data access layers knows how much time it can save. Of course anyone who has ever written one knows how much time it can kill - writing a set of classes that mirror tables and convert accessors to SQL queries takes a considerable chunk of time. This seems especially silly since most of the work is manual: once you figure out the design and develop a template for your typical data access class you don&#39;t need to do any thinking. You just write code based on the same template over and over and over and over again. Many people figured out that there is a better way - there are plenty of tools that connect to the database, grab the schema, and write code for you based on a predefined (or a custom) template.</p>
+<p>Anyone who has ever used such a tool knows what an amazing time saver it can be. In a few clicks you connect the tool to the database, get it to generate the data access layer source code, add the files to your project and voilà - ten minutes worth of work do a better job than hundreds of man-hours that were required previously. What happens if your database schema changes? Well, you just have to go through this short process again. Of course some of the best tools let you automate this - you simply add them as a part of your build step and every time you compile your project everything is done for you automatically. This is perfect! You barely have to do anything at all. If the schema ever changes your data access layer code updates automatically at compile time and any obsolete access in your code will result in compiler errors!</p>
+<p>Data access layers are one good example, but there are plenty of others. From boilerplate GUI code, to web code, to COM and CORBA stubs, to MFC and ATL, - there are plenty of examples where the same code is written over and over again. Since writing this code is a task that can be automated completely and a programmer&#39;s time is far more expensive than CPU time, plenty of tools have been created that generate this boilerplate code automatically. What are these tools, exactly? Well, they are programs that write programs. They perform a simple task that has a mysterious name of metaprogramming. That&#39;s all there is to it.</p>
+<p>We could create and use such tools in millions of scenarios but more often than not we don&#39;t. What it boils down to is a subconscious calculation - is it worth it for me to create a separate project, write a whole tool to generate something, and then use it, if I only have to write these very similar pieces about seven times? Of course not. Data access layers and COM stubs are written hundreds, thousands of times. This is why there are tools for them. For similar pieces of code that repeat only a few times, or even a few dozen times, writing code generation tools isn&#39;t even considered. The trouble to create such a tool more often than not far outweighs the benefit of using one. If only creating such tools was much easier, we could use them more often, and perhaps save many hours of our time. Let&#39;s see if we can accomplish this in a reasonable manner.</p>
+<p>Surprisingly C preprocessor comes to the rescue. We&#39;ve all used it in C and C++. On occasion we all wish Java had it. We use it to execute simple instructions at compile time to make small changes to our code (like selectively removing debug statements). Let&#39;s look at a quick example:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> triple(X)    X + X + X</span></span><br></pre></td></tr></table></figure><br>What does this line do? It&#39;s a simple instruction written in the preprocessor language that instructs it to replace all instances of triple(X) with X + X + X. For example all instances of &#39;triple(5)&#39; will be replaced with &#39;5 + 5 + 5&#39; and the resulting code will be compiled by the C compiler. We&#39;re really doing a very primitive version of code generation here. If only C preprocessor was a little more powerful and included ways to connect to the database and a few more simple constructs, we could use it to develop our data access layer right there, from within our program! Consider the following example that uses an imaginary extension of the C preprocessor:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#get-db-schema(<span class="meta-string">"127.0.0.1, un, pwd"</span>);</span></span><br><span class="line"><span class="meta">#iterate-through-tables</span></span><br><span class="line"><span class="meta">#for-each-table</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> #<span class="title">table</span>-<span class="title">name</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">    &#125;;</span><br><span class="line"><span class="meta">#end-for-each</span></span><br></pre></td></tr></table></figure><br>We&#39;ve just connected to the database schema, iterated through all the tables, and created an empty class for each. All in a couple of lines right within our source code! Now every time we recompile the file where above code appears we&#39;ll get a freshly built set of classes that automatically update based on the schema. With a little imagination you can see how we could build a full data access layer straight from within our program, without the use of any external tools! Of course this has a certain disadvantage (aside from the fact that such an advanced version of C preprocessor doesn&#39;t exist) - we&#39;d have to learn a whole new &quot;compile-time language&quot; to do this sort of work. For complex code generation this language would have to be very complex as well, it would have to support many libraries and language constructs. For example, if our generated code depended on some file located at some ftp server the preprocessor would have to be able to connect to ftp. It&#39;s a shame to create and learn a new language just to do this. Especially since there are so many nice languages already out there. Of course if we add a little creativity we can easily avoid this pitfall.</p>
+<p>Why not replace the preprocessor language with C/C++ itself? We&#39;d have full power of the language at compile time and we&#39;d only need to learn a few simple directives to differentiate between compile time and runtime code!<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Enter a number: "</span>;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">%&gt;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; &lt;%= n %&gt;; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"hello"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>Can you see what happens here? Everything that&#39;s between &lt;% and %&gt; tags runs when the program is compiled. Anything outside of these tags is normal code. In the example above you&#39;d start compiling your program in the development environment. The code between the tags would be compiled and then ran. You&#39;d get a prompt to enter a number. You&#39;d enter one and it would be placed inside the for loop. The for loop would then be compiled as usual and you&#39;d be able to execute it. For example, if you&#39;d enter 5 during the compilation of your program, the resulting code would look like this:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"hello"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>Simple and effective. No need for a special preprocessor language. We get full power of our host language (in this case C/C++) at compile time. We could easily connect to a database and generate our data access layer source code at compile time in the same way JSP or ASP generate HTML! Creating such tools would also be tremendously quick and simple. We&#39;d never have to create new projects with specialized GUIs. We could inline our tools right into our programs. We wouldn&#39;t have to worry about whether writing such tools is worth it because writing them would be so fast - we could save tremendous amounts of time by creating simple bits of code that do mundane code generation for us!</p>
+<h2 id="Hello-Lisp"><a href="#Hello-Lisp" class="headerlink" title="Hello, Lisp!"></a>Hello, Lisp!</h2><p>Everything we&#39;ve learned about Lisp so far can be summarized by a single statement: Lisp is executable XML with a friendlier syntax. We haven&#39;t said a single word about how Lisp actually operates. It&#39;s time to fill this gap.</p>
+<p>Lisp has a number of built in data types. Integers and strings, for example, aren&#39;t much different from what you&#39;re used to. The meaning of 71 or &quot;hello&quot; is roughly the same in Lisp as in C++ or Java. What is of more interest to us are symbols, lists, and functions. I will spend the rest of this section describing these data types as well as how a Lisp environment compiles and executes the source code you type into it (this is called evaluation in Lisp lingo). Getting through this section in one piece is important for understanding true potential of Lisp&#39;s metaprogramming, the unity of code and data, and the notion of domain specific languages. Don&#39;t think of this section as a chore though, I&#39;ll try to make it fun and accessible. Hopefully you can pick up a few interesting ideas on the way. Ok. Let&#39;s start with Lisp&#39;s symbols.</p>
+<p>A symbol in Lisp is roughly equivalent to C++ or Java&#39;s notion of an identifier. It&#39;s a name you can use to access a variable (like currentTime, arrayCount, n, etc.) The difference is that a symbol in Lisp is a lot more liberal than its mainstream identifier alternative. In C++ or Java you&#39;re limited to alphanumeric characters and an underscore. In Lisp, you are not. For example + is a valid symbol. So is -, =, hello-world, hello+world, <em>, etc. (you can find the exact definition of valid Lisp symbols online). You can assign to these symbols any data-type you like. Let&#39;s ignore Lisp syntax and use pseudo-code for now. Assume that a function set assigns some value to a symbol (like = does in Java or C++). The following are all valid examples:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span>(test, <span class="number">5</span>)            <span class="comment">// symbol 'test' will equal an integer 5</span></span><br><span class="line"><span class="built_in">set</span>(=, <span class="number">5</span>)               <span class="comment">// symbol '=' will equal an integer 5</span></span><br><span class="line"><span class="built_in">set</span>(test, <span class="string">"hello"</span>)      <span class="comment">// symbol 'test' will equal a string "hello"</span></span><br><span class="line"><span class="built_in">set</span>(test, =)            <span class="comment">// at this point symbol '=' is equal to 5</span></span><br><span class="line">                        <span class="comment">// therefore symbol 'test' will equal to 5</span></span><br><span class="line"><span class="built_in">set</span>(*, <span class="string">"hello"</span>)         <span class="comment">// symbol '*' will equal a string "hello"</span></span><br></pre></td></tr></table></figure><br>At this point something must smell wrong. If we can assign strings and integers to symbols like </em>, how does Lisp do multiplication? After all, <em> means multiply, right? The answer is pretty simple. Functions in Lisp aren&#39;t special. There is a data-type, function, just like integer and string, that you assign to symbols. A multiplication function is built into Lisp and is assigned to a symbol </em>. You can reassign a different value to * and you&#39;d lose the multiplication function. Or you can store the value of the function in some other variable. Again, using pseudo-code:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">*(<span class="number">3</span>, <span class="number">4</span>)                 <span class="comment">// multiplies 3 by 4, resulting in 12</span></span><br><span class="line"><span class="built_in">set</span>(temp, *)            <span class="comment">// symbol '*' is equal to the multiply function</span></span><br><span class="line">                        <span class="comment">// so temp will equal to the multiply function</span></span><br><span class="line"><span class="built_in">set</span>(*, <span class="number">3</span>)               <span class="comment">// sets symbol '*' to equal to 3</span></span><br><span class="line">*(<span class="number">3</span>, <span class="number">4</span>)                 <span class="comment">// error, symbol '*' no longer equals to a function</span></span><br><span class="line">                        <span class="comment">// it's equal to 3</span></span><br><span class="line">temp(<span class="number">3</span>, <span class="number">4</span>)              <span class="comment">// temp equals to a multiply function</span></span><br><span class="line">                        <span class="comment">// so Lisp multiplies 3 by 4 resulting in 12</span></span><br><span class="line"><span class="built_in">set</span>(*, temp)            <span class="comment">// symbol '*' equals multiply function again</span></span><br><span class="line">*(<span class="number">3</span>, <span class="number">4</span>)                 <span class="comment">// multiplies 3 by 4, resulting in 12</span></span><br></pre></td></tr></table></figure><br>You can even do wacky stuff like reassigning plus to minus:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span>(+, -)               <span class="comment">// the value of '-' is a built in minus function</span></span><br><span class="line">                        <span class="comment">// so now symbol '+' equals to a minus function</span></span><br><span class="line">+(<span class="number">5</span>, <span class="number">4</span>)                 <span class="comment">// since symbol '+' is equal to the minus function</span></span><br><span class="line">                        <span class="comment">// this results in 1</span></span><br></pre></td></tr></table></figure><br>I&#39;ve used functions quite liberally in these examples but I didn&#39;t describe them yet. A function in Lisp is just a data-type like an integer, a string, or a symbol. A function doesn&#39;t have a notion of a name like in Java or C++. Instead, it stands on its own. Effectively it is a pointer to a block of code along with some information (like a number of parameters it accepts). You only give the function a name by assigning it to a symbol, just like you assign an integer or a string. You can create a function by using a built in function for creating functions, assigned to a symbol &#39;fn&#39;. Using pseudo-code:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fn [a]</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> *(a, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>This returns a function that takes a single parameter named &#39;a&#39; and doubles it. Note that the function has no name but you can assign it to a symbol:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span>(times-two, fn [a] &#123; <span class="keyword">return</span> *(a, <span class="number">2</span>); &#125;)</span><br></pre></td></tr></table></figure><br>We can now call this function:<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">times-two(<span class="number">5</span>)             <span class="comment">// returns 10</span></span><br></pre></td></tr></table></figure><br>Now that we went over symbols and functions, what about lists? Well, you already know a lot about them. Lists are simply pieces of XML written in s-expression form. A list is specified by parentheses and contains Lisp data-types (including other lists) separated by a space. For example (this is real Lisp, note that we use semicolons for comments now):<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">()                      <span class="comment">; an empty list</span></span><br><span class="line">(<span class="number">1</span>)                     <span class="comment">; a list with a single element, 1</span></span><br><span class="line">(<span class="number">1</span> <span class="string">"test"</span>)              <span class="comment">; a list with two elements</span></span><br><span class="line">                        <span class="comment">; an integer 1 and a string "test"</span></span><br><span class="line">(<span class="name">test</span> <span class="string">"hello"</span>)          <span class="comment">; a list with two elements</span></span><br><span class="line">                        <span class="comment">; a symbol test and a string "hello"</span></span><br><span class="line">(<span class="name">test</span> (<span class="number">1</span> <span class="number">2</span>) <span class="string">"hello"</span>)    <span class="comment">; a list with three elements, a symbol test</span></span><br><span class="line">                        <span class="comment">; a list of two integers 1 and 2</span></span><br><span class="line">                        <span class="comment">; and a string "hello"</span></span><br></pre></td></tr></table></figure><br>When a Lisp system encounters lists in the source code it acts exactly like Ant does when it encounters XML - it attempts to execute them. In fact, Lisp source code is only specified using lists, just like Ant source code is only specified using XML. Lisp executes lists in the following manner. The first element of the list is treated as the name of a function. The rest of the elements are treated as functions parameters. If one of the parameters is another list it is executed using the same principles and the result is passed as a parameter to the original function. That&#39;s it. We can write real code now:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">*</span> <span class="number">3</span> <span class="number">4</span>)                 <span class="comment">; equivalent to pseudo-code *(3, 4).</span></span><br><span class="line">                        <span class="comment">; Symbol '*' is a function</span></span><br><span class="line">                        <span class="comment">; 3 and 4 are its parameters.</span></span><br><span class="line">                        <span class="comment">; Returns 12.</span></span><br><span class="line">(<span class="name">times-two</span> <span class="number">5</span>)           <span class="comment">; returns 10</span></span><br><span class="line">(<span class="number">3</span> <span class="number">4</span>)                   <span class="comment">; error: 3 is not a function</span></span><br><span class="line">(<span class="name">times-two</span>)              <span class="comment">; error, times-two expects one parameter</span></span><br><span class="line">(<span class="name">times-two</span> <span class="number">3</span> <span class="number">4</span>)          <span class="comment">; error, times-two expects one parameter</span></span><br><span class="line">(<span class="name">set</span> + -)               <span class="comment">; sets symbol '+' to be equal to whatever symbol '-'</span></span><br><span class="line">                        <span class="comment">; equals to, which is a minus function</span></span><br><span class="line">(<span class="name">+</span> <span class="number">5</span> <span class="number">4</span>)                 <span class="comment">; returns 1 since symbol '+' is now equal</span></span><br><span class="line">                        <span class="comment">; to the minus function</span></span><br><span class="line">(<span class="name">*</span> <span class="number">3</span> (<span class="name">*</span> <span class="number">2</span> <span class="number">2</span>))           <span class="comment">; multiplies 3 by the second parameter</span></span><br><span class="line">                        <span class="comment">; (which is a function call that returns 4).</span></span><br><span class="line">                        <span class="comment">; Returns 12.</span></span><br></pre></td></tr></table></figure><br>Note that so far every list we&#39;ve specified was treated by a Lisp system as code. But how can we treat a list as data? Again, imagine an Ant task that accepts XML as one of its parameters. In Lisp we do this using a quote operator &#39; like so:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">set</span> test '(<span class="number">1</span> <span class="number">2</span>))       <span class="comment">; test is equal to a list of two integers, 1 and 2</span></span><br><span class="line">(<span class="name">set</span> test (<span class="number">1</span> <span class="number">2</span>))        <span class="comment">; error, 1 is not a function</span></span><br><span class="line">(<span class="name">set</span> test '(* 3 4))     ; sets test to a list of three elements,</span><br><span class="line">                        ; a symbol *, an integer <span class="number">3</span>, and an integer <span class="number">4</span></span><br></pre></td></tr></table></figure><br>We can use a built in function head to return the first element of the list, and a built in function tail to return the rest of the list&#39;s elements:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">head</span> '(* 3 4))         ; returns a symbol '*'</span><br><span class="line">(tail '(* <span class="number">3</span> <span class="number">4</span>))         ; returns a list (<span class="number">3</span> <span class="number">4</span>)</span><br><span class="line">(head (tail '( * <span class="number">3</span> <span class="number">4</span>))) ; (tail '(* <span class="number">3</span> <span class="number">4</span>)) returns a list (<span class="number">3</span> <span class="number">4</span>)</span><br><span class="line">                        ; and (head '(<span class="number">3</span> <span class="number">4</span>)) returns <span class="number">3</span>.</span><br><span class="line">(head test)             ; test was set to a list in previous example</span><br><span class="line">                        ; returns a symbol '*'</span><br></pre></td></tr></table></figure><br>You can think of built in Lisp functions as you think of Ant tasks. The difference is that we don&#39;t have to extend Lisp in another language (although we can), we can extend it in Lisp itself as we did with the times-two example. Lisp comes with a very compact set of built in functions - the necessary minimum. The rest of the language is implemented as a standard library in Lisp itself.</p>
+<h2 id="Lisp-Macros"><a href="#Lisp-Macros" class="headerlink" title="Lisp Macros"></a>Lisp Macros</h2><p>So far we&#39;ve looked at metaprogramming in terms of a simple templating engine similar to JSP. We&#39;ve done code generation using simple string manipulations. This is generally how most code generation tools go about doing this task. But we can do much better. To get on the right track, let&#39;s start off with a question. How would we write a tool that automatically generates Ant build scripts by looking at source files in the directory structure?</p>
+<p>We could take the easy way out and generate Ant XML by manipulating strings. Of course a much more abstract, expressive and extensible way is to work with XML processing libraries to generate XML nodes directly in memory. The nodes can then be serialized to strings automatically. Furthermore, our tool would be able to analyze and transform existing Ant build scripts by loading them and dealing with the XML nodes directly. We would abstract ourselves from strings and deal with higher level concepts which let us get the job done faster and easier.</p>
+<p>Of course we could write Ant tasks that allow dealing with XML transformations and write our generation tool in Ant itself. Or we could just use Lisp. As we saw earlier, a list is a built in Lisp data structure and Lisp has a number of facilities for processing lists quickly and effectively (head and tail being the simplest ones). Additionally Lisp has no semantic constraints - you can have your code (and data) have any structure you want.</p>
+<p>Metaprogramming in Lisp is done using a construct called a &quot;macro&quot;. Let&#39;s try to develop a set of macros that transform data like, say, a to-do list (surprised?), into a language for dealing with to-do lists.</p>
+<p>Let&#39;s recall our to-do list example. The XML looks like this:<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">todo</span> <span class="attr">name</span>=<span class="string">"housework"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">priority</span>=<span class="string">"high"</span>&gt;</span>Clean the house.<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">priority</span>=<span class="string">"medium"</span>&gt;</span>Wash the dishes.<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">priority</span>=<span class="string">"medium"</span>&gt;</span>Buy more soap.<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">todo</span>&gt;</span></span><br></pre></td></tr></table></figure><br>The corresponding s-expression version looks like this:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">todo</span> <span class="string">"housework"</span></span><br><span class="line">    (<span class="name">item</span> (<span class="name">priority</span> high) <span class="string">"Clean the house."</span>)</span><br><span class="line">    (<span class="name">item</span> (<span class="name">priority</span> medium) <span class="string">"Wash the dishes."</span>)</span><br><span class="line">    (<span class="name">item</span> (<span class="name">priority</span> medium) <span class="string">"Buy more soap."</span>))</span><br></pre></td></tr></table></figure><br>Suppose we&#39;re writing a to-do manager application. We keep our to-do items serialized in a set of files and when the program starts up we want to read them and display them to the user. How would we do this with XML and some other language (say, Java)? We&#39;d parse our XML files with the to-do lists using some XML parser, write the code that walks the XML tree and converts it to a Java data structure (because frankly, processing DOM in Java is a pain in the neck), and then use this data structure to display the data. Now, how would we do the same thing in Lisp?</p>
+<p>If we were to adopt the same approach we&#39;d parse the files using Lisp libraries responsible for parsing XML. The XML would then be presented to us as a Lisp list (an s-expression) and we&#39;d walk the list and present relevant data to the user. Of course if we used Lisp it would make sense to persist the data as s-expressions directly as there&#39;s no reason to do an XML conversion. We wouldn&#39;t need special parsing libraries since data persisted as a set of s-expressions is valid Lisp and we could use Lisp compiler to parse it and store it in memory as a Lisp list. Note that Lisp compiler (much like .NET compiler) is available to a Lisp program at runtime.</p>
+<p>But we can do better. Instead of writing code to walk the s-expression that stores our data we could write a macro that allows us to treat data as code! How do macros work? Pretty simple, really. Recall that a Lisp function is called like this:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">function-name</span> arg1 arg2 arg3)</span><br></pre></td></tr></table></figure><br>Where each argument is a valid Lisp expression that&#39;s evaluated and passed to the function. For example if we replace arg1 above with (+ 4 5), it will be evaluated and 9 would be passed to the function. A macro works the same way as a function, except its arguments are not evaluated.<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">macro-name</span> (<span class="name">+</span> <span class="number">4</span> <span class="number">5</span>))</span><br></pre></td></tr></table></figure><br>In this case, (+ 4 5) is not evaluated and is passed to the macro as a list. The macro is then free to do what it likes with it, including evaluating it. The return value of a macro is a Lisp list that&#39;s treated as code. The original place with the macro is replaced with this code. For example, we could define a macro plus that takes two arguments and puts in the code that adds them.</p>
+<p>What does it have to do with metaprogramming and our to-do list problem? Well, for one, macros are little bits of code that generate code using a list abstraction. Also, we could create macros named to-do and item that replace our data with whatever code we like, for instance code that displays the item to the user.</p>
+<p>What benefits does this approach offer? We don&#39;t have to walk the list. The compiler will do it for us and will invoke appropriate macros. All we need to do is create the macros that convert our data to appropriate code!</p>
+<p>For example, a macro similar to our triple C macro we showed earlier looks like this:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">defmacro</span> triple (<span class="name">x</span>)</span><br><span class="line">    '(+ ~x ~x ~x))</span><br></pre></td></tr></table></figure><br>The quote prevents evaluation while the tilde allows it. Now every time triple is encountered in lisp code:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">triple</span> <span class="number">4</span>)</span><br></pre></td></tr></table></figure><br>it is replaced with the following code:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">+</span> <span class="number">4</span> <span class="number">4</span> <span class="number">4</span>)</span><br></pre></td></tr></table></figure><br>We can create macros for our to-do list items that will get called by lisp compiler and will transform the to-do list into code. Now our to-do list will be treated as code and will be executed. Suppose all we want to do is print it to standard output for the user to read:<br><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">(<span class="name">defmacro</span> item (<span class="name">priority</span> note)</span><br><span class="line">    '(block</span><br><span class="line">         (print stdout tab <span class="string">"Priority: "</span></span><br><span class="line">             ~(head (tail priority)) endl)</span><br><span class="line">         (print stdout tab <span class="string">"Note: "</span> ~note endl endl)))</span><br></pre></td></tr></table></figure><br>We&#39;ve just created a very small and limited language for managing to-do lists embedded in Lisp. Such languages are very specific to a particular problem domain and are often referred to as domain specific languages or DSLs.</p>
+<h2 id="Domain-Specific-Languages"><a href="#Domain-Specific-Languages" class="headerlink" title="Domain Specific Languages"></a>Domain Specific Languages</h2><p>In this article we&#39;ve already encountered two domain specific languages: Ant (specific to dealing with project builds) and our unnamed mini-language for dealing with to-do lists. The difference is that Ant was written from scratch using XML, an XML parser, and Java while our language is embedded into Lisp and is easily created within a couple of minutes.</p>
+<p>We&#39;ve already discussed the benefits of DSLs, mainly why Ant is using XML, not Java source code. Lisp lets us create as many DSLs as we need for our problem. We can create domain specific languages for creating web applications, writing massively multiplayer games, doing fixed income trading, solving the protein folding problem, dealing with transactions, etc. We can layer these languages on top of each other and create a language for writing web-based trading applications by taking advantage of our web application language and bond trading language. Every day we&#39;d reap the benefits of this approach, much like we reap the benefits of Ant.</p>
+<p>Using DSLs to solve problems results in much more compact, maintainable, flexible programs. In a way we create them in Java by creating classes that help us solve the problem. The difference is that Lisp allows us to take this abstraction to the next level: we&#39;re not limited by Java&#39;s parser. Think of writing build scripts in Java itself using some supporting library. Compare it to using Ant. Now apply this same comparison to every single problem you&#39;ve ever worked on and you&#39;ll begin to glimpse a small share of the benefits offered by Lisp.</p>
+<h2 id="What-39-s-next"><a href="#What-39-s-next" class="headerlink" title="What&#39;s next?"></a>What&#39;s next?</h2><p>Learning Lisp is an uphill battle. Even though in Computer Science terms Lisp is an ancient language, few people to date figured out how to teach it well enough to make it accessible. Despite great efforts by many Lisp advocates, learning Lisp today is still hard. The good news is that this won&#39;t remain the case forever since the amount of Lisp-related resources is rapidly increasing. Time is on Lisp&#39;s side.</p>
+<p>Lisp is a way to escape mediocrity and to get ahead of the pack. Learning Lisp means you can get a better job today, because you can impress any reasonably intelligent interviewer with fresh insight into most aspects of software engineering. It also means you&#39;re likely to get fired tomorrow because everyone is tired of you constantly mentioning how much better the company could be doing if only its software was written in Lisp. Is it worth the effort? Everyone who has ever learned Lisp says yes. The choice, of course, remains yours.</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuZGVmbWFjcm8ub3JnL3JhbWJsaW5ncy9saXNwLmh0bWw=">orgin page<i class="fa fa-external-link-alt"></i></span></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/lisp/" rel="tag"># lisp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/04/knowledge/human-tools-history/" rel="prev" title="人类工具简史">
+      <i class="fa fa-chevron-left"></i> 人类工具简史
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XML-Reloaded"><span class="nav-number">2.</span> <span class="nav-text">XML Reloaded</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ant-Reloaded"><span class="nav-number">3.</span> <span class="nav-text">Ant Reloaded</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-XML"><span class="nav-number">4.</span> <span class="nav-text">Why XML?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Almost-Lisp"><span class="nav-number">5.</span> <span class="nav-text">Almost Lisp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-Better-XML"><span class="nav-number">6.</span> <span class="nav-text">A Better XML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-Macros-Reloaded"><span class="nav-number">7.</span> <span class="nav-text">C Macros Reloaded</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hello-Lisp"><span class="nav-number">8.</span> <span class="nav-text">Hello, Lisp!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lisp-Macros"><span class="nav-number">9.</span> <span class="nav-text">Lisp Macros</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Domain-Specific-Languages"><span class="nav-number">10.</span> <span class="nav-text">Domain Specific Languages</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-39-s-next"><span class="nav-number">11.</span> <span class="nav-text">What&#39;s next?</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

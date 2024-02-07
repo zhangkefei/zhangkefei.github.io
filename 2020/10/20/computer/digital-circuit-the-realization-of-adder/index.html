@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="本文打通了机械世界与电子世界的通路，希望读者在头脑中建立机械与电子的对应关系，同时可以理解为什么二进制更适合计算机领域。从加法器举一反三，设想其他运算器的实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字电路-加法器的实现">
+<meta property="og:url" content="https://zhangkefei.github.io/2020/10/20/computer/digital-circuit-the-realization-of-adder/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="本文打通了机械世界与电子世界的通路，希望读者在头脑中建立机械与电子的对应关系，同时可以理解为什么二进制更适合计算机领域。从加法器举一反三，设想其他运算器的实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/1.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/2.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/3.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/4.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/5.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/6.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/7.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/8.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/9.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/10.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/11.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/12.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/13.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/14.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/15.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/16.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/17.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/18.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/19.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/20.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/21.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/22.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/23.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/24.png">
+<meta property="og:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/25.png">
+<meta property="article:published_time" content="2020-10-20T02:10:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.440Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="DigitalCircuit">
+<meta property="article:tag" content="CPU">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhangkefei.github.io/images/digital-circuit-the-realization-of-adder/1.png">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2020/10/20/computer/digital-circuit-the-realization-of-adder/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数字电路-加法器的实现 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2020/10/20/computer/digital-circuit-the-realization-of-adder/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数字电路-加法器的实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-10-20 02:10:00" itemprop="dateCreated datePublished" datetime="2020-10-20T02:10:00Z">2020-10-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Computer/" itemprop="url" rel="index"><span itemprop="name">Computer</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文打通了机械世界与电子世界的通路，希望读者在头脑中建立机械与电子的对应关系，同时可以理解为什么二进制更适合计算机领域。从加法器举一反三，设想其他运算器的实现。<br><a id="more"></a></p>
+<h2 id="门电路"><a href="#门电路" class="headerlink" title="门电路"></a>门电路</h2><p>常见的门电路有：<code>与门</code>，<code>或门</code>，<code>非门</code>，<code>异或门</code>，<code>与非门</code>，<code>或非门</code>。</p>
+<p>今天，我们就来说说这些门电路是如何实现的，并用它来实现一个加法器。</p>
+<h3 id="非门（NOT）"><a href="#非门（NOT）" class="headerlink" title="非门（NOT）"></a>非门（NOT）</h3><h4 id="逻辑符号-amp-布尔表达式-amp-真值表"><a href="#逻辑符号-amp-布尔表达式-amp-真值表" class="headerlink" title="逻辑符号 &amp; 布尔表达式 &amp; 真值表"></a>逻辑符号 &amp; 布尔表达式 &amp; 真值表</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/1.png" alt=""></p>
+<p>请务必记住其逻辑框图符合，再后面做加法器时我们要用其来表示！</p>
+<h4 id="继电器实现"><a href="#继电器实现" class="headerlink" title="继电器实现"></a>继电器实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/2.png" alt=""></p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/3.png" alt=""></p>
+<ul>
+<li>输入端输入1时，电磁铁会把金属弹簧片吸下来，从而灯泡电路断开，灯泡不发光，即输出0</li>
+<li>输入端输入0时，电磁铁会把金属弹簧片维持原来的位置，从而灯泡电路连接，灯泡发光即输出1</li>
+</ul>
+<p>这就实现了一个非门：<code>输入1，输出0；输入0，输出1</code>。</p>
+<h4 id="晶体管实现"><a href="#晶体管实现" class="headerlink" title="晶体管实现"></a>晶体管实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/4.png" alt=""></p>
+<p>在分析这个电路之前，我们先看看这个晶体管的线路：</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/5.png" alt=""></p>
+<p>在计算机电路中，源极是一个高电压，发射极接地，基极通常做输入端，它决定了是否将源极接地：</p>
+<ul>
+<li>当基极为高电压(1)时：晶体管闭合-&gt;源极接地-&gt;输出端为低电压(0)</li>
+<li>当基极为低电压(0)时：晶体管打开-&gt;源极不接地-&gt;输出端为高电压(1)</li>
+</ul>
+<p>经过上面的分析，你应该已经知道晶体管非门电路实现的原理了吧，那么对上面那幅图就不做再多的阐述了。</p>
+<h3 id="与门（NOT）"><a href="#与门（NOT）" class="headerlink" title="与门（NOT）"></a>与门（NOT）</h3><h4 id="逻辑符号-amp-布尔表达式-amp-真值表-1"><a href="#逻辑符号-amp-布尔表达式-amp-真值表-1" class="headerlink" title="逻辑符号 &amp; 布尔表达式 &amp; 真值表"></a>逻辑符号 &amp; 布尔表达式 &amp; 真值表</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/6.png" alt=""></p>
+<h4 id="继电器实现-1"><a href="#继电器实现-1" class="headerlink" title="继电器实现"></a>继电器实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/7.png" alt=""></p>
+<p>可以看出，只有当两个开关都闭合时，灯泡才亮，很明显，这是一个与门电路。<br>两个继电器串联可以组成一个与门</p>
+<h4 id="晶体管实现-1"><a href="#晶体管实现-1" class="headerlink" title="晶体管实现"></a>晶体管实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/8.png" alt=""></p>
+<p>相信这个电路大家都看得懂，不再做过多的阐述</p>
+<h3 id="或门（OR）"><a href="#或门（OR）" class="headerlink" title="或门（OR）"></a>或门（OR）</h3><h4 id="逻辑符号-amp-布尔表达式-amp-真值表-2"><a href="#逻辑符号-amp-布尔表达式-amp-真值表-2" class="headerlink" title="逻辑符号 &amp; 布尔表达式 &amp; 真值表"></a>逻辑符号 &amp; 布尔表达式 &amp; 真值表</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/9.png" alt=""></p>
+<h4 id="继电器实现-2"><a href="#继电器实现-2" class="headerlink" title="继电器实现"></a>继电器实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/10.png" alt=""></p>
+<p>可以看出，只有任意一个开关闭合，灯泡就亮，很明显，这是一个或门电路。<br>两个继电器并联可以组成一个或门</p>
+<h4 id="晶体管实现-2"><a href="#晶体管实现-2" class="headerlink" title="晶体管实现"></a>晶体管实现</h4><p>这里就不画了，等到后面介绍或非门时，你可以在或非门输出端加上一个非门，从而组成或门。</p>
+<h3 id="与非门（NAND）"><a href="#与非门（NAND）" class="headerlink" title="与非门（NAND）"></a>与非门（NAND）</h3><h4 id="逻辑符号-amp-布尔表达式-amp-真值表-3"><a href="#逻辑符号-amp-布尔表达式-amp-真值表-3" class="headerlink" title="逻辑符号 &amp; 布尔表达式 &amp; 真值表"></a>逻辑符号 &amp; 布尔表达式 &amp; 真值表</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/11.png" alt=""></p>
+<h4 id="继电器实现-3"><a href="#继电器实现-3" class="headerlink" title="继电器实现"></a>继电器实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/12.png" alt=""></p>
+<p>我们可以看到：只要有一个开端断开，则灯泡就亮，这符合与非门：有0则1</p>
+<h4 id="晶体管实现-3"><a href="#晶体管实现-3" class="headerlink" title="晶体管实现"></a>晶体管实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/13.png" alt=""></p>
+<p>V1，V2只要有一个为低电平，那么源极将不会接地，则输出端为高电平</p>
+<h3 id="或非门（XOR）"><a href="#或非门（XOR）" class="headerlink" title="或非门（XOR）"></a>或非门（XOR）</h3><h4 id="逻辑符号-amp-布尔表达式-amp-真值表-4"><a href="#逻辑符号-amp-布尔表达式-amp-真值表-4" class="headerlink" title="逻辑符号 &amp; 布尔表达式 &amp; 真值表"></a>逻辑符号 &amp; 布尔表达式 &amp; 真值表</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/14.png" alt=""></p>
+<h4 id="继电器实现-4"><a href="#继电器实现-4" class="headerlink" title="继电器实现"></a>继电器实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/15.png" alt=""></p>
+<p>我们可以看到：只要有一个开端闭合，则灯泡将不亮，这符合与或门：有1则0</p>
+<h4 id="晶体管实现-4"><a href="#晶体管实现-4" class="headerlink" title="晶体管实现"></a>晶体管实现</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/16.png" alt=""></p>
+<p>V1，V2有一个微高电平时，源极将接地，输出端为低电平。</p>
+<h3 id="异或门（XOR）"><a href="#异或门（XOR）" class="headerlink" title="异或门（XOR）"></a>异或门（XOR）</h3><h4 id="逻辑符号-amp-布尔表达式-amp-真值表-5"><a href="#逻辑符号-amp-布尔表达式-amp-真值表-5" class="headerlink" title="逻辑符号 &amp; 布尔表达式 &amp; 真值表"></a>逻辑符号 &amp; 布尔表达式 &amp; 真值表</h4><p><img data-src="/images/digital-circuit-the-realization-of-adder/17.png" alt=""></p>
+<p>注意到：异或门的真值表，刚好符合我们二进制的加法运算，1+1 = 01，0是本位输出位，1则是进位，后面我们将用异或门来做加法器</p>
+<h4 id="继电器实现-5"><a href="#继电器实现-5" class="headerlink" title="继电器实现"></a>继电器实现</h4><p>由于异或门的实现需要用到或门和与非门和与门，要想用继电器来描述则有点难画，所以我们用逻辑框图符合来描述异或门：</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/18.png" alt=""></p>
+<p>我们来看看每一步的真值表：</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/19.png" alt=""></p>
+<p>显然，输入和输出完全符合我们之前的定义的异或门。下面，我们要用其来做加法器。</p>
+<p>经过上面的分析，我们已经掌握了6种逻辑门：</p>
+<ul>
+<li>非门：将唯一的输入值求逆</li>
+<li>与门：属于都为1时，输出才为1</li>
+<li>或门：属于有一个为1时，就为1</li>
+<li>与非门：结果与非门的相反</li>
+<li>或非门：结果与或门的相反</li>
+<li>异或门：两个输入皆相同时，就输出0</li>
+</ul>
+<p>以上几种门电路的特征务必记住，下面我们就要开始真正地做加法器了，让我们看看计算机内部是如何进行加法运算的</p>
+<h2 id="加法器"><a href="#加法器" class="headerlink" title="加法器"></a>加法器</h2><h3 id="半加器"><a href="#半加器" class="headerlink" title="半加器"></a>半加器</h3><p>所谓半加器，就是计算两个位数的和并产生进位的电路，不考虑进位。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>第一个数</th>
+<th>第二个数</th>
+<th>本位输出</th>
+<th>进位输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在本位加输出中，若两个输入数相同则是0，不同则是1，所以我们可以用<code>异或门</code><br>来实现</p>
+<p>在进位输出中，若输入的两个数都是1，才输出1，所以我们可以用与门来实现。<br>那么我们的半加器就做出来了：</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/20.png" alt=""></p>
+<p>为了简单，我们也可以采用以下表示：</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/21.png" alt=""></p>
+<h3 id="全加器"><a href="#全加器" class="headerlink" title="全加器"></a>全加器</h3><p>在实际中，因为涉及到多位数的运算，所以不得不考虑进位，那么半加器就不能满足我们的需求了，所以我们要做一个全加器</p>
+<p>所谓全加器，就是对二进制执行加法运算的电路，考虑进位</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>第一个数</th>
+<th>第二个数</th>
+<th>进位到本位的数</th>
+<th>本位输出</th>
+<th>进位输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们直接给出全加器的电路，请读者根据真值表来分析</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/22.png" alt=""></p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/23.png" alt=""></p>
+<p>我们再组合一下，把表达变得更简单：</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/24.png" alt=""></p>
+<h3 id="八位加法器"><a href="#八位加法器" class="headerlink" title="八位加法器"></a>八位加法器</h3><p>要实现八位加法器，当然就要八个全加器，只不过第一个全加器的进位输入值我们设为0</p>
+<p><img data-src="/images/digital-circuit-the-realization-of-adder/25.png" alt=""></p>
+<p>这就是八位加法器，进位输入我们设置为0，然后A，B就是我要进行加法运算的8bits的二进制数。</p>
+<p>按照这种思路，我们也可以设计出16位，32位的加法器。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DigitalCircuit/" rel="tag"># DigitalCircuit</a>
+              <a href="/tags/CPU/" rel="tag"># CPU</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/06/frontend/react-philosophy/" rel="prev" title="React哲学">
+      <i class="fa fa-chevron-left"></i> React哲学
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/28/computer/turing/" rel="next" title="历年图灵奖获得者">
+      历年图灵奖获得者 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#门电路"><span class="nav-number">1.</span> <span class="nav-text">门电路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#非门（NOT）"><span class="nav-number">1.1.</span> <span class="nav-text">非门（NOT）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑符号-amp-布尔表达式-amp-真值表"><span class="nav-number">1.1.1.</span> <span class="nav-text">逻辑符号 &amp; 布尔表达式 &amp; 真值表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继电器实现"><span class="nav-number">1.1.2.</span> <span class="nav-text">继电器实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#晶体管实现"><span class="nav-number">1.1.3.</span> <span class="nav-text">晶体管实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与门（NOT）"><span class="nav-number">1.2.</span> <span class="nav-text">与门（NOT）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑符号-amp-布尔表达式-amp-真值表-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">逻辑符号 &amp; 布尔表达式 &amp; 真值表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继电器实现-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">继电器实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#晶体管实现-1"><span class="nav-number">1.2.3.</span> <span class="nav-text">晶体管实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#或门（OR）"><span class="nav-number">1.3.</span> <span class="nav-text">或门（OR）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑符号-amp-布尔表达式-amp-真值表-2"><span class="nav-number">1.3.1.</span> <span class="nav-text">逻辑符号 &amp; 布尔表达式 &amp; 真值表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继电器实现-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">继电器实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#晶体管实现-2"><span class="nav-number">1.3.3.</span> <span class="nav-text">晶体管实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与非门（NAND）"><span class="nav-number">1.4.</span> <span class="nav-text">与非门（NAND）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑符号-amp-布尔表达式-amp-真值表-3"><span class="nav-number">1.4.1.</span> <span class="nav-text">逻辑符号 &amp; 布尔表达式 &amp; 真值表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继电器实现-3"><span class="nav-number">1.4.2.</span> <span class="nav-text">继电器实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#晶体管实现-3"><span class="nav-number">1.4.3.</span> <span class="nav-text">晶体管实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#或非门（XOR）"><span class="nav-number">1.5.</span> <span class="nav-text">或非门（XOR）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑符号-amp-布尔表达式-amp-真值表-4"><span class="nav-number">1.5.1.</span> <span class="nav-text">逻辑符号 &amp; 布尔表达式 &amp; 真值表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继电器实现-4"><span class="nav-number">1.5.2.</span> <span class="nav-text">继电器实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#晶体管实现-4"><span class="nav-number">1.5.3.</span> <span class="nav-text">晶体管实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异或门（XOR）"><span class="nav-number">1.6.</span> <span class="nav-text">异或门（XOR）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑符号-amp-布尔表达式-amp-真值表-5"><span class="nav-number">1.6.1.</span> <span class="nav-text">逻辑符号 &amp; 布尔表达式 &amp; 真值表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继电器实现-5"><span class="nav-number">1.6.2.</span> <span class="nav-text">继电器实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加法器"><span class="nav-number">2.</span> <span class="nav-text">加法器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#半加器"><span class="nav-number">2.1.</span> <span class="nav-text">半加器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全加器"><span class="nav-number">2.2.</span> <span class="nav-text">全加器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#八位加法器"><span class="nav-number">2.3.</span> <span class="nav-text">八位加法器</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

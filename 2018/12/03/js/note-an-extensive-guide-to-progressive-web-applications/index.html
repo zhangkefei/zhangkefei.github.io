@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="In this article, we’ll look at the pain points of users who are browsing old non-PWA websites and the promise of PWAs to make the web great. You’ll learn most of the important technologies that make f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="An Extensive Guide To Progressive Web Applications">
+<meta property="og:url" content="https://zhangkefei.github.io/2018/12/03/js/note-an-extensive-guide-to-progressive-web-applications/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="In this article, we’ll look at the pain points of users who are browsing old non-PWA websites and the promise of PWAs to make the web great. You’ll learn most of the important technologies that make f">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-03T19:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="pwa">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2018/12/03/js/note-an-extensive-guide-to-progressive-web-applications/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>An Extensive Guide To Progressive Web Applications | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2018/12/03/js/note-an-extensive-guide-to-progressive-web-applications/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          An Extensive Guide To Progressive Web Applications
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-03 19:09:00" itemprop="dateCreated datePublished" datetime="2018-12-03T19:09:00Z">2018-12-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>In this article, we’ll look at the pain points of users who are browsing old non-PWA websites and the promise of PWAs to make the web great. You’ll learn most of the important technologies that make for cool PWAs, like service workers, web push notifications and IndexedDB.<br><a id="more"></a></p>
+<p>It was my dad’s birthday, and I wanted to order a chocolate cake and a shirt for him. I headed over to Google to search for chocolate cakes and clicked on the first link in the search results. There was a blank screen for a few seconds; I didn’t understand what was happening. After a few seconds of staring patiently, my mobile screen filled with delicious-looking cakes. As soon as I clicked on one of them to check its details, I got an ugly fat popup, asking me to install an Android application so that I could get a silky smooth experience while ordering a cake.</p>
+<p>That was disappointing. My conscience didn’t allow me to click on the “Install” button. All I wanted to do was order a small cake and be on my way.</p>
+<p>I clicked on the cross icon at the very right of the popup to get out of it as soon as I could. But then the installation popup sat at the bottom of the screen, occupying one-fourth of the space. And with the flaky UI, scrolling down was a challenge. I somehow managed to order a Dutch cake.</p>
+<p>After this terrible experience, my next challenge was to order a shirt for my dad. As before, I search Google for shirts. I clicked on the first link, and in a blink, the entire content was right in front of me. Scrolling was smooth. No installation banner. I felt as if I was browsing a native application. There was a moment when my terrible internet connection gave up, but I was still able to see the content instead of a dinosaur game. Even with my janky internet, I managed to order a shirt and jeans for my dad. Most surprising of all, I was getting notifications about my order.</p>
+<p>I would call this a silky smooth experience. These people were doing something right. Every website should do it for their users. It’s called a progressive web app.</p>
+<p>As Alex Russell states in one of <span class="exturl" data-url="aHR0cHM6Ly9pbmZyZXF1ZW50bHkub3JnLzIwMTUvMDYvcHJvZ3Jlc3NpdmUtYXBwcy1lc2NhcGluZy10YWJzLXdpdGhvdXQtbG9zaW5nLW91ci1zb3VsLw==">his blog posts<i class="fa fa-external-link-alt"></i></span>:</p>
+<blockquote>
+<p>“It happens on the web from time to time that powerful technologies come to exist without the benefit of marketing departments or slick packaging. They linger and grow at the peripheries, becoming old-hat to a tiny group while remaining nearly invisible to everyone else. Until someone names them.”</p>
+</blockquote>
+<h2 id="A-Silky-Smooth-Experience-On-The-Web-Sometimes-Known-As-A-Progressive-Web-Application"><a href="#A-Silky-Smooth-Experience-On-The-Web-Sometimes-Known-As-A-Progressive-Web-Application" class="headerlink" title="A Silky Smooth Experience On The Web, Sometimes Known As A Progressive Web Application"></a>A Silky Smooth Experience On The Web, Sometimes Known As A Progressive Web Application</h2><p>Progressive web applications (PWAs) are more of a methodology that involves a combination of technologies to make powerful web applications. With an improved user experience, people will spend more time on websites and see more advertisements. They tend to buy more, and with notification updates, they are more likely to visit often. The Financial Times abandoned its native apps in 2011 and built a web app using the best technologies available at the time. Now, the product has grown into a full-fledged PWA.</p>
+<p>But why, after all this time, would you build a web app when a native app does the job well enough?</p>
+<p>Let’s look into some of the metrics shared in Google IO 17.</p>
+<p>Five billion devices are connected to the web, making the web the biggest platform in the history of computing. On the mobile web, 11.4 million monthly unique visitors go to the top 1000 web properties, and 4 million go to the top thousand apps. The mobile web garners around four times as many users as native applications. But this number drops sharply when it comes to engagement.</p>
+<p>A user spends an average of 188.6 minutes in native apps and only 9.3 minutes on the mobile web. Native applications leverage the power of operating systems to send push notifications to give users important updates. They deliver a better user experience and boot more quickly than websites in a browser. Instead of typing a URL in the web browser, users just have to tap an app’s icon on the home screen.</p>
+<p>Most visitors on the web are unlikely to come back, so developers came up with the workaround of showing them banners to install native applications, in an attempt to keep them deeply engaged. But then, users would have to go through the tiresome procedure of installing the binary of a native application. Forcing users to install an application is annoying and reduces further the chance that they will install it in the first place. The opportunity for the web is clear.</p>
+<p>Recommended reading: <span class="exturl" data-url="aHR0cHM6Ly93d3cuc21hc2hpbmdtYWdhemluZS5jb20vMjAxOC8wMi9uYXRpdmUtYW5kLXB3YS1jaG9pY2VzLW5vdC1jaGFsbGVuZ2Vycy8=">Native And PWA: Choices, Not Challengers!<i class="fa fa-external-link-alt"></i></span></p>
+<p>If web applications come with a rich user experience, push notifications, offline support and instant loading, they can conquer the world. This is what a progressive web application does.</p>
+<p>A PWA delivers a rich user experience because it has several strengths:</p>
+<ul>
+<li><p>Fast<br>The UI is not flaky. Scrolling is smooth. And the app responds quickly to user interaction.</p>
+</li>
+<li><p>Reliable<br>A normal website forces users to wait, doing nothing, while it is busy making rides to the server. A PWA, meanwhile, loads data instantaneously from the cache. A PWA works seamlessly, even on a 2G connection. Every network request to fetch an asset or piece of data goes through a service worker (more on that later), which first verifies whether the response for a particular request is already in the cache. When users get real content almost instantly, even on a poor connection, they trust the app more and view it as more reliable.</p>
+</li>
+<li><p>Engaging<br>A PWA can earn a place on the user’s home screen. It offers a native app-like experience by providing a full-screen work area. It makes use of push notifications to keep users engaged.</p>
+</li>
+</ul>
+<p>Now that we know what PWAs bring to the table, let’s get into the details of what gives PWAs an edge over native applications. PWAs are built with technologies such as <strong>service workers, web app manifests, push notifications and IndexedDB/local data structure</strong> for caching. Let’s look into each in detail.</p>
+<h3 id="Service-Workers"><a href="#Service-Workers" class="headerlink" title="Service Workers"></a>Service Workers</h3><p>A service worker is a JavaScript file that runs in the background without interfering with the user’s interactions. All GET requests to the server go through a service worker. It acts like a client-side proxy. By intercepting network requests, it takes complete control over the response being sent back to the client. A PWA loads instantly because service workers eliminate the dependency on the network by responding with data from the cache.</p>
+<p>A service worker can only intercept a network request that is in its scope. For example, a root-scoped service worker can intercept all of the fetch requests coming from a web page. A service worker operates as an event-driven system. It goes into a dormant state when it is not needed, thereby conserving memory. To use a service worker in a web application, we first have to register it on the page with JavaScript.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(function main () &#123;</span><br><span class="line"></span><br><span class="line">   &#x2F;* navigator is a WEB API that allows scripts to register themselves and carry out their activities. *&#x2F;</span><br><span class="line">    if (&#39;serviceWorker&#39; in navigator) &#123;</span><br><span class="line">        console.log(&#39;Service Worker is supported in your browser&#39;)</span><br><span class="line">        &#x2F;* register method takes in the path of service worker file and returns a promises, which returns the registration object *&#x2F;</span><br><span class="line">        navigator.serviceWorker.register(&#39;.&#x2F;service-worker.js&#39;).then (registration &#x3D;&gt; &#123;</span><br><span class="line">            console.log(&#39;Service Worker is registered!&#39;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        console.log(&#39;Service Worker is not supported in your browser&#39;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>We first check whether the browser supports service workers. To register a service worker in a web application, we provide its URL as a parameter to the <code>register</code> function, available in <code>navigator.serviceWorker</code> (<code>navigator</code> is a web API that allows scripts to register themselves and carry out their activities). A service worker is registered only once. Registration does not happen on every page load. The browser downloads the service worker file (<code>./service-worker.js</code>) only if there is a byte difference between the existing activated service worker and the newer one or if its URL has changed.</p>
+<p>The above service worker will intercept all requests coming from the root (<code>/</code>). To limit the scope of a service worker, we would pass an optional parameter with one of the keys as the scope.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (&#39;serviceWorker&#39; in navigator) &#123;</span><br><span class="line">    &#x2F;* register method takes in an optional second parameter as an object. To restrict the scope of a service worker, the scope should be provided.</span><br><span class="line">        scope: &#39;&#x2F;books&#39; will intercept requests with &#39;&#x2F;books&#39; in the url. *&#x2F;</span><br><span class="line">    navigator.serviceWorker.register(&#39;.&#x2F;service-worker.js&#39;, &#123; scope: &#39;&#x2F;books&#39; &#125;).then(registration &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#39;Service Worker for scope &#x2F;books is registered&#39;, registration)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The service worker above will intercept requests that have <code>/books</code> in the URL. For example, it will not intercept request with <code>/products</code>, but it could very well intercept requests with <code>/books/products</code>.</p>
+<p>As mentioned, a service worker operates as an event-driven system. It listens for events (install, activate, fetch, push) and accordingly calls the respective event handler. Some of these events are a part of the life cycle of a service worker, which goes through these events in sequence to get activated.</p>
+<h4 id="INSTALLATION"><a href="#INSTALLATION" class="headerlink" title="INSTALLATION"></a>INSTALLATION</h4><p>Once a service worker has been registered successfully, an installation event is fired. This is a good place to do the initialization work, like setting up the cache or creating object stores in IndexedDB. (IndexedDB will make more sense to you once we get into its details. For now, we can just say that it’s a key-value pair structure.)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.addEventListener(&#39;install&#39;, (event) &#x3D;&gt; &#123;</span><br><span class="line">    let CACHE_NAME &#x3D; &#39;xyz-cache&#39;</span><br><span class="line">    let urlsToCache &#x3D; [</span><br><span class="line">        &#39;&#x2F;&#39;,</span><br><span class="line">        &#39;&#x2F;styles&#x2F;main.css&#39;,</span><br><span class="line">        &#39;&#x2F;scripts&#x2F;bundle.js&#39;</span><br><span class="line">    ]</span><br><span class="line">    event.waitUntil(</span><br><span class="line">        &#x2F;* open method available on caches, takes in the name of cache as the first parameter. It returns a promise that resolves to the instance of cache</span><br><span class="line">        All the URLS above can be added to cache using the addAll method. *&#x2F;</span><br><span class="line">        caches.open(CACHE_NAME)</span><br><span class="line">        .then (cache &#x3D;&gt; cache.addAll(urlsToCache))</span><br><span class="line">    )</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>Here, we’re caching some of the files so that the next load is instant. <code>self</code> refers to the service worker instance. <code>event.waitUntil</code> makes the service worker wait until all of the code inside it has finished execution.</p>
+<h4 id="ACTIVATION"><a href="#ACTIVATION" class="headerlink" title="ACTIVATION"></a>ACTIVATION</h4><p>Once a service worker has been installed, it cannot yet listen for fetch requests. Rather, an <code>activate</code> event is fired. If no active service worker is operating on the website in the same scope, then the installed service worker gets activated immediately. However, if a website already has an active service worker, then the activation of a new service worker is delayed until all of the tabs operating on the old service worker are closed. This makes sense because the old service worker might be using the instance of the cache that is now modified in the newer one. So, the activation step is a good place to get rid of old caches.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.addEventListener(&#39;activate&#39;, (event) &#x3D;&gt; &#123;</span><br><span class="line">    let cacheWhitelist &#x3D; [&#39;products-v2&#39;] &#x2F;&#x2F; products-v2 is the name of the new cache</span><br><span class="line"></span><br><span class="line">    event.waitUntil(</span><br><span class="line">        caches.keys().then (cacheNames &#x3D;&gt; &#123;</span><br><span class="line">            return Promise.all(</span><br><span class="line">                cacheNames.map( cacheName &#x3D;&gt; &#123;</span><br><span class="line">                    &#x2F;* Deleting all the caches except the ones that are in cacheWhitelist array *&#x2F;</span><br><span class="line">                    if (cacheWhitelist.indexOf(cacheName) &#x3D;&#x3D;&#x3D; -1) &#123;</span><br><span class="line">                        return caches.delete(cacheName)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            )</span><br><span class="line">        &#125;)</span><br><span class="line">    )</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>In the code above, we’re deleting the old cache. If the name of a cache doesn’t match with the <code>cacheWhitelist</code>, then it is deleted. To skip the waiting phase and immediately activate the service worker, we use <code>skip.waiting()</code>.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.addEventListener(&#39;activate&#39;, (event) &#x3D;&gt; &#123;</span><br><span class="line">    self.skipWaiting()</span><br><span class="line">    &#x2F;&#x2F; The usual stuff</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>Once service worker is activated, it can listen for fetch requests and push events.</p>
+<h4 id="FETCH-EVENT-HANDLER"><a href="#FETCH-EVENT-HANDLER" class="headerlink" title="FETCH EVENT HANDLER"></a>FETCH EVENT HANDLER</h4><p>Whenever a web page fires a fetch request for a resource over the network, the fetch event from the service worker gets called. The fetch event handler first looks for the requested resource in the cache. If it is present in the cache, then it returns the response with the cached resource. Otherwise, it initiates a fetch request to the server, and when the server sends back the response with the requested resource, it puts it to the cache for subsequent requests.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* Fetch event handler for responding to GET requests with the cached assets *&#x2F;</span><br><span class="line">self.addEventListener(&#39;fetch&#39;, (event) &#x3D;&gt; &#123;</span><br><span class="line">    event.respondWith(</span><br><span class="line">        caches.open(&#39;products-v2&#39;)</span><br><span class="line">            .then (cache &#x3D;&gt; &#123;</span><br><span class="line">                &#x2F;* Checking if the request is already present in the cache. If it is present, sending it directly to the client *&#x2F;</span><br><span class="line">                return cache.match(event.request).then (response &#x3D;&gt; &#123;</span><br><span class="line">                    if (response) &#123;</span><br><span class="line">                        console.log(&#39;Cache hit! Fetching response from cache&#39;, event.request.url)</span><br><span class="line">                        return response</span><br><span class="line">                    &#125;</span><br><span class="line">                    &#x2F;* If the request is not present in the cache, we fetch it from the server and then put it in cache for subsequent requests. *&#x2F;</span><br><span class="line">                    fetch(event.request).then (response &#x3D;&gt; &#123;</span><br><span class="line">                        cache.put(event.request, response.clone())</span><br><span class="line">                        return response</span><br><span class="line">                    &#125;)</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;)</span><br><span class="line">    )</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p><code>event.respondWith</code> lets the service worker send a customized response to the client.</p>
+<p>Offline-first is now a thing. For any non-critical request, we must serve the response from the cache, instead of making a ride to the server. If any asset is not present in the cache, we get it from the server and then cache it for subsequent requests.</p>
+<p>Service workers only work on HTTPS websites because they have the power to manipulate the response of any fetch request. Someone with malicious intent might tamper the response for a request on an HTTP website. So, hosting a PWA on HTTPS is mandatory. Service workers do not interrupt the normal functioning of the DOM. They cannot communicate directly with the web page. To send any message to a web page, it makes use of post messages.</p>
+<h3 id="Web-Push-Notifications"><a href="#Web-Push-Notifications" class="headerlink" title="Web Push Notifications"></a>Web Push Notifications</h3><p>Let’s suppose you’re busy playing a game on your mobile, and a notification pops up telling you of a 30% discount on your favorite brand. Without any further ado, you click on the notification and shop your breath out. Getting live updates on, say, a cricket or football match or getting important emails and reminders as notifications is a big deal when it comes to engaging users with a product. This feature was only available in native applications until PWA came along. A PWA makes use of web push notifications to compete with this powerful feature that native apps provide out of the box. A user would still receive a web push notification even if the PWA is not open in any of the browser tabs and even if the browser is not open.</p>
+<p>A web application has to ask permission of the user to send them push notifications.</p>
+<p>Once the user confirms by clicking the “Allow” button, a unique subscription token is generated by the browser. This token is unique for this device. The format of the subscription token generated by Chrome is as follows:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">     &quot;endpoint&quot;: &quot;https:&#x2F;&#x2F;fcm.googleapis.com&#x2F;fcm&#x2F;send&#x2F;c7Veb8VpyM0:APA91bGnMFx8GIxf__UVy6vJ-n9i728CUJSR1UHBPAKOCE_SrwgyP2N8jL4MBXf8NxIqW6NCCBg01u8c5fcY0kIZvxpDjSBA75sVz64OocQ-DisAWoW7PpTge3SwvQAx5zl_45aAXuvS&quot;,</span><br><span class="line">     &quot;expirationTime&quot;: null,</span><br><span class="line">     &quot;keys&quot;: &#123;</span><br><span class="line">          &quot;p256dh&quot;: &quot;BJsj63kz8RPZe8Lv1uu-6VSzT12RjxtWyWCzfa18RZ0-8sc5j80pmSF1YXAj0HnnrkyIimRgLo8ohhkzNA7lX4w&quot;,</span><br><span class="line">          &quot;auth&quot;: &quot;TJXqKozSJxcWvtQasEUZpQ&quot;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The <code>endpoint</code> contained in the token above will be unique for every subscription. On an average website, thousands of users would agree to receive push notifications, and for each of them, this <code>endpoint</code> would be unique. So, with the help of this <code>endpoint</code>, the application is able to target these users in the future by sending them push notifications. The <code>expirationTime</code> is the amount of time that the subscription is valid for a particular device. If the <code>expirationTime</code> is 20 days, it means that the push subscription of the user will expire after 20 days and the user won’t be able to receive push notifications on the older subscription. In this case, the browser will generate a new subscription token for that device. The <code>auth</code> and <code>p256dh</code> keys are used for encryption.</p>
+<p>Now, to send push notifications to these thousands of users in the future, we first have to save their respective subscription tokens. It’s the job of the application server (the back-end server, maybe a Node.js script) to send push notifications to these users. This might sound as simple as making a <code>POST</code> request to the endpoint URL with the notification data in the request payload. However, it should be noted that if a user is not online when a push notification intended for them is triggered by the server, they should still get that notification once they come back online. The server would have to take care of such scenarios, along with sending thousands of requests to the users. A server keeping track of the user’s connection sounds complicated. So, something in the middle would be responsible for routing web push notifications from the server to the client. This is called a push service, and every browser has its own implementation of a push service. The browser has to tell the following information to the push service in order to send any notification:</p>
+<ol>
+<li><p><strong>The time to live</strong><br>This is how long a message should be queued, in case it is not delivered to the user. Once this time has elapsed, the message will be removed from the queue.</p>
+</li>
+<li><p><strong>Urgency of the message</strong><br>This is so that the push service preserves the user’s battery by sending only high-priority messages.</p>
+</li>
+</ol>
+<p>The push service routes the messages to the client. Because push has to be received by the client even if its respective web application is not open in the browser, push events have to be listened to by something that continuously monitors in the background. You guessed it: That’s the job of the service worker. The service worker listens for push events and does the job of showing notifications to the user.</p>
+<p>So, now we know that the browser, push service, service worker and application server work in harmony to send push notifications to the user. Let’s look into the implementation details.</p>
+<h4 id="WEB-PUSH-CLIENT"><a href="#WEB-PUSH-CLIENT" class="headerlink" title="WEB PUSH CLIENT"></a>WEB PUSH CLIENT</h4><p>Asking permission of the user is a one-time thing. If a user has already granted permission to receive push notifications, we shouldn’t ask again. The permission value is saved in <code>Notification.permission</code>.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;* Notification.permission can have one of these three values: default, granted or denied. *&#x2F;</span><br><span class="line">if (Notification.permission &#x3D;&#x3D;&#x3D; &#39;default&#39;) &#123;</span><br><span class="line">    &#x2F;* The Notification.requestPermission() method shows a notification permission prompt to the user. It returns a promise that resolves to the value of permission*&#x2F;</span><br><span class="line">    Notification.requestPermission().then (result &#x3D;&gt; &#123;</span><br><span class="line">        if (result &#x3D;&#x3D;&#x3D; &#39;denied&#39;) &#123;</span><br><span class="line">            console.log(&#39;Permission denied&#39;)</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (result &#x3D;&#x3D;&#x3D; &#39;granted&#39;) &#123;</span><br><span class="line">            console.log(&#39;Permission granted&#39;)</span><br><span class="line">            &#x2F;* This means the user has clicked the Allow button. We’re to get the subscription token generated by the browser and store it in our database.</span><br><span class="line"></span><br><span class="line">            The subscription token can be fetched using the getSubscription method available on pushManager of the serviceWorkerRegistration object. If subscription is not available, we subscribe using the subscribe method available on pushManager. The subscribe method takes in an object.</span><br><span class="line">            *&#x2F;</span><br><span class="line"></span><br><span class="line">            serviceWorkerRegistration.pushManager.getSubscription()</span><br><span class="line">                .then (subscription &#x3D;&gt; &#123;</span><br><span class="line">                    if (!subscription) &#123;</span><br><span class="line">                        const applicationServerKey &#x3D; &#39;&#39;</span><br><span class="line">                        serviceWorkerRegistration.pushManager.subscribe(&#123;</span><br><span class="line">                            userVisibleOnly: true, &#x2F;&#x2F; All push notifications from server should be displayed to the user</span><br><span class="line">                            applicationServerKey &#x2F;&#x2F; VAPID Public key</span><br><span class="line">                        &#125;)</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        saveSubscriptionInDB(subscription, userId) &#x2F;&#x2F; A method to save subscription token in the database</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>In the <code>subscribe</code> method above, we’re passing <code>userVisibleOnly</code> and <code>applicationServerKey</code> to generate a subscription token. The <code>userVisibleOnly</code> property should always be true because it tells the browser that any push notification sent by the server will be shown to the client. To understand the purpose of <code>applicationServerKey</code>, let’s consider a scenario.</p>
+<p>If some person gets ahold of your thousands of subscription tokens, they could very well send notifications to the endpoints contained in these subscriptions. There is no way for the endpoint to be linked to your unique identity. To provide a unique identity to the subscription tokens generated on your web application, we make use of the VAPID protocol. With VAPID, the application server voluntarily identifies itself to the push service while sending push notifications. We generate two keys like so:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const webpush &#x3D; require(&#39;web-push&#39;)</span><br><span class="line">const vapidKeys &#x3D; webpush.generateVAPIDKeys()</span><br></pre></td></tr></table></figure></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2Uvd2ViLXB1c2g=">web-push<i class="fa fa-external-link-alt"></i></span> is an npm module. <code>vapidKeys</code> will have one public key and one private key. The application server key used above is the public key.</p>
+<h3 id="Web-Push-Server"><a href="#Web-Push-Server" class="headerlink" title="Web Push Server"></a>Web Push Server</h3><p>The job of the web push server (application server) is straightforward. It sends a notification payload to the subscription tokens.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const options &#x3D; &#123;</span><br><span class="line">    TTL: 24*60*60, &#x2F;&#x2F;TTL is the time to live, the time that the notification will be queued in the push service</span><br><span class="line">    vapidDetails: &#123;</span><br><span class="line">        subject: &#39;email@example.com&#39;,</span><br><span class="line">        publicKey: &#39;&#39;,</span><br><span class="line">        privateKey: &#39;&#39;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">const data &#x3D; &#123;</span><br><span class="line">    title: &#39;Update&#39;,</span><br><span class="line">    body: &#39;Notification sent by the server&#39;</span><br><span class="line">&#125;</span><br><span class="line">webpush.sendNotification(subscription, data, options)</span><br></pre></td></tr></table></figure></p>
+<p>It uses the <code>sendNotification</code> method from the web push library.</p>
+<h3 id="Service-Workers-1"><a href="#Service-Workers-1" class="headerlink" title="Service Workers"></a>Service Workers</h3><p>The service worker shows the notification to the user as such:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.addEventListener(&#39;push&#39;, (event) &#x3D;&gt; &#123;</span><br><span class="line">    let options &#x3D; &#123;</span><br><span class="line">        body: event.data.body,</span><br><span class="line">        icon: &#39;images&#x2F;example.png&#39;,</span><br><span class="line">    &#125;</span><br><span class="line">    event.waitUntil(</span><br><span class="line">        &#x2F;* The showNotification method is available on the registration object of the service worker.</span><br><span class="line">        The first parameter to showNotification method is the title of notification, and the second parameter is an object *&#x2F;</span><br><span class="line">        self.registration.showNotification(event.data.title, options)</span><br><span class="line">    )</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>Till now, we’ve seen how a service worker makes use of the cache to store requests and makes a PWA fast and reliable, and we’ve seen how web push notifications keep users engaged.</p>
+<p>To store a bunch of data on the client side for offline support, we need a giant data structure. Let’s look into the Financial Times PWA. You’ve got to witness the power of this data structure for yourself. Load the URL in your browser, and then switch off your internet connection. Reload the page. Gah! Is it still working? It is. (Like I said, offline is the new black.) Data is not coming from the wires. It is being served from the house. Head over to the “Applications” tab of Chrome Developer Tools. Under “Storage”, you’ll find “IndexedDB”.</p>
+<p>Check out the “Articles” object store, and expand any of the items to see the magic for yourself. The Financial Times has stored this data for offline support. This data structure that lets us store a massive amount of data is called IndexedDB. IndexedDB is a JavaScript-based object-oriented database for storing structured data. We can create different object stores in this database for various purposes. For example, as we can see in the image above that “Resources”, “ArticleImages” and “Articles” are called as object stores. Each record in an object store is uniquely identified with a key. IndexedDB can even be used to store files and blobs.</p>
+<p>Let’s try to understand IndexedDB by creating a database for storing books.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let openIdbRequest &#x3D; window.indexedDB.open(&#39;booksdb&#39;, 1)</span><br></pre></td></tr></table></figure><br>If the database <code>booksdb</code> doesn’t already exist, the code above will create a <code>booksdb</code> database. The second parameter to the open method is the version of the database. Specifying a version takes care of the schema-related changes that might happen in future. For example, booksdb now has only one table, but when the application grows, we intend to add two more tables to it. To make sure our database is in sync with the updated schema, we’ll specify a higher version than the previous one.</p>
+<p>Calling the <code>open</code> method doesn’t open the database right away. It’s an asynchronous request that returns an <code>IDBOpenDBRequest</code> object. This object has success and error properties; we’ll have to write appropriate handlers for these properties to manage the state of our connection.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let dbInstance</span><br><span class="line">openIdbRequest.onsuccess &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    dbInstance &#x3D; event.target.result</span><br><span class="line">    console.log(&#39;booksdb is opened successfully&#39;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">openIdbRequest.onerror &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(’There was an error in opening booksdb database&#39;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">openIdbRequest.onupgradeneeded &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    let db &#x3D; event.target.result</span><br><span class="line">    let objectstore &#x3D; db.createObjectStore(&#39;books&#39;, &#123; keyPath: &#39;id&#39; &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>To manage the creation or modification of object stores (object stores are analogous to SQL-based tables — they have a key-value structure), the <code>onupgradeneeded</code> method is called on the <code>openIdbRequest</code> object. The <code>onupgradeneeded</code> method will be invoked whenever the version changes. In the code snippet above, we’re creating a books object store with unique key as the ID.</p>
+<p>Let’s say that, after deploying this piece of code, we have to create one more object store, called as <code>users</code>. So, now the version of our database will be <code>2</code>.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let openIdbRequest &#x3D; window.indexedDB.open(&#39;booksdb&#39;, 2) &#x2F;&#x2F; New Version - 2</span><br><span class="line"></span><br><span class="line">&#x2F;* Success and error event handlers remain the same.</span><br><span class="line">The onupgradeneeded method gets called when the version of the database changes. *&#x2F;</span><br><span class="line">openIdbRequest.onupgradeneeded &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    let db &#x3D; event.target.result</span><br><span class="line">    if (!db.objectStoreNames.contains(&#39;books&#39;)) &#123;</span><br><span class="line">        let objectstore &#x3D; db.createObjectStore(&#39;books&#39;, &#123; keyPath: &#39;id&#39; &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let oldVersion &#x3D; event.oldVersion</span><br><span class="line">    let newVersion &#x3D; event.newVersion</span><br><span class="line"></span><br><span class="line">    &#x2F;* The users tables should be added for version 2. If the existing version is 1, it will be upgraded to 2, and the users object store will be created. *&#x2F;</span><br><span class="line">    if (oldVersion &#x3D;&#x3D;&#x3D; 1) &#123;</span><br><span class="line">        db.createObjectStore(&#39;users&#39;, &#123; keyPath: &#39;id&#39; &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We’ve cached <code>dbInstance</code> in the success event handler of the open request. To retrieve or add data in IndexedDB, we’ll make use of <code>dbInstance</code>. Lets add some book records in our books object store.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let transaction &#x3D; dbInstance.transaction(&#39;books&#39;)</span><br><span class="line">let objectstore &#x3D; dbInstance.objectstore(&#39;books&#39;)</span><br><span class="line"></span><br><span class="line">let bookRecord &#x3D; &#123;</span><br><span class="line">    id: &#39;1&#39;,</span><br><span class="line">    name: ’The Alchemist&#39;,</span><br><span class="line">    author: &#39;Paulo Coelho&#39;</span><br><span class="line">&#125;</span><br><span class="line">let addBookRequest &#x3D; objectstore.add(bookRecord)</span><br><span class="line"></span><br><span class="line">addBookRequest.onsuccess &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;Book record added successfully&#39;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">addBookRequest.onerror &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(’There was an error in adding book record&#39;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We make use of <code>transactions</code>, especially while writing records on object stores. A transaction is simply a wrapper around an operation to ensure data integrity. If any of the actions in a transaction fails, then no action is performed on the database.</p>
+<p>Let’s modify a book record with the <code>put</code> method:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let modifyBookRequest &#x3D; objectstore.put(bookRecord) &#x2F;&#x2F; put method takes in an object as the parameter</span><br><span class="line">modifyBookRequest.onsuccess &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;Book record updated successfully&#39;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Let’s retrieve a book record with the <code>get</code> method:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">let transaction &#x3D; dbInstance.transaction(&#39;books&#39;)</span><br><span class="line">let objectstore &#x3D; dbInstance.objectstore(&#39;books&#39;)</span><br><span class="line"></span><br><span class="line">&#x2F;* get method takes in the id of the record *&#x2F;</span><br><span class="line">let getBookRequest &#x3D; objectstore.get(1)</span><br><span class="line"></span><br><span class="line">getBookRequest.onsuccess &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    &#x2F;* event.target.result contains the matched record *&#x2F;</span><br><span class="line">    console.log(&#39;Book record&#39;, event.target.result)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">getBookRequest.onerror &#x3D; (event) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;Error while retrieving the book record.&#39;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Adding-Icon-On-Home-Screen"><a href="#Adding-Icon-On-Home-Screen" class="headerlink" title="Adding Icon On Home Screen"></a>Adding Icon On Home Screen</h3><p>Now that there is hardly any distinction between a PWA and a native application, it makes sense to offer a prime position to the PWA. If your website fulfills the basic criteria of a PWA (hosted on HTTPS, integrates with service workers and has a <code>manifest.json</code>) and after the user has spent some time on the web page, the browser will invoke a prompt at the bottom, asking the user to add the app to their home screen, as shown below:</p>
+<p>When a user clicks on “Add FT to Home screen”, the PWA gets to set its foot on the home screen, as well as in the app drawer. When a user searches for any application on their phone, any PWAs that match the search query will be listed. They will also be seen in the system settings, which makes it easy for users to manage them. In this sense, a PWA behaves like a native application.</p>
+<p>PWAs make use of <code>manifest.json</code> to provide this feature. Let’s look into a simple <code>manifest.json</code> file.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;: &quot;Demo PWA&quot;,</span><br><span class="line">     &quot;short_name&quot;: &quot;Demo&quot;,</span><br><span class="line">     &quot;start_url&quot;: &quot;&#x2F;?standalone&quot;,</span><br><span class="line">     &quot;background_color&quot;: &quot;#9F0C3F&quot;,</span><br><span class="line">     &quot;theme_color&quot;: &quot;#fff1e0&quot;,</span><br><span class="line">     &quot;display&quot;: &quot;standalone&quot;,</span><br><span class="line">     &quot;icons&quot;: [&#123;</span><br><span class="line">          &quot;src&quot;: &quot;&#x2F;lib&#x2F;img&#x2F;icons&#x2F;xxhdpi.png?v2&quot;,</span><br><span class="line">          &quot;sizes&quot;: &quot;192x192&quot;</span><br><span class="line">     &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The <code>short_name</code> appears on the user’s home screen and in the system settings. The <code>name</code> appears in the chrome prompt and on the splash screen. The splash screen is what the user sees when the app is getting ready to launch. The <code>start_url</code> is the main screen of your app. It’s what users get when they tap an icon on the home screen. The <code>background_color</code> is used on the splash screen. The <code>theme_color</code> sets the color of the toolbar. The <code>standalone</code> value for <code>display</code> mode says that the app is to be operated in full-screen mode (hiding the browser’s toolbar). When a user installs a PWA, its size is merely in kilobytes, rather than the megabytes of native applications.</p>
+<p>Service workers, web push notifications, IndexedDB, and the home screen position make up for offline support, reliability, and engagement. It should be noted that a service worker doesn’t come to life and start doing its work on the very first load. The first load will still be slow until all of the static assets and other resources have been cached. We can implement some strategies to optimize the first load.</p>
+<h4 id="Bundling-Assets"><a href="#Bundling-Assets" class="headerlink" title="Bundling Assets"></a>Bundling Assets</h4><p>All of the resources, including the HTML, style sheets, images and JavaScript, are to be fetched from the server. The more files, the more HTTPS requests needed to fetch them. We can use bundlers like WebPack to bundle our static assets, hence reducing the number of HTTP requests to the server. WebPack does a great job of further optimizing the bundle by using techniques such as code-splitting (i.e. bundling only those files that are required for the current page load, instead of bundling all of them together) and tree shaking (i.e. removing duplicate dependencies or dependencies that are imported but not used in the code).</p>
+<h4 id="Reducing-Round-Trips"><a href="#Reducing-Round-Trips" class="headerlink" title="Reducing Round Trips"></a>Reducing Round Trips</h4><p>One of the main reasons for slowness on the web is network latency. The time it takes for a byte to travel from A to B varies with the network connection. For example, a particular round trip over Wi-Fi takes 50 milliseconds and 500 milliseconds on a 3G connection, but 2500 milliseconds on a 2G connection. These requests are sent using the HTTP protocol, which means that while a particular connection is being used for a request, it cannot be used for any other requests until the response of the previous request is served. A website can make six asynchronous HTTP requests at a time because six connections are available to a website to make HTTP requests. An average website makes roughly 100 requests; so, with a maximum of six connections available, a user might end up spending around 833 milliseconds in a single round trip. (The calculation is 833 milliseconds - 100⁄6 = 1666. We have to divide 1666 by 2 because we’re calculating the time spend on a round trip.) With HTTP2 in place, the turnaround time is drastically reduced. HTTP2 doesn’t block the connection head, so multiple requests can be sent simultaneously.</p>
+<p>Most HTTP responses contain <code>last-modified</code> and <code>etag</code> headers. The <code>last-modified</code> header is the date when the file was last modified, and an <code>etag</code> is a unique value based on the contents of the file. It will only be changed when the contents of a file are changed. Both of these headers can be used to avoid downloading the file again if a cached version is already locally available. If the browser has a version of this file locally available, it can add any of these two headers in the request as such:</p>
+<p>The server can check whether the contents of the file have changed. If the contents of the file have not changed, then it responds with a status code of 304 (<em>not modified</em>).</p>
+<p>This indicates to the browser to use the locally available cached version of the file. By doing all of this, we’ve prevented the file from being downloaded.</p>
+<p>Faster responses are in now place, but our job is not done yet. We still have to parse the HTML, load the style sheets and make the web page interactive. It makes sense to show some empty boxes with a loader to the user, instead of a blank screen. While the HTML document is getting parsed, when it comes across <code>&lt;script src=&#39;asset.js&#39;&gt;&lt;/script&gt;</code>, it will make a synchronous HTTP request to the server to fetch asset.js, and the whole parsing process will be paused until the response comes back. Imagine having a dozen of synchronous static asset references. These could very well be managed just by making use of the async keyword in script references, like <code>&lt;script src=&#39;asset.js&#39; async&gt;&lt;/script&gt;</code>. With the introduction of the async keyword here, the browser will make an asynchronous request to fetch asset.js without hindering the parsing of the HTML. If a script file is required at a later stage, we can defer the downloading of that file until the entire HTML has been parsed. A script file can be deferred by using the <code>defer</code> keyword, like <code>&lt;script src=&#39;asset.js&#39; defer&gt;&lt;/script&gt;</code>.</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>We’ve learned a lot of many new things that make for a cool web application. Here’s a summary of all of the things we’ve explored in this article:</p>
+<ol>
+<li><p>Service workers make good use of the cache to speed up the loading of assets.</p>
+</li>
+<li><p>Web push notifications work under the hood.</p>
+</li>
+<li><p>We use IndexedDB to store a massive amount of data.</p>
+</li>
+<li><p>Some of the optimizations for instant first load, like using HTTP2 and adding headers like <code>Etag</code>, <code>last-modified</code> and <code>If-None-Match</code>, prevent the downloading of valid cached assets.</p>
+</li>
+</ol>
+<p>That’s all, folks!</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+              <a href="/tags/pwa/" rel="tag"># pwa</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/11/28/thinking/note-most-effective-sales-promotion/" rel="prev" title="最有效的五步推销法">
+      <i class="fa fa-chevron-left"></i> 最有效的五步推销法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/11/thinking/google-methodology-20181211/" rel="next" title="我们面临的世界和我们的对策（下）">
+      我们面临的世界和我们的对策（下） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-Silky-Smooth-Experience-On-The-Web-Sometimes-Known-As-A-Progressive-Web-Application"><span class="nav-number">1.</span> <span class="nav-text">A Silky Smooth Experience On The Web, Sometimes Known As A Progressive Web Application</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Service-Workers"><span class="nav-number">1.1.</span> <span class="nav-text">Service Workers</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#INSTALLATION"><span class="nav-number">1.1.1.</span> <span class="nav-text">INSTALLATION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ACTIVATION"><span class="nav-number">1.1.2.</span> <span class="nav-text">ACTIVATION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FETCH-EVENT-HANDLER"><span class="nav-number">1.1.3.</span> <span class="nav-text">FETCH EVENT HANDLER</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-Push-Notifications"><span class="nav-number">1.2.</span> <span class="nav-text">Web Push Notifications</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WEB-PUSH-CLIENT"><span class="nav-number">1.2.1.</span> <span class="nav-text">WEB PUSH CLIENT</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-Push-Server"><span class="nav-number">1.3.</span> <span class="nav-text">Web Push Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Service-Workers-1"><span class="nav-number">1.4.</span> <span class="nav-text">Service Workers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-Icon-On-Home-Screen"><span class="nav-number">1.5.</span> <span class="nav-text">Adding Icon On Home Screen</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Bundling-Assets"><span class="nav-number">1.5.1.</span> <span class="nav-text">Bundling Assets</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reducing-Round-Trips"><span class="nav-number">1.5.2.</span> <span class="nav-text">Reducing Round Trips</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conclusion"><span class="nav-number">1.6.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

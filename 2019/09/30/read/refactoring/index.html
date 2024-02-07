@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="对软件内部结构的一种调整，目的是在不改变软件可察行为的前提下，提高可理解性，降低修改成本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《重构：改善既有代码的设计》书摘">
+<meta property="og:url" content="https://zhangkefei.github.io/2019/09/30/read/refactoring/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="对软件内部结构的一种调整，目的是在不改变软件可察行为的前提下，提高可理解性，降低修改成本。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-09-30T21:38:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta property="article:tag" content="software">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2019/09/30/read/refactoring/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《重构：改善既有代码的设计》书摘 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2019/09/30/read/refactoring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《重构：改善既有代码的设计》书摘
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-30 21:38:00" itemprop="dateCreated datePublished" datetime="2019-09-30T21:38:00Z">2019-09-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/read/" itemprop="url" rel="index"><span itemprop="name">read</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>对软件内部结构的一种调整，目的是在不改变软件可察行为的前提下，提高可理解性，降低修改成本。<br><a id="more"></a></p>
+<h2 id="重构原则"><a href="#重构原则" class="headerlink" title="重构原则"></a>重构原则</h2><ol>
+<li>重构的定义<ul>
+<li>（名词形式）对软件内部结构的一种调整，目的是在不改变软件可察行为的前提下，提高可理解性，降低修改成本。</li>
+<li>（动词形式）使用一些列重构手法，在不改变软件可观察行为的前提下，调整其结构。</li>
+</ul>
+</li>
+<li>软件开发的两顶帽子<ul>
+<li>添加新功能时，不应该修改既有代码，只管添加新功能并通过测试。</li>
+<li>重构时不再添加新功能，只管改进程序结构，并通过已有测试。</li>
+</ul>
+</li>
+<li>为何重构<ul>
+<li>重构改进软件设计（Design）</li>
+<li>重构使软件更容易理解（Maintain）</li>
+<li>重构帮助找到BUG（Debug）</li>
+<li>重构提高编程速度（Efficiency）</li>
+</ul>
+</li>
+<li>何时重构<ul>
+<li>三次法则：事不过三，三则重构</li>
+<li>添加功能时重构（New Feature）</li>
+<li>修补错误时重构（Bug Fix）</li>
+<li>复审代码时重构（Code Review）</li>
+</ul>
+</li>
+<li>何时不该重构<ul>
+<li>既有代码太混乱，且不能正常工作，需要重写而不是重构。</li>
+<li>项目接近最后期限时，应该避免重构。</li>
+</ul>
+</li>
+<li>重构的目标<ul>
+<li>为什么程序如此难以相与？    设计与重构的目标</li>
+<li>难以阅读的程序，难以修改    容易阅读</li>
+<li>逻辑重复的程序，难以修改    所有逻辑都只在唯一地点指定</li>
+<li>添加新行为时需要修改已有代码的程序，难以修改    新的改动不会危及现有行为</li>
+<li>带复杂条件逻辑的程序，难以修改    尽可能简单表达条件逻辑</li>
+</ul>
+</li>
+<li>间接层和重构<ul>
+<li>间接层的价值</li>
+<li>允许逻辑共享（避免重复代码）</li>
+<li>分开解释意图和实现（方法越短小，越容易起好名字揭示意图，单一职责）</li>
+<li>隔离变化（软件需要根据需求的变化不断修改，隔离缩小修改的范围）</li>
+<li>封装条件逻辑（多态消息）</li>
+<li>大多数重构都为程序引入了更多的间接层</li>
+<li>“计算机科学是这样一门科学：它相信所有问题都可以通过增加一个间接层来解决。” ——Dennis Debruler</li>
+<li>过多的间接层会导致代码的层次太深</li>
+<li>使代码难以阅读.因此要权衡加入间接层的利弊<h2 id="代码的坏味道"><a href="#代码的坏味道" class="headerlink" title="代码的坏味道"></a>代码的坏味道</h2>我觉得这一章的内容非常重要，识别出代码的坏味道，是正确重构的前提。</li>
+</ul>
+</li>
+<li><p>Duplicated Code（重复代码）</p>
+<ul>
+<li>代码有很多中坏味道，重复是最坏的一种。</li>
+<li>一个类中的两个方法有重复代码，可以通过抽取方法将重复代码放到另一个方法中以供调用；</li>
+<li>互为兄弟的子类中如果有重复代码，可以将重复代码抽取到父类中；</li>
+<li>两个没有关系的类中如果有重复代码，可以重新抽取一个类将重复代码放到这个第三方类中。</li>
+</ul>
+</li>
+<li><p>Long Method（过长函数）</p>
+<ul>
+<li>使用短小的方法首先符合高内聚的要求，同时给方法起一个好的名字，可以帮助理解方法的作用。</li>
+<li>如果感觉方法的某个地方需要注释来加以说明，可以把这部分代码放入一个独立的方法中，并以用途（而不是实现手法）来命名方法。</li>
+</ul>
+</li>
+<li><p>Large Class（过大的类）</p>
+<ul>
+<li>类的设计应当遵循单一职责原则（SRP）。重构一个巨大的类可以使用抽取接口的方式来搞清楚这个类应该如何分解。</li>
+</ul>
+</li>
+<li><p>Long Parameter List（过长参数列表）</p>
+<ul>
+<li>比较常见的是将相关的参数组织成一个对象来替换掉这些参数。</li>
+</ul>
+</li>
+<li><p>Divergent Change（发散式变化）</p>
+<ul>
+<li>因为不同的原因，在不同的方向上，修改同一个类。应该分解成更小的类，每个类只因一种原因而修改。</li>
+<li>这个深有体会，多层结构系统，开发人员往往容易把全部逻辑都放在Service层，导致Service类非常庞大且不断被修改。</li>
+</ul>
+</li>
+<li><p>Shotgun Surgery（霰弹式修改）</p>
+<ul>
+<li>每遇到变化，需要修改多个类，容易遗漏。应该把需要修改的部分放到一个类里。</li>
+</ul>
+</li>
+<li><p>Feature Envy（依恋情结）</p>
+<ul>
+<li>函数大量地使用了另外类的数据。这种情况下最好将此函数移动到那个类中</li>
+</ul>
+</li>
+<li><p>Data Clumps（数据泥团）</p>
+<ul>
+<li>两个类中相同的字段、函数签名中相同的参数等，都适合提取成一个单独的数据类</li>
+</ul>
+</li>
+<li><p>Primitive Obsession（基本类型偏执）</p>
+<ul>
+<li>如果你有大量的基本数据类型字段，就有可能将其中部分存在逻辑联系的字段组织起来，形成一个类。更进一步的是，将与这些数据有关联的方法也一并移入类中。为了实现这个目标，可以尝试 以类取代类型码(Replace Type Code with Class) 。</li>
+<li>如果基本数据类型字段的值是用于方法的参数，可以使用 引入参数对象(Introduce Parameter Object) 或 保持对象完整(Preserve Whole Object) 。</li>
+<li>如果想要替换的数据值是类型码，而它并不影响行为，则可以运用 以类取代类型码(Replace Type Code with Class) 将它替换掉。如果你有与类型码相关的条件表达式，可运用 以子类取代类型码(Replace Type Code with Subclass) 或 以状态/策略模式取代类型码(Replace Type Code with State/Strategy) 加以处理。</li>
+<li>如果你发现自己正从数组中挑选数据，可运用 以对象取代数组(Replace Array with Object) 。</li>
+</ul>
+</li>
+<li><p>Switch Statements（switch惊悚现身）</p>
+<ul>
+<li>先将switch语句提炼成独立的函数，然后再将此函数搬移到需要多态的类里。</li>
+</ul>
+</li>
+<li><p>Parallel Inheritance（平行继承体系）</p>
+<ul>
+<li>是Shortgun Surgery的一种特殊情况，每当为某个类增加一个子类，必须也为另外一个类相应增加一个子类。</li>
+</ul>
+</li>
+<li><p>Lazy Class（冗赘类）</p>
+<ul>
+<li>如果一个类不值得存在，那么它就应该消失。</li>
+</ul>
+</li>
+<li><p>Speculative Generality（夸夸其谈未来性）</p>
+<ul>
+<li>如果你的抽象类、委托、方法的参数没有实际的作用，那么就应当被移除掉。</li>
+</ul>
+</li>
+<li><p>Temporary Field（令人迷惑的暂时字段）</p>
+<ul>
+<li>类中某个字段只为某些特殊情况而设置。</li>
+</ul>
+</li>
+<li><p>Message Chains（过度耦合的消息链）</p>
+<ul>
+<li>常常是因为数据结构的层次很深，需要层层调用getter获取内层数据。个人认为Message Chains如果频繁出现，考虑这个字段是否应该移到较外层的类，或者把调用链封装在较外层类的方法。</li>
+</ul>
+</li>
+<li><p>Middle Man（中间人）</p>
+<ul>
+<li>如果一个类的很多功能都通过委托给其他类来完成，那么就不如去掉这些中间人直接和真正负责的对象打交道。</li>
+</ul>
+</li>
+<li><p>Inappropriate Intimacy（两个类过度亲密）</p>
+<ul>
+<li>将双向关联改为单向关联（Change Bidirectional Association to Unidirectional）。</li>
+<li>提炼类，将两个类的共同点提炼到新类中，让它们共同使用新类。</li>
+<li>继承往往造成过度亲密，运用以委托取代继承（Replace Inheritance with Delegate）。</li>
+</ul>
+</li>
+<li><p>Alternative Classes（异曲同工的类）</p>
+</li>
+<li><p>Incomplete Lib Class（不完美的类库）</p>
+<ul>
+<li>修改类库的一两个函数 - 引入外部函数（Introduce Foreign Method）</li>
+<li>添加一大堆额外行为 - 添加本地扩展（Introduce Local Extension）</li>
+</ul>
+</li>
+<li><p>Data Class（纯稚的数据类）</p>
+<ul>
+<li>数据类不应该把全部字段单纯的通过getter/setter暴露出来（我们在多层结构系统开发时经常这么做），</li>
+<li>而应该暴露抽象接口，封装内部结构。</li>
+</ul>
+</li>
+<li><p>Refused Bequest（被拒绝的遗赠）</p>
+<ul>
+<li>子类继承父类的所有函数和数据，子类只挑选几样来使用。</li>
+<li>为子类新建一个兄弟类，再运用下移方法（Push Down Method）和下移字段（Push Down Field）把用不到的函数下推个兄弟类。</li>
+<li>子类只复用了父类的行为，却不想支持父类的接口。</li>
+<li>运用委托替代继承（Replace Inheritance with Delegation）来达到目的。</li>
+</ul>
+</li>
+<li>Comments（过多的注释）<ul>
+<li>注释不是用来补救劣质代码的，事实上如果我们去除了代码中的所有坏味道，当劣质代码都被移除的时候，注释已经变得多余，因为代码已经讲清楚了一切。</li>
+</ul>
+</li>
+</ol>
+<h2 id="四、构筑测试体系"><a href="#四、构筑测试体系" class="headerlink" title="四、构筑测试体系"></a>四、构筑测试体系</h2><p>测试是安全重构的前提。在项目开发工作中，我们要求添加新代码必须有单元测试，重构旧代码也要先加单元测试。</p>
+<h2 id="五、重构列表"><a href="#五、重构列表" class="headerlink" title="五、重构列表"></a>五、重构列表</h2><p>Java开发，由于IDE（Intellij Idea）能够很好的支持大多数情况下的重构，有各种的自动提示，所以感觉暂时不需要用到重构列表。</p>
+<h2 id="六、重新组织函数"><a href="#六、重新组织函数" class="headerlink" title="六、重新组织函数"></a>六、重新组织函数</h2><ol>
+<li><p>Extract Method 提炼函数</p>
+<ul>
+<li>将一段代码放进一个独立函数中，并让函数名称解释该函数的用途。</li>
+<li>增加可读性，函数粒度小更容易被复用和覆写。</li>
+</ul>
+</li>
+<li><p>Inline Method（内联函数）</p>
+<ul>
+<li>在函数调用点插入函数本体，然后移除该函数。</li>
+<li>函数的本体与名称同样清楚易懂，间接层太多反而不易理解。</li>
+</ul>
+</li>
+<li><p>Inline Temp（内联临时变量）</p>
+<ul>
+<li>将所有对该变量的引用动作，替换为对它赋值的那个表达式自身。</li>
+</ul>
+</li>
+<li><p>Replace Temp with Query（以查询取代临时变量）</p>
+<ul>
+<li>将一个表达式提炼到一个独立函数中，并将临时变量的引用点替换为对函数的调用。</li>
+<li>临时变量扩展为查询函数，就可以将使用范围扩展到整个类。</li>
+<li>减少临时变量，使函数更短更易维护。</li>
+</ul>
+</li>
+<li><p>Introduce Explaining Variable（引入解释性变量）</p>
+<ul>
+<li>将该复杂表达式的结果放进一个临时变量，以变量名来解释其用途。</li>
+</ul>
+</li>
+<li><p>Split Temporary Variable（分解临时变量）</p>
+<ul>
+<li>针对每次赋值，创造一个独立、对应的临时变量。</li>
+<li>临时变量会被多次赋值，容易产生理解歧义。</li>
+<li>如果变量被多次赋值（除了“循环变量”和“结果收集变量”），说明承担了多个职责，应该分解。</li>
+</ul>
+</li>
+<li><p>Remove Assignments to Parameters（移除对参数的赋值）</p>
+<ul>
+<li>以一个临时变量取代该参数的位置。</li>
+<li>对参数赋值容易降低代码的清晰度；</li>
+<li>容易混淆按值传递和按引用传递的方式 ；</li>
+</ul>
+</li>
+<li><p>Replace Method with Method object 函数对象取代函数</p>
+<ul>
+<li>一个大型函数如果包含了很多临时变量，用Extract Method很难拆解，</li>
+<li>可以把函数放到一个新创建的类中，把临时变量变成类的实体变量，再用Extract Method拆解。</li>
+</ul>
+</li>
+<li><p>Substitute Algorithm 替换算法</p>
+<ul>
+<li>复杂的算法会增加维护的成本，替换成较简单的算法实现，往往能明显提高代码的可读性和可维护性。</li>
+</ul>
+</li>
+</ol>
+<h2 id="七、在对象之间搬移特性"><a href="#七、在对象之间搬移特性" class="headerlink" title="七、在对象之间搬移特性"></a>七、在对象之间搬移特性</h2><p>在面向对象的设计过程中，“决定把责任放在哪儿”是最重要的事之一。最常见的烦恼是：你不可能一开始就保证把事情做对。在这种情况下，就可以大胆使用重构，改变自己原先的设计。</p>
+<ol>
+<li><p>Move Method 移动函数</p>
+<ul>
+<li>类的行为做到单一职责，不要越俎代庖。</li>
+<li>如果一个类有太多行为，或一个类与另一个类有太多合作而形成高度耦合，就需要搬移函数。</li>
+<li>观察调用它的那一端、它调用的那一端，已经继承体系中它的任何一个重定义函数。</li>
+<li>根据“这个函数不哪个对象的交流比较多”，决定其移动路径。</li>
+</ul>
+</li>
+<li><p>Move Field（搬移字段）</p>
+<ul>
+<li>如果一个类的字段在另一个类中使用更频繁，就考虑搬移它。</li>
+</ul>
+</li>
+<li><p>Extract Class提炼类</p>
+<ul>
+<li>一个类应该是一个清楚地抽象，处理一些明确的责仸。</li>
+</ul>
+</li>
+<li><p>Inline Class 将类内联化</p>
+<ul>
+<li>Inline Class （将类内联化）正好于Extract Class （提炼类）相反。如果一个类丌再承担足够责仸、丌再有单独存在的理由。将这个类的所有特性搬移到另一个类中，然后移除原类。</li>
+</ul>
+</li>
+<li><p>Hide Delegate 隐藏委托关系</p>
+<ul>
+<li>在服务类上建立客户所需的所有函数，用以隐藏委托关系</li>
+</ul>
+</li>
+<li><p>Remove Middle Man（移除中间人）</p>
+<ul>
+<li>封装委托对象也是要付出代价的：每当客户要使用受托类的新特性时，就必须在服务端添加一个委托函数。</li>
+<li>随着委托类的特性（功能）越来越多，服务类完全变成了“中间人”，此时就应该让客户直接调用受托类。</li>
+<li>很难说什么程度的隐藏才是合适的，随着系统不断变化，使用Hide Delegate和Remove Middle Man不断调整。</li>
+</ul>
+</li>
+<li><p>Introduce Foreign Method 引入外加函数</p>
+<ul>
+<li>你需要为提供服务的类增加一个函数，但你无法修改这个类。</li>
+<li>在客户类中建立一个函数，并以第一参数形式传入一个服务类实例。</li>
+</ul>
+</li>
+<li><p>Introduce Local Extension 引入本地扩展</p>
+<ul>
+<li>你需要为服务类提供一些额外函数，但你无法修改这个类。</li>
+<li>建立一个新类，使它包含这些额外函数。让这个扩展品成为源类的子类戒包装类。</li>
+</ul>
+</li>
+</ol>
+<h2 id="重新组织数据"><a href="#重新组织数据" class="headerlink" title="重新组织数据"></a>重新组织数据</h2><ol>
+<li><p>Self Encapsulate Field自封装字段</p>
+<ul>
+<li>为这个字段建立getter/setter函数，并且只以这些函数访问字段。</li>
+<li>直接访问一个字段，导致出现强耦合关系；</li>
+<li>直接访问的好处是易阅读，间接访问的好处是好管理，子类好覆写。</li>
+</ul>
+</li>
+<li><p>Replace Data Value with Object 对象取代数据值</p>
+<ul>
+<li>一个数据项，需要与其他数据和行为一起使用才有意义。将数据项改成对象。</li>
+<li>随着设计深入，数据之间的关系逐渐显现出来，就需要将相关数据及其操作封装成对象。</li>
+</ul>
+</li>
+<li><p>Change value to Reference 将值对象改为引用对象</p>
+<ul>
+<li>如果希望修改某个值对象的数据，并且影响到所有引用此对象的地方。</li>
+<li>将这个值对象变成引用对象。</li>
+<li>组合改为关联</li>
+</ul>
+</li>
+<li><p>Change Reference to Value 将引用对象改为值对象</p>
+<ul>
+<li>引用对象很小且不可变，将它改成一个值对象。</li>
+</ul>
+</li>
+<li><p>Replace Array with Object 以对象取代数组</p>
+<ul>
+<li>数组中的元素各自代表不同的东西。</li>
+<li>以对象替换数组，对于数组中的每个元素，以一个字段来表示。</li>
+</ul>
+</li>
+<li><p>Change Unidirection Association to Bidirectional 将单向关联改为双向关联</p>
+<ul>
+<li>两个类都需要使用对方特性，但其间只有一条单向连接。</li>
+<li>添加一个反向指针，并使修改函数能够同时更新2条连接。</li>
+</ul>
+</li>
+<li><p>Change Bidirectional Association to Unidirection将双向关联改为单向关联</p>
+<ul>
+<li>两个类之间有双向关联，但其中一个类如今不再需要另一个类的特性。去除不必要的关联。</li>
+</ul>
+</li>
+<li><p>Replace Magic Number with Symbolic Constant字面常量取代魔法数</p>
+<ul>
+<li>你有一个字面数值，带有特别含义。</li>
+<li>创建一个常量，根据其意义为它命名，并将上述的字面数值替换为这个常量。</li>
+</ul>
+</li>
+<li><p>Encapsulate Field 封装字段</p>
+<ul>
+<li>你的类中存在一个public字段。将它声明为private，并提供相应的访问函数。</li>
+</ul>
+</li>
+<li><p>Encapsulate Coolection 封装集合</p>
+<ul>
+<li>如果一个函数返回一个集合，应改为返回该集合的一个只读副本，并在这个类中提供添加/移除集合元素的函数。</li>
+</ul>
+</li>
+<li><p>Replace Record with Data Class 以数据类取代记录</p>
+</li>
+<li><p>Replace Type Code with Class 以类来取代类型码</p>
+<ul>
+<li>类中有一个数值类型码，但它并不影响类的行为。以一个新的类替换该数值类型码。</li>
+</ul>
+</li>
+<li><p>Replace Type Code with Subclasses 以子类来取代类型码</p>
+<ul>
+<li>如果类型码不会影响宿主类的行为，可以使用Replace Type Code with Class （以类取代类型码）来处理。</li>
+<li>但如果类型码会影响宿主类的行为，最好的办法是多态来处理变化行为。</li>
+</ul>
+</li>
+<li><p>Replace Type Code with State/Strategy 以状态/策略取代类型码</p>
+<ul>
+<li>你有一个类型码，它会影响类的行为，但你无法提供继承手法消除它。以状态对象替代类型码。</li>
+</ul>
+</li>
+<li><p>Replace Subclass with Fieldls 以字段取代子类</p>
+<ul>
+<li>你的各个子类的唯一差别只在“返回常量数据”的函数身上。</li>
+<li>修改这些函数，使它们返回超类中的某个字段（新增），然后销毁子类。</li>
+</ul>
+</li>
+</ol>
+<h2 id="简化表达式"><a href="#简化表达式" class="headerlink" title="简化表达式"></a>简化表达式</h2><p>在面向对象的设计过程中，表达式的使用通常较少，因为很多条件行为都被多态机制处理掉了，所以条件的扩展更为容易。有时候条件逻辑可能十分复杂，可以使用本章提供的一些重构手法来简化它们。</p>
+<ol>
+<li><p>Decompose Conditional 分解条件表达式</p>
+<ul>
+<li>程序中，复杂的条件逻辑是最常导致复杂度上升的地点之一。</li>
+<li>可以将它分解为多个独立函数，根据每个小块代码的用途，为分解的新函数命名，从而更清楚的表达意图。</li>
+</ul>
+</li>
+<li><p>Consolidate Conditional Expression 合并条件表达式</p>
+<ul>
+<li>一系列条件测试，都得到相同结果。</li>
+<li>将这些测试合并为一个条件表达式，并将这个条件表达式提炼为一个独立函数。</li>
+</ul>
+</li>
+<li><p>Consolodate Duplicate Conditional Fragments 合并重复的条件片段</p>
+<ul>
+<li>在条件表达式的每个分支上有着相同的一段代码。将这段重复代码移到条件表达式之外。</li>
+</ul>
+</li>
+<li><p>Remove Control Flag 移除控制标记</p>
+<ul>
+<li>以break或return语句取代控制标记。</li>
+</ul>
+</li>
+<li><p>Replace Nested Conditional with Guard Clauses 以卫语句取代嵌套条件表达式</p>
+</li>
+<li><p>Replace Conditional with Polymorphism 以多态取代条件表达式</p>
+<ul>
+<li>一个条件表达式，它根据对象类型的丌同而选择丌同的行为。</li>
+<li>将这个条件表达式的每个分支放进一个子类的覆写函数中，然后将原始函数声明为抽象函数。</li>
+</ul>
+</li>
+<li><p>Introduce Assertion 引入断言</p>
+<ul>
+<li>某一段代码需要对程序状态做出某种假设。以断言明确表现这种假设。</li>
+<li>使用断言明确标明对输入条件的严格要求和限制；</li>
+<li>断言可以辅助交流和调试。</li>
+</ul>
+</li>
+</ol>
+<h2 id="十、简化函数调用"><a href="#十、简化函数调用" class="headerlink" title="十、简化函数调用"></a>十、简化函数调用</h2><p>在面向对象的设计技术中，最重要的概念莫过于“接口”（interface）。容易被理解和被使用的接口，是开发良好面向对象软件的关键。</p>
+<ol>
+<li><p>Rename Method 函数改名</p>
+</li>
+<li><p>Add Parameter 添加参数</p>
+<ul>
+<li>某个函数需要从调用端得到更多信息。为此函数添加一个对象参数，让该对象带进函数所需信息。</li>
+</ul>
+</li>
+<li><p>Remove Parameter（移除参数）</p>
+<ul>
+<li>函数不再需要某个参数时，将其移除</li>
+</ul>
+</li>
+<li><p>Separate Query from Modifier 将查询函数和修改函数分离</p>
+</li>
+<li><p>Parameterize Method 令函数携带参数</p>
+<ul>
+<li>若干函数做了类似的工作，但在函数本体中却包含了不同的值。</li>
+<li>建立一个单一函数，以参数表达那些不同的值。</li>
+</ul>
+</li>
+<li><p>Replace Parameter with Explicit Methods 以明确函数取代参数</p>
+<ul>
+<li>某个函数完全取决于参数值而采取不同行为，为了获得一个清晰的接口，</li>
+<li>针对该参数的每一个可能值，建立一个独立函数。</li>
+</ul>
+</li>
+<li><p>Preserve whole object 保持对象完整</p>
+<ul>
+<li>如果从对象中取出若干值，将它们作为某一次函数调用时的参数。改为传递整个对象。</li>
+<li>除了可以使参数列更稳固外，还能简化参数列表，提高代码的可读性。</li>
+<li>此外，使用完整对象，被调用函数可以利用完整对象中的函数来计算某些中间值。</li>
+<li>不过事情总有2面：如果你传的是数值，被调用函数就叧依赖于这些数值。但如果你传递的是整个对象，被调用函数所在的对象就需要依赖参数对象。如果这会使你的依赖结构恶化，那么就不该使用。</li>
+<li>有的观点认为：如果被调用函数只需要参数对象的其中一项数值，那么只传递那个数值会更好。这个观点不能被认同：因为传递一项数值和传递一个对象，至少在代码清晰度上是一致的。更重要的考量应该放在对象之间的依赖关系上。</li>
+</ul>
+</li>
+<li><p>Replace Parameter with Methods 以函数取代参数</p>
+<ul>
+<li>对象调用某个函数，并将所得结果作为参数，传递给另一个函数。</li>
+<li>而接受该参数的函数本身也能够调用前一个函数。</li>
+<li>让参数接受者去除该项参数，并直接调用前一个函数。</li>
+</ul>
+</li>
+<li><p>Introduce Parameter Object 引入参数对象</p>
+<ul>
+<li>如果一组参数总是一起被传递，以一个对象取代这些参数。</li>
+</ul>
+</li>
+<li><p>Replace Error Code with Exception 以异常取代错误码</p>
+</li>
+<li><p>Replace Exception with Test 以测试取代异常</p>
+<ul>
+<li>面对调用者可以预先检查的条件，在调用函数之前应该先做检查，而不是直接捕获异常。</li>
+</ul>
+</li>
+</ol>
+<h2 id="十一、处理概况关系"><a href="#十一、处理概况关系" class="headerlink" title="十一、处理概况关系"></a>十一、处理概况关系</h2><p>在面向对象的设计过程中，概括（继承）关系是其核心特性。良好的继承体系可以显著地提高程序的易读性和易理解性，增加了未来修改和扩展的灵活性。</p>
+<ol>
+<li><p>Pull Up Field 字段上移</p>
+<ul>
+<li>两个子类拥有相同的字段。将该字段移至超类。</li>
+</ul>
+</li>
+<li><p>Pull up Method 函数上移</p>
+<ul>
+<li>有些函数，在各个子类中产生完全相同的结果。将该函数移至超类。</li>
+</ul>
+</li>
+<li><p>Pull up Constructor Body 构造函数本体上移</p>
+<ul>
+<li>各个子类中拥有一些极造函数，它们的本体几乎完全一致。</li>
+<li>在超类中新建一个构造函数，并在子类构造函数中调用它。</li>
+</ul>
+</li>
+<li><p>Push down Method 函数下移</p>
+<ul>
+<li>超类中的某个函数只与部分子类有关。将这个函数移到相关的那些子类去。</li>
+</ul>
+</li>
+<li><p>Push down Fiedld 字段下移</p>
+<ul>
+<li>超类中的某个字段只被部分子类用到，将这个字段移到需要它的那些子类去。</li>
+</ul>
+</li>
+<li><p>Extract Subclass 提炼子类</p>
+<ul>
+<li>类中的某些特性只被某些实例用到。新建一个子类，将这部分特性移到子类中。</li>
+</ul>
+</li>
+<li><p>Extract Superclass 提炼超类</p>
+<ul>
+<li>两个类有相似特性。为这2个类建立一个超类，将相同特性移至超类。</li>
+</ul>
+</li>
+<li><p>From TemPlate Method 塑造模板函数</p>
+<ul>
+<li>一些子类，其中相应的某些函数以相同的顺序执行类似的操作，但各个操作的细节不同。</li>
+<li>将这些操作分别放迚独立的函数中，并保持它们都有相同的签名，于是原函数也就变得相同了，然后将原函数上移至超类。</li>
+</ul>
+</li>
+<li><p>Replace Inheritance with delegation 以委托取代继承</p>
+<ul>
+<li>某个子类只使用超类接口中的一部分，或是根本不需要继承而来的数据。</li>
+<li>在子类中新建一个字段用以保存超类；调整子类函数，令它改而委托超类；然后去掉2者之间的继承关系。</li>
+</ul>
+</li>
+<li><p>Replace delegation with Inheritance 以继承代替委托</p>
+<ul>
+<li>两个类之间使用委托关系，并经常为整个接口编写许多简单的委托函数。让委托类继承受托类。</li>
+</ul>
+</li>
+</ol>
+<h2 id="十二、大型重构"><a href="#十二、大型重构" class="headerlink" title="十二、大型重构"></a>十二、大型重构</h2><p>在一知半解的情况下做出的设计决策，一旦堆积起来，也会使你的程序陷于瘫痪。通过重构，可以保证随时在程序中反映出完整的设计思路。</p>
+<ol>
+<li><p>Tease apart Inheritance 梳理并分解继承体系</p>
+<ul>
+<li>某个继承体系同时承担两项责任。</li>
+<li>建立两个继承体系，并通过委托关系让其中一个可以调用另一个。</li>
+</ul>
+</li>
+<li><p>Convert Procedural design to Objects 将过程化设计转化为对象设计</p>
+<ul>
+<li>你手上有一些传统过程风格的代码 。</li>
+<li>将数据记录变成对象，将大块的行为分成小块，并将行为移入相关对象之中。</li>
+</ul>
+</li>
+<li><p>Separate Domain from from Presention 将领域和表述/显示分离</p>
+<ul>
+<li>某些GUI类之中包含了领域逻辑 ,将领域逻辑分离出来，为它们建立独立的领域类</li>
+</ul>
+</li>
+<li><p>Extract Hierarchy 提炼继承体系</p>
+<ul>
+<li>你有某个类做了太多工作，其中一部分工作是以大量条件表达式完成的 ,</li>
+<li>建立继承体系，以一个子类表示一种特殊情况</li>
+</ul>
+</li>
+</ol>
+<h2 id="十三、重构、复用与现实"><a href="#十三、重构、复用与现实" class="headerlink" title="十三、重构、复用与现实"></a>十三、重构、复用与现实</h2><ol>
+<li><p>项目开始时的选择</p>
+<ul>
+<li>重写整个程序</li>
+<li>可以依赖自己的经验纠正程序中的错误，但谁来付钱呢？你又如何保证新的系统能够完成旧系统所做的每一件事呢？</li>
+<li>复制、修改、扩展</li>
+<li>随着时间流逝，错误会不断地被复制、被传播，程序变得臃肿，当初的设计开始腐败变质，修改的整体成本逐渐上升。</li>
+<li>重构是两个极端之间的中庸之道</li>
+<li>通过重新组织软件结构，重构使得设计思路更详尽明确，抽取可复用组件，使得软件架构更清晰，增加新功能更容易，使程序更简洁有力。</li>
+</ul>
+</li>
+<li><p>为什么开发者不愿意重构他们的程序？</p>
+<ul>
+<li>不知道如何重构？</li>
+<li>重构的收益是长远的，也许那时你已经离开当初的职位了，所以没有动力去实施重构。</li>
+<li>代码重构是一项额外工作，老板并不会为此付钱。</li>
+<li>重构有可能破坏现有程序。</li>
+</ul>
+</li>
+<li><p>重构以获得短期收益</p>
+<ul>
+<li>重构可以带来短期利益，让软件更易修改、更易维护。重构只是一种手段，不是目的。</li>
+<li>它是“程序员或程序开发团队如何开发并维护自己的软件”这一更宽广场景的一部分。</li>
+</ul>
+</li>
+<li><p>重构为设计模式</p>
+<ul>
+<li>设计模式</li>
+<li>设计模式（Design pattern）是一套被反复使用、多数人知晓的、经过分类编目的、代码设计经验的总结。</li>
+<li>使用设计模式是为了可重用代码、让代码更容易被他人理解、保证代码可靠性。</li>
+<li>每种模式在现在中都有相应的原理来与之对应，并且描述了一个在我们周围不断重复发生的问题，以及该问题的核心解决方案。</li>
+<li>重构为设计模式</li>
+<li>在很多时候，将代码重构为符合设计模式的要求也是重构的一个最佳目标。</li>
+</ul>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本书主要涉及重构中的各种细节问题，从如何识别代码的坏味道，到重新组织函数、对象、数据，再到简化表达式、简化函数调用，再到更高层级的处理概况（继承）关系、大型重构。熟练掌握重构技巧，需要在学习工作中反复的练习，并不断思考为什么要这么做（违反面向对象原则、坏味道等等）。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+              <a href="/tags/software/" rel="tag"># software</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/08/30/read/xianmishengtailian/" rel="prev" title="《小米生态链战地笔记》书摘">
+      <i class="fa fa-chevron-left"></i> 《小米生态链战地笔记》书摘
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/30/read/the-most-important-thing/" rel="next" title="《投资中最重要的事》书摘">
+      《投资中最重要的事》书摘 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#重构原则"><span class="nav-number">1.</span> <span class="nav-text">重构原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码的坏味道"><span class="nav-number">2.</span> <span class="nav-text">代码的坏味道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、构筑测试体系"><span class="nav-number">3.</span> <span class="nav-text">四、构筑测试体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、重构列表"><span class="nav-number">4.</span> <span class="nav-text">五、重构列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、重新组织函数"><span class="nav-number">5.</span> <span class="nav-text">六、重新组织函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、在对象之间搬移特性"><span class="nav-number">6.</span> <span class="nav-text">七、在对象之间搬移特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重新组织数据"><span class="nav-number">7.</span> <span class="nav-text">重新组织数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简化表达式"><span class="nav-number">8.</span> <span class="nav-text">简化表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十、简化函数调用"><span class="nav-number">9.</span> <span class="nav-text">十、简化函数调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十一、处理概况关系"><span class="nav-number">10.</span> <span class="nav-text">十一、处理概况关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十二、大型重构"><span class="nav-number">11.</span> <span class="nav-text">十二、大型重构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十三、重构、复用与现实"><span class="nav-number">12.</span> <span class="nav-text">十三、重构、复用与现实</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">13.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

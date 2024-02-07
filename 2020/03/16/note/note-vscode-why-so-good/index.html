@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="VS Code 无疑是非常成功的。读完这篇文章对其成功也窥见一二，但远不止如此。文中表达的观点也与我一直以来对架构设计的认识相同：  简洁：实现目标的情况下，更简洁的东西才更能生命力 聚焦：明白一个东西要做什么事情，做好应该做的事情 取舍：有舍有得，放弃是一件很难的事情。但是只有在聚焦的基础有所放弃，才能强化本来应该做的事情。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VS Code为什么能这么牛?">
+<meta property="og:url" content="https://zhangkefei.github.io/2020/03/16/note/note-vscode-why-so-good/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="VS Code 无疑是非常成功的。读完这篇文章对其成功也窥见一二，但远不止如此。文中表达的观点也与我一直以来对架构设计的认识相同：  简洁：实现目标的情况下，更简洁的东西才更能生命力 聚焦：明白一个东西要做什么事情，做好应该做的事情 取舍：有舍有得，放弃是一件很难的事情。但是只有在聚焦的基础有所放弃，才能强化本来应该做的事情。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GGF0Oia9yXCQa9ytVIVswc95OFXDVPAsFJQicAUNVCo9kcCmhAWk3gnZA/640?wx_fmt=jpeg">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GbsNDM0ZJovGGl2P8SzqFO6mZVSaPKxovBz0GgqXLHc6HlIDYy8ONKg/640?wx_fmt=jpeg">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GhXp7L45w8djTLHDKusSDLfoolVC14p7jDZmlszfFKDTHNmfUD4fjiag/640?wx_fmt=jpeg">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GF2KlxFJO6IP2yZsDvVOJ9q7nBB3onzZZeN8SxibFvzThzn5y3EAaWUA/640?wx_fmt=jpeg">
+<meta property="article:published_time" content="2020-03-16T21:38:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GGF0Oia9yXCQa9ytVIVswc95OFXDVPAsFJQicAUNVCo9kcCmhAWk3gnZA/640?wx_fmt=jpeg">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2020/03/16/note/note-vscode-why-so-good/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>VS Code为什么能这么牛? | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2020/03/16/note/note-vscode-why-so-good/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          VS Code为什么能这么牛?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-16 21:38:00" itemprop="dateCreated datePublished" datetime="2020-03-16T21:38:00Z">2020-03-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>VS Code 无疑是非常成功的。读完这篇文章对其成功也窥见一二，但远不止如此。文中表达的观点也与我一直以来对架构设计的认识相同：</p>
+<ul>
+<li>简洁：实现目标的情况下，更简洁的东西才更能生命力</li>
+<li>聚焦：明白一个东西要做什么事情，做好应该做的事情</li>
+<li>取舍：有舍有得，放弃是一件很难的事情。但是只有在聚焦的基础有所放弃，才能强化本来应该做的事情。<a id="more"></a>
+</li>
+</ul>
+<blockquote>
+<p>文章转自码农翻身</p>
+</blockquote>
+<p>Visual Studio Code（VS Code）近年来获得了爆炸式增长，成为广大开发者工具库中的必备神器。它作为一个开源项目，也吸引了无数第三方开发者和终端用户，成为顶尖开源项目之一。它在功能上做到了够用，体验上做到了好用，更在拥有海量插件的情况下做到了简洁流畅，实属难能可贵。</p>
+<p>我是VS Code用户，同时也为它开发插件，插件市场里的众多Java插件基本都是我们团队的作品，所以我在日常工作中观察到不少VS Code在工程方面的亮点，下面就来逐一探讨。</p>
+<h2 id="简洁而聚焦的产品定位，贯穿始终"><a href="#简洁而聚焦的产品定位，贯穿始终" class="headerlink" title="简洁而聚焦的产品定位，贯穿始终"></a>简洁而聚焦的产品定位，贯穿始终</h2><p>你知道VS Code的开发团队人数只有二十出头吗？</p>
+<p>难以相信吧，大家都觉得VS Code无所不能，如此强大的工具那么几个人怎么做得出来。实际上功能丰富是个美好的错觉，因为大部分针对特定编程语言和技术的功能都是第三方插件提供的，VS Code的核心始终非常精简，这很考验产品团队的拿捏能力：做多了，臃肿，人手也不够；做少了，太弱，没人用。</p>
+<p>他们团队选择了专注于核心功能的开发，为用户提供简洁流畅的体验，并将该思路贯穿在产品开发的每个环节。在我看来，这就是第一个亮点。</p>
+<p>第一个亮点同时也是一个难点，因为“简洁”说到底是产品的“形态”，更关键的其实是前置问题——产品的定位，它到底解决什么问题。该问题如果从用户的角度来看，可以转换为以下几个点——我们为什么需要一个新的工具？它到底是代码编辑器(Editor)还是集成开发环境(IDE)？让我们来看看项目负责人Erich Gamma 的说法：</p>
+<p><img data-src="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GGF0Oia9yXCQa9ytVIVswc95OFXDVPAsFJQicAUNVCo9kcCmhAWk3gnZA/640?wx_fmt=jpeg" alt="视频截图 - Erich阐述了VS Code的定位：编辑器+代码理解+调试"></p>
+<p>(视频截图 - Erich阐述了VS Code的定位：编辑器+代码理解+调试)</p>
+<p>这张截图它阐述了VS Code的定位：<strong>编辑器+代码理解+调试</strong>。这是一个非常节制而平衡的选择，专注于开发者“最常用”的功能，同时在产品的形式上力求简洁高效。从结果来看，这个定位是相当成功的。</p>
+<p>在这个定位的指导下，这二十多位工程师搞出了VS Code。相对较小的功能集，使得开发者们能在代码质量上精益求精，最终用户们也得到了一个性能优异的工具，这是VS Code从一众编辑器中脱颖而出的重要原因。</p>
+<p>正因为产品定位以及团队职责上的高度节制，团队成员才能把时间花在这类问题上，写出经得起考验的代码。</p>
+<p>与此同时，较小的团队也使得团队成员做到了行为层面的整齐划一，这点在社区互动上体现得尤为明显，大家可以去GitHub上看他们的Issues，超出产品定位范畴的请求和反馈基本都被婉拒或者转交到第三方插件项目，可以说是很专注了。</p>
+<p>看到这里，似乎一切都好，但问题来了，码农千千万，你用Node我用Go，你搞前端我弄后台，VS Code如何满这些五花八门的需求呢？机智的你已经抢答了——海量插件。那么接下来我们来深究一下VS Code是如何经营一个庞大的插件生态的。</p>
+<h2 id="进程隔离的插件模型"><a href="#进程隔离的插件模型" class="headerlink" title="进程隔离的插件模型"></a>进程隔离的插件模型</h2><p>通过插件来扩展功能的做法已经是司空见惯了，但如何保证插件和原生功能一样优秀呢？历史告诉我们：不能保证。</p>
+<p>大家可以参考Eclipse，插件模型可以说是做得非常彻底了，功能层面也是无所不能，但存在几个烦人的问题：不稳定、难用、慢，所以不少用户转投IntelliJ的怀抱。可谓成也插件，败也插件。</p>
+<p>问题的本质在于信息不对称，它导致不同团队写出来的代码，无论是思路还是质量，都不一致。最终，用户得到了一个又乱又卡的产品。所以要让插件在稳定性、速度和体验的层面都做到和原生功能统一，只能是一个美好的愿望。</p>
+<p>来看看其他IDE是怎么做的，Visual Studio自己搞定所有功能，并且做到优秀，让别人无事可做，这也成就了其“宇宙第一IDE”的美名；IntelliJ与之相仿，开箱即用，插件可有可无。这么看起来，自己搞定所有的事情是个好办法，但大家是否知道，Visual Studio背后有上千人的工程团队，显然，这不是VS Code这二十几号人能搞定的。他们选择了让大家来做插件，那怎么解决Eclipse所遇到的问题呢？</p>
+<p>这里分享一个小知识——Eclipse核心部分的开发者就是早期的VS Code团队。嗯，所以他们没有两次踏入同一条河流。<strong>与Eclipse不同，VS Code选择了把插件关进盒子里</strong>。</p>
+<p>这样做首先解决的问题就是稳定性，这个问题对于VS Code来说尤为重要。都知道VS Code基于Electron，实质上是个Node.js环境，单线程，任何代码崩了都是灾难性后果。所以VS Code干脆不信任任何人，把插件们放到单独的进程里，任你折腾，主程序妥妥的。</p>
+<p><img data-src="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GbsNDM0ZJovGGl2P8SzqFO6mZVSaPKxovBz0GgqXLHc6HlIDYy8ONKg/640?wx_fmt=jpeg" alt="插件与主进程隔离"></p>
+<p>插件与主进程隔离</p>
+<p>VS Code团队的这一决策不是没有原因的，正如前面提到的，团队里很多人其实是Eclipse的旧部，自然对Eclipse的插件模型有深入的思考。Eclipse的设计目标之一就是把组件化推向极致，所以很多核心功能都是用插件的形式来实现的。遗憾的是，Eclipse的插件运行在主进程中，任何插件性能不佳或者不稳定，都直接影响到Eclipse，最终结果是大家抱怨Eclipse臃肿、慢、不稳定。VS Code基于进程做到了物理级别的隔离，成功解决了该问题。实际上进程级别的隔离也带出了另一个话题，那就是界面与业务逻辑的隔离。</p>
+<h2 id="UI渲染与业务逻辑隔离，一致的用户体验"><a href="#UI渲染与业务逻辑隔离，一致的用户体验" class="headerlink" title="UI渲染与业务逻辑隔离，一致的用户体验"></a>UI渲染与业务逻辑隔离，一致的用户体验</h2><p>“不稳定”之后的问题是“难用”，具体来说就是混乱的界面和流程，究其原因就是插件之间的界面语言的“不一致”，它导致学习曲线异常陡峭，并且在面临问题时没有统一的解决路径。VS Code的做法是根本不给插件们“发明”新界面的机会。</p>
+<p>如上图，插件们被关在Extension Host进程里，而UI则在主进程里，所以插件们天然没法直接在用户界面上做手脚。</p>
+<p>VS Code统管所有用户交互入口，制定交互的标准，所有用户的操作被转化为各种请求发送给插件，插件能做的就是响应这些请求，专注于业务逻辑。但从始至终，<strong>插件都不能“决定”或者“影响”界面元素如何被渲染（颜色、字体等，一概不行）</strong>，至于弹对话框什么的，就更是天方夜谭了。</p>
+<p>VS Code对于用户界面的把控可以说是谨慎到变态，做过插件的人都懂的，感兴趣的同学可以去深挖一下TreeView的历史，会有更直观的体会。乍一看，第三方开发者被卡得死死的，这样不是限制了大家的创造力吗？我想说这个做法跟这个团队的背景密切相关，换一拨人很有可能会失败。他们之所以能成功，是因为该团队在开发工具领域深耕多年，他们把经验转换为观点，最终落实到了VS Code的界面元素以及交互语言上，从结果来看，广受欢迎。</p>
+<p>界面和业务逻辑的彻底隔离，使得所有插件有了一致的行为，用户就得到了整齐划一的体验。不仅如此，这种接口和行为层面的一致性，最终转化成了另一个“伟大”的功能——Remote Development，我们稍后讨论。接下来我们要聊的是VS Code另一个创举——Language Server Protocol。</p>
+<h2 id="LSP——基于文本的协议"><a href="#LSP——基于文本的协议" class="headerlink" title="LSP——基于文本的协议"></a>LSP——基于文本的协议</h2><p>前文提到了VS Code定位中的两个特色：代码理解和调试，绝大部分都由第三方插件来实现，中间的桥梁就是两大协议——Language Server Protocol(LSP)和Debug Adapter Protocol(DAP)。两者从设计的角度来看高度相似，我们着重看一下最火的LSP。首先，为什么需要LSP？</p>
+<p>全栈开发早已成为这个时代的主流，软件从业者们也越来越不被某个特定的语言或者技术所局限，这也对我们手里的金刚钻提出了新的挑战。</p>
+<p>举个栗子，我用TypeScript和Node.js做前端，同时用Java写后台，偶尔也用Python做一些数据分析，那么我很有可能需要若干工具的组合，这样做的问题就在于需要在工具间频繁切换，无论从系统资源消耗和用户体验的角度来看，都是低效的。</p>
+<p>那么有没有一种工具能在同一个工作区里把三个语言都搞定呢？没错，就是VS Code——支持多语言的开发环境，而多语言支持的基础就是Language Server Protocol(LSP)。</p>
+<p>该协议在短短几年内取得了空前的成功，到目前为止，已经有来自微软等大厂以及社区的一百个实现，基本覆盖了所有主流编程语言。同时，它也被其他开发工具所采纳，比如Atom、Vim、Sublime、Emacs、Visual Studio和Eclipse，从另一个角度证明了它的优秀。</p>
+<p>更难能可贵的是，该协议还做到了轻量和快速，可以说是VS Code的杀手级特性了，同时也是微软最重要的IP之一。。。哇塞，又强大又轻巧，怎么看都是个骗局啊，那我们就来看看它到底怎么做到的。</p>
+<p>先划重点：<strong>1、节制的设计 2、合理的抽象 2、周全的细节。</strong></p>
+<p>先来说说设计(Design)，大而全是很常见的问题。如果让我来设计这么一个用来支持所有编程语言的东西，第一反应很可能是搞个涵盖所有语言特性的超集。</p>
+<p>微软就有过这样的尝试，比如Roslyn——一个语言中立的编译器，C#和VB.NET的编译器都是基于它做的。大家都知道C#在语言特性层面是非常丰富的，Roslyn能撑起C#足以说明它的强大。那么问题来了，为啥它没有在社区得到广泛应用呢？我想根本原因是“强大”所带来的副作用：复杂、主观(Opinionated)。光是语法树就已经很复杂了，其他各种特性以及他们之间的关系更是让人望而却步，这样一个庞然大物，普通开发者是不会轻易去碰的。</p>
+<p>相较之下，LSP显然把小巧作为设计目标之一，它选择做最小子集，贯彻了团队一贯节制的作风。它<strong>关心的是用户在编辑代码时最经常处理的物理实体（比如文件、目录）和状态（光标位置）</strong>。它根本没有试图去理解语言的特性，编译也不是它所关心的问题，所以自然不会涉及语法树一类的复杂概念。</p>
+<p>它也不是一步到位的，而是随着VS Code功能的迭代而逐步发展的。所以它自诞生至今依然保持着小巧的身材，易懂，实现门槛也很低，迅速在社区得到了广泛的支持，各种语言的Language Server(LS)遍地开花。</p>
+<p>小归小，功能可不能少，所以抽象就非常关键了。LSP最重要的概念是动作和位置，LSP的大部分请求都是在表达”在指定位置执行规定动作“。</p>
+<p>举个栗子，用户把鼠标悬停在某个类名上方，查看相关的定义和文档。这时VS Code会发送一个&#39;textDocument/hover&#39;请求给LS，这个请求里最关键的信息就是当前的文档和光标的位置。LS收到请求之后，经过一系列内部计算（识别出光标位置所对应的符号，并找出相关文档），找出相关的信息，然后发回给VS Code显示给用户看。这样一来一回的交互，在LSP里被抽象成请求(Request)和回复(Response)，LSP同时也规定了它们的规格(Schema)。在开发者看来，概念非常少，交互形式也很简单，实现起来非常轻松。</p>
+<p>看到这里，大家应该对LSP有了更进一步的理解，它本质上是胶水，把VS Code和各种语言的LS粘在一起。但它不是普通的胶水，而是非常有品位的胶水，这品位就体现在细节上。</p>
+<p>首先这是一个基于文本的协议，文本降低了理解和调试的难度。参考HTTP和REST的成功，很难想象如果这是一个二进制协议会是什么局面，甚至同样是文本协议的SOAP也早已作古，足以说明“简单”在打造开发者生态里的重要性。</p>
+<p>其次这是一个基于JSON的协议，JSON可以说是最易读的结构化数据格式了，大家看看各个代码仓库里的配置文件都是啥格式就知道这是个多么正确的决定了，现在还有人在新项目里用XML吗？又一次——“简单”。</p>
+<p>再次，这是一个基于JSONRPC的协议，由于JSON的流行，各大语言都对它有极好的支持，所以开发者根本不需要处理序列化、反序列化一类的问题，这是实现层面的“简单”。</p>
+<p>从这些细节可以看出，VS Code团队对当今技术趋势的把握是相当精准的，他们决策充分考虑到了“简单”，牢牢抓住了社区开发者的心。所以重要的事情说三遍：</p>
+<blockquote>
+<p>在做设计的时候一定要倾向于简单。</p>
+<p>在做设计的时候一定要倾向于简单。</p>
+<p>在做设计的时候一定要倾向于简单。</p>
+</blockquote>
+<h2 id="集大成的Remote-Development"><a href="#集大成的Remote-Development" class="headerlink" title="集大成的Remote Development"></a>集大成的Remote Development</h2><p>今年五月，VS Code发布了Remote Development(VSCRD)，有了它，我们可以在远程环境（比如虚机、容器）里开一个VS Code工作区，然后用本地的VS Code连上去工作，下图说明了它的运行模式：<br><img data-src="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GhXp7L45w8djTLHDKusSDLfoolVC14p7jDZmlszfFKDTHNmfUD4fjiag/640?wx_fmt=jpeg" alt=""></p>
+<p>VSCRD从本质上改善了远程开发的体验，与常用的远程桌面共享相比，具体改进如下：</p>
+<p><strong>响应迅速</strong>：VSCRD所有的交互都在本地UI内完成，响应迅速；远程桌面由于传输的是截屏画面，数据往返延迟很大，卡顿是常态</p>
+<p><strong>沿用本地设置</strong>：VSCRD的UI运行在本地，遵从所有本地设置，所以你依然可以使用自己所习惯的快捷键、布局、字体，避免了工作效率层面的开销</p>
+<p><strong>数据传输开销小</strong>：远程桌面传输的是视频数据，而VS Code传输是操作请求和响应，开销与命令行相仿，卡顿的情况进一步改善</p>
+<p><strong>第三方插件可用</strong>：在远程工作区里，不仅VS Code的原生功能可用，所有第三方插件的功能依然可用；远程桌面的话，你得自己一个个装好</p>
+<p><strong>远程文件系统可用</strong>：远程文件系统被完整映射到本地，这个两者差不多</p>
+<p>那么VSCRD做了什么神奇的操作能够实现以上效果呢？来看看它的架构图：<br><img data-src="https://mmbiz.qpic.cn/mmbiz_jpg/KyXfCrME6UIqiaLBvCPXibnTVMY66whB7GF2KlxFJO6IP2yZsDvVOJ9q7nBB3onzZZeN8SxibFvzThzn5y3EAaWUA/640?wx_fmt=jpeg" alt=""></p>
+<p>其实答案都在前文有所提及：</p>
+<h3 id="进程级别隔离的插件模型"><a href="#进程级别隔离的插件模型" class="headerlink" title="进程级别隔离的插件模型"></a>进程级别隔离的插件模型</h3><p>Extension Host（也就是图中的VS Code Server）与主程序做到了物理级别的分离，那么把Extension Host在远程或者本地跑没有本质的区别</p>
+<h3 id="UI渲染与插件逻辑隔离，整齐划一的插件行为"><a href="#UI渲染与插件逻辑隔离，整齐划一的插件行为" class="headerlink" title="UI渲染与插件逻辑隔离，整齐划一的插件行为"></a>UI渲染与插件逻辑隔离，整齐划一的插件行为</h3><p>所有的插件的UI都由VS Code统一渲染，所以插件里面只有纯业务逻辑，行为高度统一，跑在哪里都没区别</p>
+<h3 id="高效的协议LSP"><a href="#高效的协议LSP" class="headerlink" title="高效的协议LSP"></a>高效的协议LSP</h3><p>VS Code的两大协议LSP、DAP都非常精简，天然适合网络延迟高的情况，用在远程开发上再适合不过<br>VS Code团队在架构上的决策无疑是非常有前瞻性的，与此同时，他们对细节的把握也是无可挑剔。正因为有了如此扎实的工程基础，VSCRD这样的功能才得以诞生，所以我认为这是集大成的作品。</p>
+<p>还没有尝试过VSCRD的同学，这里再安利一下，它在以下场景中非常有用：</p>
+<ul>
+<li><p>开发环境配置起来很繁琐，比如物联网开发，需要自己安装和配置各种工具和插件。在VSCRD里，一个远程工作区的模板即可搞定，如需安装额外的工具，也就是改改Dockerfile的事情，非常简单。在这里可以找到常用的编程语言和场景的模板。</p>
+</li>
+<li><p>本地机器太弱，某些开发搞不了，比如机器学习，海量数据及和计算需求需要非常好的机器。在VSCRD里，可以直接操作远程文件系统，使用远程计算资源。</p>
+</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>VS Code像一颗耀眼的星星，吸引着成千上万开发者为其添砖加瓦。从VS Code的成功中，我们看到了好的设计和工程实践能创造多少奇迹。放眼软件产业，各个层面的模式不断被刷新，让人激动之余，也要求从业者不断提高技能水平。从个人学习的角度来看，了解这些模式诞生的前因后果，理解工程实践中的决策过程是非常有利于提高工程能力的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/30/read/the-most-important-thing/" rel="prev" title="《投资中最重要的事》书摘">
+      <i class="fa fa-chevron-left"></i> 《投资中最重要的事》书摘
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/git/display-10-git-command-by-gif/" rel="next" title="用动图展示10大 Git 命令">
+      用动图展示10大 Git 命令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简洁而聚焦的产品定位，贯穿始终"><span class="nav-number">1.</span> <span class="nav-text">简洁而聚焦的产品定位，贯穿始终</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程隔离的插件模型"><span class="nav-number">2.</span> <span class="nav-text">进程隔离的插件模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UI渲染与业务逻辑隔离，一致的用户体验"><span class="nav-number">3.</span> <span class="nav-text">UI渲染与业务逻辑隔离，一致的用户体验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LSP——基于文本的协议"><span class="nav-number">4.</span> <span class="nav-text">LSP——基于文本的协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集大成的Remote-Development"><span class="nav-number">5.</span> <span class="nav-text">集大成的Remote Development</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程级别隔离的插件模型"><span class="nav-number">5.1.</span> <span class="nav-text">进程级别隔离的插件模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UI渲染与插件逻辑隔离，整齐划一的插件行为"><span class="nav-number">5.2.</span> <span class="nav-text">UI渲染与插件逻辑隔离，整齐划一的插件行为</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高效的协议LSP"><span class="nav-number">5.3.</span> <span class="nav-text">高效的协议LSP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后"><span class="nav-number">6.</span> <span class="nav-text">最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

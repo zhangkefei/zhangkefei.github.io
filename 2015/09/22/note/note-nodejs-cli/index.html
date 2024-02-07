@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="yandex-verification" content="3ac9ae36ddebb425">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhangkefei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"db.json"};
+  </script>
+
+  <meta name="description" content="用Nodejs开发命令行工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用Nodejs开发命令行工具">
+<meta property="og:url" content="https://zhangkefei.github.io/2015/09/22/note/note-nodejs-cli/index.html">
+<meta property="og:site_name" content="Themis">
+<meta property="og:description" content="用Nodejs开发命令行工具">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-09-22T19:09:00.000Z">
+<meta property="article:modified_time" content="2024-02-07T07:49:48.444Z">
+<meta property="article:author" content="Themis">
+<meta property="article:tag" content="note">
+<meta property="article:tag" content="nodejs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhangkefei.github.io/2015/09/22/note/note-nodejs-cli/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>用Nodejs开发命令行工具 | Themis</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Themis</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">92</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="book fa-fw"></i>分类<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">42</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhangkefei.github.io/2015/09/22/note/note-nodejs-cli/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Themis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Themis">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用Nodejs开发命令行工具
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-09-22 19:09:00" itemprop="dateCreated datePublished" datetime="2015-09-22T19:09:00Z">2015-09-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>用Nodejs开发命令行工具<br><a id="more"></a></p>
+<h2 id="The-first-step-Hello-World"><a href="#The-first-step-Hello-World" class="headerlink" title="The first step - Hello World"></a>The first step - Hello World</h2><h3 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h3><ul>
+<li>nodejs v6.10.1</li>
+<li>npm v3.10.10</li>
+</ul>
+<p>分4步：</p>
+<ol>
+<li>index.js</li>
+<li>package.json</li>
+<li>根目录下执行npm link</li>
+<li>执行命令nhw =&gt; hello world</li>
+</ol>
+<p>touch index.js创建一个index.js文件，内容如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env node</span><br><span class="line"></span><br><span class="line">console.log(&#39;hello world&#39;)</span><br></pre></td></tr></table></figure><br>用npm init创建一个package.json文件，之后修改成如下:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;: &quot;npmhelloworld&quot;,</span><br><span class="line">    &quot;bin&quot;: &#123;</span><br><span class="line">        &quot;nhw&quot;: &quot;index.js&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;preferGlobal&quot;: true,</span><br><span class="line">    &quot;version&quot;: &quot;1.0.0&quot;,</span><br><span class="line">    &quot;description&quot;: &quot;&quot;,</span><br><span class="line">    &quot;scripts&quot;: &#123;</span><br><span class="line">        &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;author&quot;: &quot;jerryni &lt;jerryni2014@gmail.com&gt;&quot;,</span><br><span class="line">    &quot;license&quot;: &quot;ISC&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="内容详解"><a href="#内容详解" class="headerlink" title="内容详解"></a>内容详解</h3><h4 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#! &#x2F;usr&#x2F;bin&#x2F;env node</span><br></pre></td></tr></table></figure>
+<p>这句话是一个shebang line实例, 作用是告诉系统运行这个文件的解释器是node；比如，本来需要这样运行node ./file.js，但是加上了这句后就可以直接./file.js运行了</p>
+<h4 id="package-json"><a href="#package-json" class="headerlink" title="package.json"></a>package.json</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; 模块系统的名字，如require(&#39;npmhelloworld&#39;)</span><br><span class="line">    &quot;name&quot;: &quot;npmhelloworld&quot;,</span><br><span class="line">    &quot;bin&quot;: &#123;</span><br><span class="line">        &quot;nhw&quot;: &quot;index.js&quot; &#x2F;&#x2F; nhw就是命令名 ，index.js就是入口</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 加入 安装的时候, 就会有-g的提示了</span><br><span class="line">    &quot;preferGlobal&quot;: true,</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 去掉main: &#39;xxx.js&#39;  是模块系统的程序入口</span><br><span class="line">    &quot;version&quot;: &quot;1.0.0&quot;,</span><br><span class="line">    &quot;description&quot;: &quot;&quot;,</span><br><span class="line">    &quot;scripts&quot;: &#123;</span><br><span class="line">        &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;author&quot;: &quot;jerryni &lt;jerryni2014@gmail.com&gt;&quot;,</span><br><span class="line">    &quot;license&quot;: &quot;ISC&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="npm-link命令"><a href="#npm-link命令" class="headerlink" title="npm link命令"></a>npm link命令</h4><p>执行后，控制台里面会有以下输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;bin&#x2F;nhw -&gt; &#x2F;usr&#x2F;local&#x2F;lib&#x2F;node_modules&#x2F;npmhelloworld&#x2F;index.js</span><br><span class="line">&#x2F;usr&#x2F;local&#x2F;lib&#x2F;node_modules&#x2F;npmhelloworld -&gt; &#x2F;Users&#x2F;nirizhe&#x2F;GitHub&#x2F;npmhelloworld</span><br></pre></td></tr></table></figure><br><strong>解释</strong>：创建了2个软链接分别放到系统环境变量$PATH目录里，nhw命令和npmhellworld模块。npm link在用户使用的场景下是不需要执行的，用户使用npm i -g npmhellworld命令安装即可。</p>
+<h2 id="The-second-step"><a href="#The-second-step" class="headerlink" title="The second step"></a>The second step</h2><p>自制脚手架所需基础node工具包</p>
+<h3 id="一、commander"><a href="#一、commander" class="headerlink" title="一、commander"></a>一、commander</h3><h4 id="1、安装"><a href="#1、安装" class="headerlink" title="1、安装"></a>1、安装</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install commander --save</span><br></pre></td></tr></table></figure>
+<h4 id="2、简单demo"><a href="#2、简单demo" class="headerlink" title="2、简单demo"></a>2、简单demo</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var program &#x3D; require(&#39;commander&#39;);</span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">  .version(&#39;0.1.0&#39;)</span><br><span class="line">  .option(&#39;-p, --peppers&#39;, &#39;Add peppers&#39;)</span><br><span class="line">  .option(&#39;-P, --pineapple&#39;, &#39;Add pineapple&#39;)</span><br><span class="line">  .option(&#39;-b, --bbq-sauce&#39;, &#39;Add bbq sauce&#39;)</span><br><span class="line">  .option(&#39;-c, --cheese [type]&#39;, &#39;Add the specified type of cheese [marble]&#39;, &#39;marble&#39;)</span><br><span class="line">  .parse(process.argv);</span><br><span class="line">&#x2F;&#x2F; 示例 *** -p -P -b -c type  (***表示启动命令)</span><br><span class="line">&#x2F;&#x2F; 或者 *** --peppers --pineapple --bbq-sauce --cheese type  (***表示启动命令)</span><br><span class="line"></span><br><span class="line">console.log(&#39;you ordered a pizza with:&#39;);</span><br><span class="line">if (program.peppers) console.log(&#39;  - peppers&#39;);</span><br><span class="line">if (program.pineapple) console.log(&#39;  - pineapple&#39;);</span><br><span class="line">if (program.bbqSauce) console.log(&#39;  - bbq&#39;);</span><br><span class="line">console.log(&#39;  - %s cheese&#39;, program.cheese);</span><br><span class="line"></span><br><span class="line">&#x2F;*</span><br><span class="line">* you ordered a pizza with:</span><br><span class="line">*   - peppers</span><br><span class="line">*   - pineapple</span><br><span class="line">*   - bbq</span><br><span class="line">*   - type cheese</span><br><span class="line">*&#x2F;</span><br></pre></td></tr></table></figure>
+<h4 id="3、demo解释"><a href="#3、demo解释" class="headerlink" title="3、demo解释"></a>3、demo解释</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var program &#x3D; require(&#39;commander&#39;); &#x2F;&#x2F; 引入commander</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * option（）</span><br><span class="line"> * @param &#123;String&#125; name 表示参数的名称，</span><br><span class="line"> * @param &#123;String&#125; desc 描述参数</span><br><span class="line"> * @param &#123;String&#125; value 参数默认值</span><br><span class="line"> *&#x2F;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 第一种option表达方式</span><br><span class="line">program</span><br><span class="line">  .option(&#39;-p, --peppers&#39;, &#39;Add peppers&#39;)</span><br><span class="line">  .parse(process.argv);</span><br><span class="line">  if (program.peppers) console.log(program.peppers);</span><br><span class="line">  &#x2F;&#x2F; program.peppers为Boolean值</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 第二种option表达方式</span><br><span class="line">program</span><br><span class="line">  .option(&#39;-p, --peppers [p]&#39;, &#39;Add peppers&#39;, &#39;peppers &#39;)</span><br><span class="line">  .parse(process.argv);</span><br><span class="line">  if (program.peppers) console.log(program.peppers);</span><br><span class="line">  &#x2F;&#x2F; -p参数后面可以输入值,第三个参数可以设定默认值</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 第三种option表达方式</span><br><span class="line">program</span><br><span class="line">  .option(&#39;-p, --peppers [p]&#39;, &#39;Add peppers&#39;, function(val) &#123;</span><br><span class="line">    console.log(val)</span><br><span class="line">    return val</span><br><span class="line">  &#125;)</span><br><span class="line">  .parse(process.argv);</span><br><span class="line">  if (program.peppers) console.log(program.peppers);</span><br><span class="line">  &#x2F;&#x2F; 第三个参数可以传入一个带参的函数，参数为program.peppers的值</span><br></pre></td></tr></table></figure>
+<h3 id="二、fs相关"><a href="#二、fs相关" class="headerlink" title="二、fs相关"></a>二、fs相关</h3><h4 id="1、readFileSync"><a href="#1、readFileSync" class="headerlink" title="1、readFileSync"></a>1、readFileSync</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fs.readFileSync(path[, options])</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>path: string | buffer | url | integer</li>
+<li>options : object | string</li>
+<li>encoding string | null</li>
+<li>flag string 默认为 ‘r’</li>
+<li>fs.readFile() 的同步版本。 返回 path 的内容。</li>
+<li>如果指定了 encoding 选项，则该函数返回一个字符串，否则返回一个 buffer。</li>
+</ul>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var fs &#x3D; require(&#39;fs&#39;)</span><br><span class="line">var path &#x3D; require(&#39;path&#39;)</span><br><span class="line">console.log(path.join(__dirname, &#39;doc&#x2F;package.json&#39;))</span><br><span class="line"></span><br><span class="line">var file &#x3D; fs.readFileSync(path.join(path.join(__dirname, &#39;doc&#x2F;package.json&#39;)), &#39;utf-8&#39;);</span><br><span class="line">fs.writeFileSync(path.join(__dirname, &#39;package.json&#39;), file, &#123; mode: 0666 &#125;);</span><br><span class="line">console.log(file)</span><br></pre></td></tr></table></figure>
+<h4 id="2、writeFileSync"><a href="#2、writeFileSync" class="headerlink" title="2、writeFileSync"></a>2、writeFileSync</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fs.writeFileSync(file, data[, options])</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>file： string | Buffer | integer 文件名或文件描述符</li>
+<li>data： string | Buffer | Uint8Array</li>
+<li>options：Object | string</li>
+<li>encoding：string | null 默认 = ‘utf8’</li>
+<li>mode： integer 默认 = 0o666</li>
+<li>flag：string 默认 = ‘w’</li>
+<li>fs.writeFile() 的同步版本。 返回 undefined。</li>
+</ul>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var fs &#x3D; require(&#39;fs&#39;)</span><br><span class="line">var path &#x3D; require(&#39;path&#39;)</span><br><span class="line">console.log(path.join(__dirname, &#39;doc&#x2F;package.json&#39;))</span><br><span class="line"></span><br><span class="line">var file &#x3D; fs.readFileSync(path.join(path.join(__dirname, &#39;doc&#x2F;package.json&#39;)), &#39;utf-8&#39;);</span><br><span class="line">fs.writeFileSync(path.join(__dirname, &#39;package.json&#39;), file, &#123; mode: 0666 &#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="3、mkdirSync"><a href="#3、mkdirSync" class="headerlink" title="3、mkdirSync"></a>3、mkdirSync</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fs.mkdirSync(path[, mode])</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>path：string | Buffer | URL</li>
+<li>mode：integer Default: 0o777</li>
+<li>同步的 mkdir(2)。返回 undefined。</li>
+</ul>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var fs &#x3D; require(&#39;fs&#39;);</span><br><span class="line">var path &#x3D; require(&#39;path&#39;)</span><br><span class="line"></span><br><span class="line">fs.mkdirSync(path.resolve(__dirname + &#39;&#x2F;name&#39;), 0777, function (err) &#123;</span><br><span class="line">    if (err) &#123;</span><br><span class="line">        console.log(err);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        console.log(&quot;creat done!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h4 id="REFERRENCE"><a href="#REFERRENCE" class="headerlink" title="REFERRENCE"></a>REFERRENCE</h4><blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RqL2NvbW1hbmRlci5qcy9ibG9iL21hc3Rlci9SZWFkbWVfemgtQ04ubWQ=">Commander.js<i class="fa fa-external-link-alt"></i></span> :node.js 命令行接口的完整解决方案  </p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/note/" rel="tag"># note</a>
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/08/30/git/note-git-handbook/" rel="prev" title="Git handbook">
+      <i class="fa fa-chevron-left"></i> Git handbook
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/01/01/mouse/programming-paradigm-travel-1-origin/" rel="next" title="编程范式游记（1）- 起源">
+      编程范式游记（1）- 起源 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-first-step-Hello-World"><span class="nav-number">1.</span> <span class="nav-text">The first step - Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ENV"><span class="nav-number">1.1.</span> <span class="nav-text">ENV</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内容详解"><span class="nav-number">1.2.</span> <span class="nav-text">内容详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#index-js"><span class="nav-number">1.2.1.</span> <span class="nav-text">index.js</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#package-json"><span class="nav-number">1.2.2.</span> <span class="nav-text">package.json</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#npm-link命令"><span class="nav-number">1.2.3.</span> <span class="nav-text">npm link命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-second-step"><span class="nav-number">2.</span> <span class="nav-text">The second step</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、commander"><span class="nav-number">2.1.</span> <span class="nav-text">一、commander</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、安装"><span class="nav-number">2.1.1.</span> <span class="nav-text">1、安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、简单demo"><span class="nav-number">2.1.2.</span> <span class="nav-text">2、简单demo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、demo解释"><span class="nav-number">2.1.3.</span> <span class="nav-text">3、demo解释</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、fs相关"><span class="nav-number">2.2.</span> <span class="nav-text">二、fs相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、readFileSync"><span class="nav-number">2.2.1.</span> <span class="nav-text">1、readFileSync</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、writeFileSync"><span class="nav-number">2.2.2.</span> <span class="nav-text">2、writeFileSync</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、mkdirSync"><span class="nav-number">2.2.3.</span> <span class="nav-text">3、mkdirSync</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#REFERRENCE"><span class="nav-number">2.2.4.</span> <span class="nav-text">REFERRENCE</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Themis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW5na2VmZWk=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangkefei"><i class="github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOnpoa2YuaHVudGVyQGljbG91ZC5jb20=" title="E-Mail → mailto:zhkf.hunter@icloud.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+
+
+<div class="cc-license motion-element" itemprop="sponsor">
+</div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">NexT</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span> 强力驱动
+  </div><div class="footer-custom">
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
